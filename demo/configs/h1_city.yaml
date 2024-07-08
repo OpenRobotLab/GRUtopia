@@ -1,0 +1,34 @@
+simulator:
+  physics_dt: 1/240
+  rendering_dt: 1/240
+
+tasks:
+- type: "SingleInferenceTask"
+  name: "h1_keyboard_locomotion"
+  scene_asset_path: "GRUtopia/assets/scenes/demo_city/demo_city.usd"
+  env_num: 1
+  offset_size: 1.0
+  robots:
+  - name: h1
+    prim_path: "/World/h1"
+    type: "HumanoidRobot"
+    position: [.0, .0, 1.05]
+    scale: [1, 1, 1]
+    controller_params:
+    - name: "move_by_speed"
+    - name: "joint_controller"
+    - name: "move_to_point"
+    - name: "move_along_path"
+    - name: "rotate"
+    - name: "move_with_keyboard"
+    - name: "web_chat"
+    sensor_params:
+    - name: "camera"
+      enable: false
+  objects:
+  - name: target_cube_0
+    type: VisualCube
+    prim_path: /World/target_cube_0
+    position: [1.0, 0, 1.0]
+    scale: [0.05015, 0.05015, 0.05015]
+    color: [1.0, 0, 1.0]

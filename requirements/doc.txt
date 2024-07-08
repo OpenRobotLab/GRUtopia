@@ -1,0 +1,5 @@
+myst_parser
+sphinx==6.2.1
+sphinx_copybutton
+sphinx_markdown_tables
+# -e git+https://github.com/APX103/pytorch_sphinx_theme.git#egg=pytorch_sphinx_theme

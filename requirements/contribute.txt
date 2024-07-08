@@ -1,0 +1,5 @@
+codespell~=2.2.1
+flake8==4.0.1
+isort==5.11.5
+pre-commit==3.6.2
+yapf==0.30.0

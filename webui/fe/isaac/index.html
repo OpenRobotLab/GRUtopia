@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+    <meta name="description" content="Omniverse: WebRTC Livestream Player" />
+    <title>Omniverse: WebRTC Livestream Player</title>
+
+    <link rel="stylesheet" href="css/bootstrap-5.0.0.min.css" />
+
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+        }
+
+        .bg-dark {
+            background-color: rgb(31, 33, 36);
+        }
+
+        .btn-secondary {
+            background-color: rgb(69, 69, 69);
+            border-color: rgb(69, 69, 69);
+        }
+
+        #video-container {
+            display: flex;
+            position: relative;
+        }
+
+        #stream {
+            display: flex;
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+        }
+
+        #overlay {
+            display: block !important;
+        }
+
+        #play {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        #remote-video {
+            background: rgb(69, 69, 69);
+            max-width: 100%;
+            max-height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        #remote-video:focus {
+            outline-width: 0;
+        }
+
+        #streamtransition input {
+            margin: 0 0.5rem;
+        }
+
+        .bottom-bar {
+            margin-top: 2rem;
+        }
+
+        .invalid-server {
+            text-align: center;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .invalid-server code {
+            display: contents;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-light text-center">
+    <!--make stream client full screen-->
+    <div id="stream">
+        <div id="video-container">
+            <div id="remote-video-height"></div>
+            <video id="remote-video" width="1920" height="1080" playsinline tabindex="-1"></video>
+        </div>
+        <audio id="remote-audio"></audio>
+    </div>
+    <div id="streamtransition" class="bottom-bar">
+        <input type="button" value="◼ &nbsp;Stop" id="stop" class="btn btn-secondary" disabled />
+    </div>
+    </div>
+    <div id="overlay">
+        <input type="button" value="▷" id="play" class="btn btn-danger btn-lg" disabled />
+    </div>
+
+    <script type="text/javascript" src="js/bootstrap-5.0.0.bundle.min.js"></script>
+    <script type="text/javascript" src="js/kit-player.js"></script>
+    <script type="text/javascript">
+        (() => {
+            /**
+             * Show the given HTML button element.
+             *
+             * @param {HTMLInputElement} buttonElement HTML button element to show.
+             */
+            function showButton(buttonElement) {
+                buttonElement.removeAttribute('disabled');
+                buttonElement.classList.remove('d-none');
+            }
+
+            /**
+             * Hide the given HTML button element.
+             *
+             * @param {HTMLInputElement} buttonElement HTML button element to hide.
+             */
+            function hideButton(buttonElement) {
+                buttonElement.setAttribute('disabled', 'disabled');
+                buttonElement.classList.add('d-none');
+            }
+
+            /**
+             * Enable the given HTML button element.
+             *
+             * @param {HTMLInputElement} buttonElement HTML button element to enable.
+             */
+            function enableButton(buttonElement) {
+                buttonElement.removeAttribute('disabled');
+            }
+
+            /**
+             * Disable the given HTML button element.
+             *
+             * @param {HTMLInputElement} buttonElement HTML button element to disable.
+             */
+            function disableButton(buttonElement) {
+                buttonElement.setAttribute('disabled', 'disabled');
+            }
+
+            /**
+             * Validate if the IP of the WebSocket server to connect to is supported.
+             *
+             * @return {boolean} `true` if a valid IP address for a WebSocket server was found, `false` otherwise.
+             */
+            function isValidStreamingServer() {
+                const UNSUPPORTED_IPS = [null, '127.0.0.1'];
+
+                const urlSearchParams = new URLSearchParams(window.location.search);
+                const serverIP = urlSearchParams.get('server');
+
+                return !UNSUPPORTED_IPS.includes(serverIP);
+            }
+
+            /**
+             * Display an informative message letting Users know that no valid streaming server was identified.
+             */
+            function displayInvalidStreamingServerMessage() {
+                const videoContainerElement = document.getElementById('video-container');
+                const remoteVideoElement = document.getElementById('remote-video');
+                if (videoContainerElement !== null && remoteVideoElement !== null) {
+                    const videoWidth = remoteVideoElement.getAttribute('width');
+                    const videoHeight = remoteVideoElement.getAttribute('height');
+
+                    videoContainerElement.style.width = `${videoWidth}px`;
+                    videoContainerElement.style.height = `${videoHeight}px`;
+                    videoContainerElement.classList.add('invalid-server');
+                    videoContainerElement.innerHTML = [
+                        '<div>',
+                        '<h5><strong>Sorry!</strong> <small>We were unable to automatically find an appropriate streaming server for you.</small></h5>',
+                        '<br />',
+                        '<p>Please provide your internal IP address or the one of the server you are attempting to reach as the <code>?server=</code> parameter of this page.</p>',
+                        '</div>',
+                    ].join('');
+                }
+            }
+
+
+            /**
+             * Register event listeners once all elements on the page have been loaded.
+             */
+            document.addEventListener('DOMContentLoaded', async () => {
+                const playElement = document.getElementById('play');
+                const stopElement = document.getElementById('stop');
+                hideButton(stopElement);
+                let isPlaying = false;
+
+                // Wait for the application to be initialized before allowing
+                // the User to press the "Play" button:
+                const kitWebRTCApp = await SetupWebRTCPlayer({
+                    videoElementId: 'remote-video',
+                    audioElementId: 'remote-audio',
+                    playElement,
+                    stopElement,
+                });
+                enableButton(playElement);
+
+                // Update the UI by disabling/enabling the start/stop buttons:
+                playElement.addEventListener('click', () => {
+                    if (isPlaying) {
+                        hideButton(playElement);
+                        enableButton(stopElement);
+                    } else {
+                        disableButton(playElement);
+                        hideButton(playElement);
+                        enableButton(stopElement);
+                    }
+                    isPlaying = !isPlaying;
+                });
+
+                stopElement.addEventListener('click', () => {
+                    if (isPlaying) {
+                        showButton(playElement);
+                        disableButton(stopElement);
+                    } else {
+                        enableButton(playElement);
+                        showButton(playElement);
+                        disableButton(stopElement);
+                    }
+                    isPlaying = !isPlaying;
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>

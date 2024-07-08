@@ -1,0 +1,107 @@
+# Developer only. User read-only.
+robots:
+- type: "HumanoidRobot"
+  usd_path: "GRUtopia/assets/robots/h1/h1.usd"
+  gains: [0.0, 0.0]
+  joint_names:
+  - left_hip_yaw_joint
+  - right_hip_yaw_joint
+  - torso_joint
+  - left_hip_roll_joint
+  - right_hip_roll_joint
+  - left_shoulder_pitch_joint
+  - right_shoulder_pitch_joint
+  - left_hip_pitch_joint
+  - right_hip_pitch_joint
+  - left_shoulder_roll_joint
+  - right_shoulder_roll_joint
+  - left_knee_joint
+  - right_knee_joint
+  - left_shoulder_yaw_joint
+  - right_shoulder_yaw_joint
+  - left_ankle_joint
+  - right_ankle_joint
+  - left_elbow_joint
+  - right_elbow_joint
+  controllers:
+  - name: "move_by_speed"
+    type: HumanoidMoveBySpeedController
+    policy_weights_path: GRUtopia/assets/policy/weights/h1_loco_model_20000.pt
+    joint_names:
+    - left_hip_yaw_joint
+    - right_hip_yaw_joint
+    - torso_joint
+    - left_hip_roll_joint
+    - right_hip_roll_joint
+    - left_shoulder_pitch_joint
+    - right_shoulder_pitch_joint
+    - left_hip_pitch_joint
+    - right_hip_pitch_joint
+    - left_shoulder_roll_joint
+    - right_shoulder_roll_joint
+    - left_knee_joint
+    - right_knee_joint
+    - left_shoulder_yaw_joint
+    - right_shoulder_yaw_joint
+    - left_ankle_joint
+    - right_ankle_joint
+    - left_elbow_joint
+    - right_elbow_joint
+  - name: "joint_controller"
+    type: JointController
+    joint_names:
+    - left_hip_yaw_joint
+    - right_hip_yaw_joint
+    - torso_joint
+    - left_hip_roll_joint
+    - right_hip_roll_joint
+    - left_shoulder_pitch_joint
+    - right_shoulder_pitch_joint
+    - left_hip_pitch_joint
+    - right_hip_pitch_joint
+    - left_shoulder_roll_joint
+    - right_shoulder_roll_joint
+    - left_knee_joint
+    - right_knee_joint
+    - left_shoulder_yaw_joint
+    - right_shoulder_yaw_joint
+    - left_ankle_joint
+    - right_ankle_joint
+    - left_elbow_joint
+    - right_elbow_joint
+  - name: "move_to_point"
+    type: "MoveToPointBySpeedController"
+    forward_speed: 1.0
+    rotation_speed: 4.0
+    threshold: 0.05
+    sub_controllers:
+    - name: move_by_speed
+  - name: "move_along_path"
+    type: MoveAlongPathPointsController
+    forward_speed: 1.0
+    rotation_speed: 4.0
+    threshold: 0.1
+    sub_controllers:
+    - name: move_to_point
+  - name: "rotate"
+    type: RotateController
+    rotation_speed: 2.0
+    threshold: 0.02
+    sub_controllers:
+    - name: move_by_speed
+  - name: "move_with_keyboard"
+    type: MoveWithKeyboardController
+    forward_speed: 1.0
+    rotation_speed: 4.0
+    lateral_speed: 1.0
+    sub_controllers:
+    - name: move_by_speed
+  - name: web_chat
+    type: WebChatboxController
+  sensors:
+  - name: "camera"
+    type: "Camera"
+    prim_path: "logo_link/Camera"
+  - name: "tp_camera"
+    type: "Camera"
+    prim_path: "torso_link/TPCamera"
