@@ -120,8 +120,8 @@ work_dirs/
 *.sh~
 
 # grutopia assets
-asset
-assets
+/asset
+/assets
 
 # sphinx build dir
 docs/en/_build
