@@ -11,24 +11,16 @@
 
 <div id="top" align="center">
 
-[![arXiv](https://img.shields.io/badge/arXiv-2312.16170-blue)]()
-[![](https://img.shields.io/badge/Paper-%F0%9F%93%96-blue)](./assets/GRUtopia.pdf)
+[![arXiv](https://img.shields.io/badge/arXiv-2312.16170-red)]()
+[![](https://img.shields.io/badge/Paper-%F0%9F%93%96-yellow)](./assets/GRUtopia.pdf)
 [![](https://img.shields.io/badge/Project-%F0%9F%9A%80-blue)](https://github.com/OpenRobotLab/GRUtopia)
+[![](https://img.shields.io/badge/Doc-📘-green)](https://grutopia.github.io)
 
 </div>
 
-## 🤖 [Demo](https://tai-wang.github.io/embodiedscan)
+## 🤖 Demo
 
-GRUtopia aka. Tao Yuan (桃源 in Chinese)
-
-To add demo video link
-
-<!-- <div style="text-align: center;">
-    <img src="assets/demo_fig.png" alt="Dialogue_Teaser" width=100% >
-</div> -->
-
-[![demo](assets/demo_fig.png "demo")]()
-
+[![demo](assets/demo_video.mp4 "demo")]()
 
 ## 📋 Contents
 
@@ -50,7 +42,7 @@ To add demo video link
 </div>
 Recent works have been exploring the scaling laws in the field of Embodied AI. Given the prohibitive costs of collecting real-world data, we believe the <b>Simulation-to-Real (Sim2Real) paradigm</b> is a more feasible path for scaling the learning of embodied models.
 
-We introduce project <b>GRUtopia</b>, the first simulated interactive 3D society designed for various robots.
+We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), the first simulated interactive 3D society designed for various robots.
 It features several advancements: 
 * 🏙️ <b>GRScenes</b>, the scene dataset, includes 100k interactive, finely annotated scenes, which can be freely combined into city-scale environments. In contrast to previous works mainly focusing on home, GRScenes covers 89 diverse scene categories, bridging the gap of <b>service-oriented environments</b> where general robots would initially be deployed.
 * 🧑‍🤝‍🧑 <b>GRResidents</b>, a Large Language Model (LLM) driven Non-Player Character (NPC) system that is responsible for social interaction, task generation, and task assignment, thus simulating <b>social scenarios</b> for embodied AI applications.
@@ -94,7 +86,7 @@ You can see a humanoid robot (Unitree H1) walking following a pre-defined trajec
 
 ### Wander the Demo Scenes
 
-Referring to the [guide](docs/en/get_started/wander-in-city.md), you can basically run to wander a demo house:
+Referring to the [guide](docs/en/get_started/wander-with-keyboard.md), you can basically run to wander a demo house:
 
 ```bash
 # python ./GRUtopia/demo/h1_city.py will run a humanoid in the city block
@@ -109,19 +101,11 @@ BTW, you can also simply load the demo city USD file into Isaac Sim to freely si
 
 ### WebUI and NPC Demo
 
-Please refer to the [guide](docs/en/get_started/web-demo.md) to try with WebUI and play with NPCs. Note that there are some additional requirements, such as installing with the docker and LLM's API keys.
-
-### Customize Robots
-
-Please refer to the [guide](docs/en/get_started/30-min-to-get-started.md) to get started with simple inference of a low-level control task on a newly added simple robot.
-
-### Customize NPC
-
-Please refer to the [guide](docs/en/tutorials/how-to-use-npc.md) to customize NPC with your algorithm.
+Please refer to the [guide](docs/en/get_started/webui.md) to try with WebUI and play with NPCs. Note that there are some additional requirements, such as installing with the docker and LLM's API keys.
 
 ### Documentation \& Tutorial
 
-We provide detailed [docs](docs/env) and simple [tutorials](docs/en/tutorials/) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
+We provide detailed [docs](docs/en) and simple [tutorials](docs/en/tutorials/) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
 ## 📦 Model and Benchmark
 
@@ -160,7 +144,7 @@ If you find our work helpful, please cite:
 
 ## 📄 License
 
-GRUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRScenes are under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>.
+GRUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRScenes are under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License </a><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>.
 
 ## 👏 Acknowledgements
 
