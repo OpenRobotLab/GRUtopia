@@ -2,14 +2,12 @@ simulator:
   physics_dt: 1/240
   rendering_dt: 1/240
 
-env:
-  bg_type: null
-
 tasks:
 - type: "SingleInferenceTask"
   name: "h1_locomotion"
   env_num: 1
   offset_size: 1.0
+  scene_asset_path: GRUtopia/assets/scenes/empty.usd
   robots:
   - name: h1
     prim_path: "/World/h1"
@@ -27,22 +25,3 @@ tasks:
       enable: False
     - name: "tp_camera"
       enable: False
-  objects:
-  - name: target_cube_0
-    type: VisualCube
-    prim_path: /World/target_cube_0
-    position: [1.0, 0, 1.0]
-    scale: [0.05015, 0.05015, 0.05015]
-    color: [1.0, 0, 1.0]
-  - name: target_cube_1
-    type: VisualCube
-    prim_path: /World/target_cube_1
-    position: [1.0, 1.0, 1.0]
-    scale: [0.05015, 0.05015, 0.05015]
-    color: [1.0, 0, 1.0]
-  - name: target_cube_2
-    type: VisualCube
-    prim_path: /World/target_cube_2
-    position: [3.0, 4.0, 1.0]
-    scale: [0.05015, 0.05015, 0.05015]
-    color: [1.0, 0, 1.0]

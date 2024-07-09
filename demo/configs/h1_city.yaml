@@ -25,10 +25,3 @@ tasks:
     sensor_params:
     - name: "camera"
       enable: false
-  objects:
-  - name: target_cube_0
-    type: VisualCube
-    prim_path: /World/target_cube_0
-    position: [1.0, 0, 1.0]
-    scale: [0.05015, 0.05015, 0.05015]
-    color: [1.0, 0, 1.0]
