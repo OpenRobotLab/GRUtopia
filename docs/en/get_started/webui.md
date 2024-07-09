@@ -19,7 +19,6 @@ $ docker run --name grutopia -it --rm --gpus all --network host \
   -e "PRIVACY_CONSENT=Y" \
   -e "WEBUI_HOST=${WEBUI_HOST}" \
   -v ${PWD}:/isaac-sim/GRUtopia \
-  -v ${PWD}/test/.test_scripts:/isaac-sim/run_scripts \
   -v ${CACHE_ROOT}/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
   -v ${CACHE_ROOT}/isaac-sim/cache/ov:/root/.cache/ov:rw \
   -v ${CACHE_ROOT}/isaac-sim/cache/pip:/root/.cache/pip:rw \
