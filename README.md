@@ -12,7 +12,7 @@
 <div id="top" align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2312.16170-red)]()
-[![](https://img.shields.io/badge/Paper-%F0%9F%93%96-yellow)](./assets/GRUtopia.pdf)
+[![](https://img.shields.io/badge/Paper-%F0%9F%93%96-yellow)](./docs/GRUtopia.pdf)
 [![](https://img.shields.io/badge/Project-%F0%9F%9A%80-blue)](https://github.com/OpenRobotLab/GRUtopia)
 [![](https://img.shields.io/badge/Doc-📘-green)](https://grutopia.github.io)
 

@@ -28,6 +28,7 @@ RUN bash -c "cd ../ && \
     sed 's/^\$python_exe/#\$python_exe/g' ./python.sh > python.env.init && \
     echo 'source /isaac-sim/.venv/bin/activate' >> /root/.bashrc && \
     echo ' . /isaac-sim/python.env.init' >> /root/.bashrc && \
+    echo 'set +e' >> /root/.bashrc && \
     echo 'export MDL_SYSTEM_PATH=/isaac-sim/materials/' >> /root/.bashrc"
 
 WORKDIR /isaac-sim
