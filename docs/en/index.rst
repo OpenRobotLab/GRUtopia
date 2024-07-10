@@ -11,7 +11,7 @@ Welcome to GRUtopia's documentation!
    :caption: Introduction
 
 
-   introduction/introduction.md
+   introduction/overview.md
 
 .. toctree::
    :maxdepth: 1
