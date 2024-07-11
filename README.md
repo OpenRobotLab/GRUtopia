@@ -18,9 +18,9 @@
 
 </div>
 
-## 🤖 Demo
+## 🤖 [Demo](https://www.youtube.com/watch?v=zYGsxj8nd0w)
 
-[![demo](https://www.youtube.com/watch?v=zYGsxj8nd0w "demo")]()
+[![demo](docs/en/_static/image/teaser.png "demo")](https://www.youtube.com/watch?v=zYGsxj8nd0w)
 
 ## 📋 Contents
 
@@ -37,9 +37,6 @@
 
 <!-- ![Teaser](assets/teaser.jpg) -->
 
-<div style="text-align: center;">
-    <img src="docs/en/_static/image/teaser.png" alt="Dialogue_Teaser" width=100% >
-</div>
 Recent works have been exploring the scaling laws in the field of Embodied AI. Given the prohibitive costs of collecting real-world data, we believe the <b>Simulation-to-Real (Sim2Real) paradigm</b> is a more feasible path for scaling the learning of embodied models.
 
 We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), the first simulated interactive 3D society designed for various robots.
