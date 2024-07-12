@@ -18,7 +18,7 @@ from grutopia.core.util.rsl_rl import pickle
 class RLPolicy:
     """RL policy for h1 locomotion."""
 
-    def __init__(self, path='./examples/h1/model_20000.pt') -> None:
+    def __init__(self, path: str) -> None:
         self.policy_cfg = {
             'class_name': 'ActorCritic',
             'init_noise_std': 1.0,
@@ -34,7 +34,7 @@ class RLPolicy:
         self.actor_critic = ActorCritic(num_obs, num_critic_obs, self.env_actions, **self.policy_cfg)
         self.load(path=path)
 
-    def load(self, path, load_optimizer=False):
+    def load(self, path: str, load_optimizer=False):
         loaded_dict = torch.load(path, pickle_module=pickle)
         self.actor_critic.load_state_dict(loaded_dict['model_state_dict'])
         if self.empirical_normalization:
