@@ -7,6 +7,17 @@
 - GPU: NVIDIA RTX 2070+
 - NVIDIA Driver: 525.85+
 
+> GRUtopia is built upon NVIDIA's [Omniverse](https://www.nvidia.com/en-us/omniverse/) and [Isaac Sim](https://developer.nvidia.com/isaac-sim) platforms, so we inherit their dependencies. For more information, please see [Isaac Sim's Requirements](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html).
+
+Two ways of installation are provided:
+
+- Install from source (Linux): [workstation installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) of Isaac Sim is required, and is recommended for users who wants to run Isaac Sim as a GUI application on Linux workstation with a GPU.
+- Install with Docker (Linux): [container installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html) of Isaac Sim is required, and is recommended for deployment on remote headless servers or the Cloud using a Docker container running Linux.
+
+See more: [Differences Between Workstation And Docker](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_faq.html#isaac-sim-setup-differences).
+
+Windows support is in our roadmap, welcome to contribute!
+
 ## Install from source (Linux)
 
 Make sure you have [Isaac Sim 2023.1.1](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) installed.
@@ -59,9 +70,11 @@ Make sure you have [Isaac Sim 2023.1.1](https://docs.omniverse.nvidia.com/isaacs
    $ python ./GRUtopia/demo/h1_locomotion.py  # start simulation
    ```
 
+   If properly installed, Isaac Sim GUI window should pop up and you can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
+
 ## Install with Docker (Linux)
 
-Make sure you have [Docker](https://docs.docker.com/get-docker/) installed.
+Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-container-toolkit) installed. You can refer to the [container installation doc](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html) of Isaac Sim for detailed instructions.
 
 1. Clone the GRUtopia repository to any desired location.
 
@@ -133,3 +146,5 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) installed.
    # run inside container
    $ python ./GRUtopia/demo/h1_locomotion.py  # start simulation
    ```
+
+   If properly installed, observation from simulation will be displayed in the terminal every 100 steps, and you can access the Isaac Sim through WebRTC at <http://127.0.0.1:8211/streaming/webrtc-demo/?server=127.0.0.1> (if you have set a different `WEBUI_HOST`, use that instead of `127.0.0.1`).

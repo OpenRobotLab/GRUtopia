@@ -4,6 +4,8 @@
 
 ## Wander in house
 
+VRAM requirement: 12GB+
+
 ```bash
 # decompress the house scene
 $ cd PATH/TO/GRUTOPIA/ROOT
@@ -26,6 +28,8 @@ You can control the h1 robot with keyboard command:
 You can change camera view to perspective/first-person/third-person camera.
 
 ## Wander in city
+
+VRAM requirement: 16GB+
 
 ```bash
 # decompress the city scene
