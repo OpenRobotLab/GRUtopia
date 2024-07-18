@@ -51,7 +51,7 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 
 ## 🔥 News
 
-- \[2024-07\] We release the [paper](https://github.com/grutopia/grutopia.github.io/releases/download/v0.1.0/GRUtopia.pdf) and demos of GRUtopia.
+- \[2024-07\] We release the [paper](https://arxiv.org/abs/2407.10943) and demos of GRUtopia.
 
 ## 📚 Getting Started
 
