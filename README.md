@@ -149,5 +149,5 @@ GRUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRSc
 
 - [OmniGibson](https://github.com/StanfordVL/OmniGibson): We refer to OmniGibson for designs of oracle actions.
 - [RSL_RL](https://github.com/leggedrobotics/rsl_rl): We use `rsl_rl` library to train the control policies for legged robots.
-- [ReferIt3D](https://github.com/referit3d/referit3d): We refer to the Sr3D's approach to extract spaitial relationship.
+- [ReferIt3D](https://github.com/referit3d/referit3d): We refer to the Sr3D's approach to extract spatial relationship.
 - [Isaac Lab](https://github.com/isaac-sim/IsaacLab): We use some utilities from Orbit (Isaac Lab) for driving articulated joints in Isaac Sim.
