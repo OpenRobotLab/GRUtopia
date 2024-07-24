@@ -13,7 +13,7 @@ class BaseEnv:
     ----------------------------------------------------------------------
     """
 
-    def __init__(self, config: SimulatorConfig, headless: bool = True, webrtc: bool = False) -> None:
+    def __init__(self, config: SimulatorConfig, headless: bool = True, webrtc: bool = False, native: bool = False) -> None:
         self._simulation_config = None
         self._render = None
         # Setup Multitask Env Parameters
@@ -37,6 +37,15 @@ class BaseEnv:
             self._simulation_app.set_setting('/app/livestream/websocket/framerate_limit', 60)
             self._simulation_app.set_setting('/ngx/enabled', False)
             enable_extension('omni.services.streamclient.webrtc')
+
+        elif native:
+            from omni.isaac.core.utils.extensions import enable_extension  # noqa
+
+            self._simulation_app.set_setting("/app/window/drawMouse", True)
+            self._simulation_app.set_setting("/app/livestream/proto", "ws")
+            self._simulation_app.set_setting("/app/livestream/websocket/framerate_limit", 120)
+            self._simulation_app.set_setting("/ngx/enabled", False)
+            enable_extension("omni.kit.livestream.native")
 
         from grutopia.core import datahub  # noqa E402.
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
