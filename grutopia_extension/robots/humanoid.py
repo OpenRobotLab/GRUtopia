@@ -205,12 +205,18 @@ class HumanoidRobot(BaseRobot):
         self._robot_ik_base = None
 
         self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
+        self._robot_right_ankle = RigidPrim(prim_path=config.prim_path + '/right_ankle_link', name=config.name + 'right_ankle')
+        self._robot_left_ankle = RigidPrim(prim_path=config.prim_path + '/left_ankle_link', name=config.name + 'left_ankle')
 
     def post_reset(self):
         super().post_reset()
         self.isaac_robot._process_actuators_cfg()
         if self._gains is not None:
             self.isaac_robot.set_gains(self._gains)
+
+
+    def get_ankle_height(self):
+        return np.min([self._robot_right_ankle.get_world_pose()[0][2], self._robot_left_ankle.get_world_pose()[0][2]])
 
     def get_robot_scale(self):
         return self._robot_scale
