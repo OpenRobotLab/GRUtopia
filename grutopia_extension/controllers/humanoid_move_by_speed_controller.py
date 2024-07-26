@@ -130,7 +130,9 @@ class HumanoidMoveBySpeedController(BaseController):
         joint_pos -= default_dof_pos
 
         base_height = base_pose_w[0][2]
-        heights = np.clip(base_height - 0.5 - np.zeros(121), -1., 1.) * 5.0
+        ankle_height = self.robot.get_ankle_height()
+        relative_base_height = base_height - ankle_height
+        heights = np.clip(relative_base_height - 0.5 - np.zeros(121), -1., 1.) * 5.0
 
         # Set action command.
         tracking_command = np.array([forward_speed, lateral_speed, rotation_speed, 0.0], dtype=np.float32)

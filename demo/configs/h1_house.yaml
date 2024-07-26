@@ -24,5 +24,7 @@ tasks:
     - name: "move_with_keyboard"
     - name: "web_chat"
     sensor_params:
+    - name: "camera"
+      enable: false
     - name: "tp_camera"
       enable: false
