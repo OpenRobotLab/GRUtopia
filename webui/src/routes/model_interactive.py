@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import os
 from threading import Thread
 from typing import Annotated, Any, Dict, List
 
@@ -8,9 +9,10 @@ from fastapi import APIRouter, Body
 from pydantic import BaseModel
 
 from grutopia.core.datahub.model_data import ChainOfThoughtDataItem, ChatControlData, LogData, ModelData
-from grutopia.core.datahub.web_ui_api import WEBUI_HOST
 from grutopia.core.util import log
 from webui.src.routes.response_model import SuccessModel
+
+WEBUI_HOST = os.getenv('WEBUI_HOST', '127.0.0.1')
 
 router = APIRouter(prefix='/api/grutopia')
 
@@ -165,11 +167,12 @@ async def send_message_interactive(
 ) -> Dict[str, Any]:  # noqa E125
     log.debug(data.prompt)
     ModelData.append_chat_control(
-        ChatControlData(type='user',
-                        name='Agent',
-                        time=datetime.datetime.now().strftime('%H:%M'),
-                        message=data.prompt,
-                        photo=f'http://{WEBUI_HOST}:8080/static/avatar_00.jpg',
-                        img=data.imgUrl))
+        ChatControlData(
+            type='user',
+            name='Agent',
+            time=datetime.datetime.now().strftime('%H:%M'),
+            message=data.prompt,
+            photo=f'http://{WEBUI_HOST}:8080/static/avatar_00.jpg',  # noqa
+            img=data.imgUrl))
     asyncio.run_coroutine_threadsafe(send_chat_control(data.prompt, data.imgUrl), message_send_loop)
     return SuccessModel({}).get_res_body()

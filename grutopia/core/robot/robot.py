@@ -6,8 +6,9 @@ from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config import RobotUserConfig, TaskUserConfig
+from grutopia.core.config import RobotUserConfig
 from grutopia.core.robot.robot_model import RobotModel, RobotModels
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 
 
@@ -27,7 +28,7 @@ class BaseRobot:
         """Set up robot in the scene.
 
         Args:
-            scene (Scene): scene to setup.
+            scene (Scene): scene to set up.
         """
         config = self.user_config
         robot_model = self.robot_model
@@ -41,7 +42,8 @@ class BaseRobot:
 
     def post_reset(self):
         """Set up things that happen after the world resets."""
-        pass
+        for sensor in self.sensors.values():
+            sensor.reset()
 
     def apply_action(self, action: dict):
         """Apply actions of controllers to robot.
@@ -120,10 +122,11 @@ class BaseRobot:
         return decorator
 
 
-def create_robots(config: TaskUserConfig, robot_models: RobotModels, scene: Scene) -> Dict[str, BaseRobot]:
-    """Create robot instances in config.
+def create_robots(runtime: TaskRuntime, robot_models: RobotModels, scene: Scene) -> Dict[str, BaseRobot]:
+    """Create robot instances in runtime.
+
     Args:
-        config (TaskUserConfig): user config.
+        runtime (TaskRuntime): task runtime.
         robot_models (RobotModels): robot models.
         scene (Scene): isaac scene.
 
@@ -131,7 +134,7 @@ def create_robots(config: TaskUserConfig, robot_models: RobotModels, scene: Scen
         Dict[str, BaseRobot]: robot instances dictionary.
     """
     robot_map = {}
-    for robot in config.robots:
+    for robot in runtime.robots:
         if robot.type not in BaseRobot.robots:
             raise KeyError(f'unknown robot type "{robot.type}"')
         robot_cls = BaseRobot.robots[robot.type]

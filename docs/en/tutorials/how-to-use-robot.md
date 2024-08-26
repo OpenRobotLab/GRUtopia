@@ -43,17 +43,17 @@ Done.
 try this demo:
 
 ```python
-from grutopia.core.config import SimulatorConfig
-from grutopia.core.env import BaseEnv
 
-file_path = f'{path/to/your/config}'
-sim_config = SimulatorConfig(file_path)
+from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.env import Env
 
-env = BaseEnv(sim_config, headless=False)
+file_path = '{path/to/your/config}'
+sim_runtime = SimulatorRuntime(file_path)
+
+env = Env(sim_runtime, headless=False)
 import numpy as np
 
 while env.simulation_app.is_running():
-
     obs = env.step(actions=[{}])
 env.simulation_app.close()
 ```

@@ -32,8 +32,8 @@ Use them in isaac simulation_app's step loops.
 while env.simulation_app.is_running():
     ...
     obs = env.step(actions)
-    task_name = env.config.tasks[0].name
-    robot_name = env.config.tasks[0].robots[0].name
+    task_name = env.active_runtimes.values()[0].name
+    robot_name = env.active_runtimes.values()[0].robots.values()[0].name
     photo = obs[task_name][robot_name]['camera']['rgba']  # here get `camera` data
     ...
 env.simulation_app.close()

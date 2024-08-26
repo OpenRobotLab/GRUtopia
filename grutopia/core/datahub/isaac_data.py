@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
+from grutopia.core.util import log
+
 
 class MetaActionData(BaseModel):
     """
@@ -23,45 +25,47 @@ class _IsaacData(BaseModel):
     """
     isaac status in grutopia
     """
-    actions: Optional[List[Dict[str, Any]]] = None
-    obs: Optional[List[Dict[str, Any]]] = None
+    actions: Optional[Dict[str, Dict[str, Any]]] = {}
+    obs: Optional[Dict[str, Dict[str, Any]]] = {}
+    task_idx_counter: Optional[int] = 0
+    finished_tasks: Optional[List[str]] = []
 
 
 class IsaacData:
     """
     isaac status in grutopia
 
-    There are two types of isaac status:
+    There are three types of isaac status:
 
     * Action
     * Observation
+    * Episode
 
     structure of isaac status like this::
 
             {
                 actions: {
-                    [
-                        {
-                            robot_1: {
-                                cap: param,
-                            }
+                    "task_0":{
+                        robot_1: {
+                            cap: param,
+                            controller: param,
                         }
-                    ]
+                    }
                 },
                 observations: {
-                    [
-                        {
-                            robot_1: {
-                                obs_1: data,
-                                obs_2: data
-                            }
+                    "task_0":{
+                        robot_1: {
+                            obs_1: data,
+                            obs_2: data
                         }
-                    ]
-                }
+                    }
+                },
+                task_idx_counter: 0
+                finished_tasks: []
             }
 
     """
-    data = _IsaacData(actions=[], obs=[])
+    data: _IsaacData = _IsaacData(actions={}, obs={})
 
     def __init__(self) -> None:
         pass
@@ -72,67 +76,112 @@ class IsaacData:
 
     # Observation
     @classmethod
-    def set_obs_data(cls, obs: List[Dict[str, Any]]) -> None:
-        cls.data.obs = obs
-
-    @classmethod
-    def get_obs(cls) -> List[Dict[str, Any]]:
+    def set_obs_data(cls, obs: Dict[str, Dict[str, Any]]) -> None:
         """
-        Get isaac observation data
-
-        Returns:
-            isaac observation data list
-        """
-        return cls.data.obs
-
-    @classmethod
-    def get_obs_by_id(cls, task_id: int) -> Dict[str, Any]:
-        """
-        Get isaac observation by id
+        Set isaac observations data
 
         Args:
-            task_id: isaac task id
+            obs (Dict[str, Dict[str, Any]]): obs data with task_name key.
+        """
+        for task_id, obs_data in obs.items():
+            cls.data.obs[task_id] = obs_data
+
+    @classmethod
+    def get_obs_by_task_name(cls, task_name: str) -> Dict[str, Dict]:
+        """
+        Get isaac observation by task name
+
+        Args:
+            task_name: isaac task name
 
         Returns:
             isaac observation data
 
         """
-        return cls.data.obs[task_id]
+        if task_name in cls.data.obs:
+            return cls.data.obs[task_name]
+        return {}
+
+    @classmethod
+    def get_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str) -> Dict[str, Dict]:
+        """
+        Get isaac observation by task name and robot name
+
+        Args:
+            task_name: isaac task name
+            robot_name: isaac robot name
+
+        Returns:
+            isaac observation data
+
+        """
+        if task_name in cls.data.obs:
+            if robot_name in cls.data.obs[task_name]:
+                return cls.data.obs[task_name][robot_name]
+        return {}
 
     # Action
     @classmethod
-    def add_actions(cls, actions: List[ActionData]):
+    def set_actions(cls, actions: Dict[str, ActionData]) -> None:
         """
-        Add actions
+        Set action by task_name
 
         Args:
-            actions: action list
-
-        Returns:
-
+            actions (Dict[str, ActionData]): action data with task_name key
         """
-        # when add action, return action's index.
-        cls.data.actions = []
-        for action in actions:
-            cls.data.actions.append({action.robot: {x.controller: x.data for x in action.controllers}})
-        return
+        for task_name, action in actions.items():
+            cls.data.actions[task_name].update(action.model_dump())
 
     @classmethod
-    def get_actions(cls) -> None | List[Dict[Any, Any]]:
+    def get_action_by_task_name(cls, task_name: str) -> Dict[str, Dict]:
         """
-        Get actions
-
-        Returns:
-            action(dict like {robot_name: {controller_name: param}}) list
-        """
-        return cls.data.actions
-
-    @classmethod
-    def get_action_by_id(cls, task_id: int) -> None | Dict[Any, Any]:
-        """
-        Get action by id
+        Get action by task name
 
         Returns:
             action(dict like {robot_name: {controller_name: param}})
         """
-        return cls.data.actions[task_id]
+        if task_name in cls.data.actions:
+            return cls.data.actions[task_name]
+        return {}
+
+    @classmethod
+    def get_action_by_task_name_and_robot_name(cls, task_name: str, robot_name: str) -> Dict[str, Dict]:
+        """
+        Get action by task name and robot name
+
+        Returns:
+            action(dict like {robot_name: {controller_name: param}})
+        """
+        if task_name in cls.data.actions:
+            if robot_name in cls.data.actions[task_name]:
+                return cls.data.actions[task_name][robot_name]
+        return {}
+
+    @classmethod
+    def gen_task_idx(cls) -> str:
+        """
+        Generate a id for isaac task
+
+        Returns:
+            task id
+        """
+        task_idx = cls.data.task_idx_counter
+        cls.data.task_idx_counter += 1
+        return str(task_idx)
+
+    @classmethod
+    def set_episode_finished(cls, task_name: str):
+        """
+        Set isaac task {task_name} finished
+
+        Args:
+            task_name (str): isaac task_name
+        """
+        if task_name not in cls.data.finished_tasks:
+            cls.data.finished_tasks.append(task_name)
+            log.info(f'Set isaac task {task_name} finished')
+        return
+
+    @classmethod
+    def get_episode_finished(cls, task_name: str) -> bool:
+        return task_name in cls.data.finished_tasks

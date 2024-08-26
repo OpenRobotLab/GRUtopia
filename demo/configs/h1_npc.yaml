@@ -2,33 +2,67 @@ simulator:
   physics_dt: 1/240
   rendering_dt: 1/240
 
-npc:
-- name: "npc-0"
-  model_name: gpt-4o
-  openai_api_key: "YOUR_OPENAI_API_KEY"
-  scene_data_path: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json
+agents:
+- type: DummyAgent
+  robot_name: h1
+  agent_config:
+    param_test: test
+    actions:
+      h1:
+        move_along_path:
+          - (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)
+- type: NPCAgent
+  agent_config:
+    name: "npc-0"
+    model_name: gpt-4o
+    openai_api_key: "YOUR_OPENAI_API_KEY"
+    scene_data_path: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json
 
-tasks:
-- type: "SingleInferenceTask"
-  name: "h1_npc"
-  scene_asset_path: GRUtopia/assets/scenes/demo_house/demo_house.usd
-  scene_scale: [0.01, 0.01, 0.01]
+task_config:
+  type: "SimpleAgentTask"
+  task_name_prefix: "h1_locomotion"
   env_num: 1
-  offset_size: 1.0
-  robots:
-  - name: h1
-    prim_path: "/World/h1"
-    type: "HumanoidRobot"
-    position: [5.58, -0.77, 1.05]
-    scale: [1, 1, 1]
-    controller_params:
-    - name: "move_by_speed"
-    - name: "joint_controller"
-    - name: "move_to_point"
-    - name: "move_along_path"
-    - name: "rotate"
-    - name: "move_with_keyboard"
-    - name: "web_chat"
-    sensor_params:
-    - name: "tp_camera"
-      enable: false
+  offset_size: 25
+  episodes:
+  - scene_asset_path: GRUtopia/assets/scenes/demo_house/demo_house.usd
+    scene_scale: [0.01, 0.01, 0.01]
+#   - scene_asset_path: GRUtopia/assets/scenes/grid.usd
+#     scene_scale: [1., 1., 1.]
+    robots:
+    - name: h1
+      prim_path: "/World/h1"
+      type: "HumanoidRobot"
+      position: [5.58, -0.77, 1.05]
+      scale: [1, 1, 1]
+      controller_params:
+      - name: "move_by_speed"
+      - name: "joint_controller"
+      - name: "move_to_point"
+      - name: "move_along_path"
+      - name: "rotate"
+      - name: "move_with_keyboard"
+      - name: "web_chat"
+      sensor_params:
+      - name: "tp_camera"
+        enable: false
+  - scene_asset_path: GRUtopia/assets/scenes/demo_house/demo_house.usd
+    scene_scale: [0.01, 0.01, 0.01]
+#   - scene_asset_path: GRUtopia/assets/scenes/grid.usd
+#     scene_scale: [1., 1., 1.]
+    robots:
+    - name: h1
+      prim_path: "/World/h1"
+      type: "HumanoidRobot"
+      position: [5.58, -0.77, 1.05]
+      scale: [1, 1, 1]
+      controller_params:
+      - name: "move_by_speed"
+      - name: "joint_controller"
+      - name: "move_to_point"
+      - name: "move_along_path"
+      - name: "rotate"
+      - name: "move_with_keyboard"
+      - name: "web_chat"
+      sensor_params:
+      - name: "tp_camera"
+        enable: false

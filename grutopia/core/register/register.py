@@ -11,7 +11,8 @@ MODEL_MODULES = [
     'robots',
     'sensors',
     'tasks',
-    'interactions'
+    'interactions',
+    'agents',
 ]
 
 DEFAULT_EXTENSION_PATH = os.path.join(os.path.split(os.path.realpath(__file__))[0], '../../../grutopia_extension')

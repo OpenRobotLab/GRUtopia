@@ -45,5 +45,5 @@ def create_object(config: ObjectConfig):
         config (ObjectConfig): configuration of the objects
     """
     assert config.type in ObjectCommon.objs, 'unknown objects type {}'.format(config.type)
-    cls = ObjectCommon.objs[config.type]
-    return cls(config)
+    obj: ObjectCommon = ObjectCommon.objs[config.type](config)
+    return obj

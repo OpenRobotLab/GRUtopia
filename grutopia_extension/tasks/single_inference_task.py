@@ -1,14 +1,14 @@
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config import TaskUserConfig
+from grutopia.core.runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 
 
 @BaseTask.register('SingleInferenceTask')
 class SimpleInferenceTask(BaseTask):
 
-    def __init__(self, config: TaskUserConfig, scene: Scene):
-        super().__init__(config, scene)
+    def __init__(self, runtime: TaskRuntime, scene: Scene):
+        super().__init__(runtime, scene)
 
     def calculate_metrics(self) -> dict:
         pass

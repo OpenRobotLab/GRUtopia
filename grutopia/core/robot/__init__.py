@@ -4,9 +4,9 @@ import typing
 import yaml
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config import TaskUserConfig
-from grutopia.core.robot.robot import create_robots
+from grutopia.core.robot.robot import BaseRobot, create_robots
 from grutopia.core.robot.robot_model import RobotModels
+from grutopia.core.runtime.task_runtime import TaskRuntime
 
 # ROBOT_TYPES = {}
 
@@ -20,5 +20,5 @@ with open(ROBOT_MODELS_PATH, 'r') as f:
     robot_models = RobotModels(**models)
 
 
-def init_robots(the_config: TaskUserConfig, scene: Scene) -> typing.Dict:
-    return create_robots(the_config, robot_models, scene)
+def init_robots(runtime: TaskRuntime, scene: Scene) -> typing.Dict[str, BaseRobot]:
+    return create_robots(runtime, robot_models, scene)

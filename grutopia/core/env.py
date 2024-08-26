@@ -1,61 +1,31 @@
-# import json
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import numpy as np
 
-from grutopia.core.config import SimulatorConfig
-from grutopia.core.util import log
+from grutopia.core.runtime import SimulatorRuntime
 
 
-class BaseEnv:
+class Env:
     """
-    Env base class. All tasks should inherit from this class(or subclass).
+    Env base class. All envs should inherit from this class(or subclass).
     ----------------------------------------------------------------------
     """
 
-    def __init__(self, config: SimulatorConfig, headless: bool = True, webrtc: bool = False, native: bool = False) -> None:
-        self._simulation_config = None
+    def __init__(self, simulator_runtime: SimulatorRuntime) -> None:
+        self._simulation_runtime = simulator_runtime
         self._render = None
         # Setup Multitask Env Parameters
         self.env_map = {}
         self.obs_map = {}
 
-        self.config = config.config
-        self.env_num = config.env_num
+        self.runtime = simulator_runtime
+        self.env_num = simulator_runtime.env_num
         self._column_length = int(np.sqrt(self.env_num))
 
-        # Init Isaac Sim
-        from omni.isaac.kit import SimulationApp
-        self.headless = headless
-        self._simulation_app = SimulationApp({'headless': self.headless, 'anti_aliasing': 0})
-
-        if webrtc:
-            from omni.isaac.core.utils.extensions import enable_extension  # noqa
-
-            self._simulation_app.set_setting('/app/window/drawMouse', True)
-            self._simulation_app.set_setting('/app/livestream/proto', 'ws')
-            self._simulation_app.set_setting('/app/livestream/websocket/framerate_limit', 60)
-            self._simulation_app.set_setting('/ngx/enabled', False)
-            enable_extension('omni.services.streamclient.webrtc')
-
-        elif native:
-            from omni.isaac.core.utils.extensions import enable_extension  # noqa
-
-            self._simulation_app.set_setting("/app/window/drawMouse", True)
-            self._simulation_app.set_setting("/app/livestream/proto", "ws")
-            self._simulation_app.set_setting("/app/livestream/websocket/framerate_limit", 120)
-            self._simulation_app.set_setting("/ngx/enabled", False)
-            enable_extension("omni.kit.livestream.native")
-
-        from grutopia.core import datahub  # noqa E402.
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
-        self._runner = SimulatorRunner(config=config)
-        # self._simulation_config = sim_config
+        self._runner = SimulatorRunner(simulator_runtime=simulator_runtime)
 
-        log.debug(self.config.tasks)
-        # create tasks
-        self._runner.add_tasks(self.config.tasks)
         return
 
     @property
@@ -66,77 +36,146 @@ class BaseEnv:
     def is_render(self):
         return self._render
 
+    @property
+    def active_runtimes(self):
+        return self.runtime.task_runtime_manager.active_runtimes
+
     def get_dt(self):
+        """
+        Get dt of simulation environment.
+        Returns:
+            dt.
+        """
         return self._runner.dt
 
-    def step(self, actions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def step(self, actions: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         """
         run step with given action(with isaac step)
 
+
+        format of input actions :
+        -------------------------
+
+        .. code-block::
+
+            {
+                "task_1_name":
+                {
+                    "robot_1": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                    "robot_2": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                },
+                "task_2_name":
+                {
+                    "robot_1": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                    "robot_2": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                },
+            }
+
+
+        format of actions send to runner:
+        ---------------------------------
+
+        .. code-block::
+
+
+            {
+                "task_1_name":
+                {
+                    "robot_1_1": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                    "robot_2_1": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                },
+                "task_2_name":
+                {
+                    "robot_1_2": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                    "robot_2_2": {
+                        "controller_1": [1, 2, 3],
+                        "controller_2": [1, 2, 3]
+                    },
+                },
+            }
+
+        Intro:
+        ------
+
+        Because robots' name in all tasks need to be unique.
+        And the suffix of robot_name is `env_id`.
+
         Args:
-            actions (List[Dict[str, Any]]): action(with isaac step)
+            actions (Dict[str, Dict[str, Any]]): action(with isaac step)
 
         Returns:
-            List[Dict[str, Any]]: observations(with isaac step)
+            Dict[str, Dict[str, Any]]: observations(with isaac step)
         """
-        if len(actions) != len(self.config.tasks):
-            raise AssertionError('len of action list is not equal to len of task list')
-        _actions = []
-        for action_idx, action in enumerate(actions):
+        _actions = {}
+        for task_name, action in actions.items():
             _action = {}
+            env_id = self.runner.task_name_to_env_map[task_name]
             for k, v in action.items():
-                _action[f'{k}_{action_idx}'] = v
-            _actions.append(_action)
+                _action[f'{k}_{env_id}'] = v
+            _actions[task_name] = _action
         action_after_reshape = {
-            self.config.tasks[action_idx].name: action
-            for action_idx, action in enumerate(_actions)
+            self.active_runtimes[self.runner.task_name_to_env_map[task_name]].name: action
+            for task_name, action in _actions.items()
+            if self.runner.task_name_to_env_map[task_name] in self.runtime.task_runtime_manager.active_runtimes
         }
 
-        # log.debug(action_after_reshape)
-        self._runner.step(action_after_reshape)
+        _, finish = self._runner.step(action_after_reshape)
         observations = self.get_observations()
+
+        if finish:
+            self._simulation_runtime.simulation_app.close()
+
         return observations
 
-    def reset(self, envs: List[int] = None):
-        """
-        reset the environment(use isaac word reset)
-
-        Args:
-            envs (List[int]): env need to be reset(default for reset all envs)
-        """
-        if envs is not None:
-            if len(envs) == 0:
-                return
-            log.debug(f'============= reset: {envs} ==============')
-            # int -> name
-            self._runner.reset([self.config.tasks[e].name for e in envs])
-            return self.get_observations(), {}
+    def reset(self):
+        """reset the environment(use isaac word reset)"""
         self._runner.reset()
         return self.get_observations(), {}
 
-    def get_observations(self) -> List[Dict[str, Any]]:
+    def get_observations(self) -> Dict[str, Dict[str, Any]]:
         """
         Get observations from Isaac environment
         Returns:
-            List[Dict[str, Any]]: observations
+            Dict[str, Dict[str, Any]]: observations
         """
         _obs = self._runner.get_obs()
         return _obs
 
     def render(self, mode='human'):
-        return
+        pass
 
     def close(self):
         """close the environment"""
-        self._simulation_app.close()
+        self._simulation_runtime.simulation_app.close()
         return
 
     @property
-    def simulation_config(self):
+    def simulation_runtime(self):
         """config of simulation environment"""
-        return self._simulation_config
+        return self._simulation_runtime
 
     @property
     def simulation_app(self):
         """simulation app instance"""
-        return self._simulation_app
+        return self._simulation_runtime.simulation_app

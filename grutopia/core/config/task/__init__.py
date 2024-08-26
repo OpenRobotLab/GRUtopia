@@ -1,37 +1,29 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-import numpy as np
 from pydantic import BaseModel, Extra
 
 from grutopia.core.config.metric import MetricUserConfig
-from grutopia.core.config.robot import RobotUserConfig
-from grutopia.core.config.scene import Object
+from grutopia.core.config.task.episode import EpisodeConfig
 
 
-class TaskUserConfig(BaseModel, extra=Extra.allow):
+class TaskConfig(BaseModel, extra=Extra.allow):
+    """
+    Task config that user input.
+    """
     type: str
-    name: str
-
-    # scene
-    scene_asset_path: Optional[str] = None
-    scene_scale: Optional[List[float]] = [1.0, 1.0, 1.0]
-    scene_position: Optional[List[float]] = [0, 0, 0]
-    scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
+    task_name_prefix: str
+    env_num: Optional[int] = 1
 
     # inherit
-    robots: Optional[List[RobotUserConfig]] = []
-    objects: Optional[List[Object]] = []
     metrics: Optional[List[MetricUserConfig]] = []
 
     # path
-    root_path: str
-    scene_root_path: str = '/scene'
-    robots_root_path: str = '/robots'
-    objects_root_path: str = '/objects'
+    scene_root_path: Optional[str] = '/scene'
+    robots_root_path: Optional[str] = '/robots'
+    objects_root_path: Optional[str] = '/objects'
 
     # offset
-    offset: Optional[List[float]] = None
-    offset_size: float = 10.0
+    offset_size: Optional[float] = 10.0
 
-    # id
-    env_id: int = 0
+    # episode
+    episodes: Union[List[EpisodeConfig], str]

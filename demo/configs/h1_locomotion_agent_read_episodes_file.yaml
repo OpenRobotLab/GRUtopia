@@ -1,0 +1,20 @@
+simulator:
+  physics_dt: 1/240
+  rendering_dt: 1/240
+
+agents:
+- type: DummyAgent
+  robot_name: h1
+  agent_config:
+    param_test: test
+    actions:
+      h1:
+        move_along_path:
+          - (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)
+
+task_config:
+  type: "SimpleAgentTask"
+  task_name_prefix: "h1_locomotion"
+  env_num: 2
+  offset_size: 25
+  episodes: "./GRUtopia/demo/configs/episodes.yaml"

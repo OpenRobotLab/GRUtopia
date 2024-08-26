@@ -1,9 +1,21 @@
-from grutopia.core.config import SimulatorConfig
-from grutopia.core.env import BaseEnv
+from grutopia.core.env import Env
+from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util.container import is_in_container
+from grutopia_extension import import_extensions
 
-file_path = './GRUtopia/demo/configs/h1_locomotion.yaml'
-sim_config = SimulatorConfig(file_path)
+# # Run with single inference task
+# file_path = './GRUtopia/demo/configs/h1_locomotion.yaml'
+
+# Run with dummy agent
+file_path = './GRUtopia/demo/configs/h1_locomotion_agent.yaml'
+
+# # Run with dummy agent. And episodes configured with file path.
+# file_path = './GRUtopia/demo/configs/h1_locomotion_agent_read_episodes_file.yaml'
+
+sim_runtime = SimulatorRuntime(config_path=file_path, headless=True, webrtc=False, native=True)
+
+import_extensions()
+# import custom extensions here.
 
 headless = False
 webrtc = False
@@ -12,15 +24,10 @@ if is_in_container():
     headless = True
     webrtc = True
 
-env = BaseEnv(sim_config, headless=headless, webrtc=webrtc)
+env = Env(sim_runtime)
 
 import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat, quat_to_euler_angles
-
-from grutopia.core.util import log
-
-task_name = env.config.tasks[0].name
-robot_name = env.config.tasks[0].robots[0].name
+from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
 path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
 i = 0
@@ -32,20 +39,13 @@ actions = {'h1': move_action}
 
 while env.simulation_app.is_running():
     i += 1
-    env_actions = []
-    env_actions.append(actions)
-    obs = env.step(actions=env_actions)
-    if not path_finished:
-        path_finished = obs[task_name][robot_name]['move_along_path'].get('finished', False)
-        if path_finished:
-            log.info('start rotate')
-            actions['h1'] = rotate_action
-            start_rotate = True
+    env_actions = {}
+    for task_runtime in env.active_runtimes.values():
+        env_actions[task_runtime.name] = actions
 
-    if i % 100 == 0:
+    obs = env.step(actions=env_actions)
+
+    if i % 1000 == 0:
         print(i)
-        print('available observations for h1: {}'.format(obs[task_name][robot_name].keys()))
-        print('current position of h1:{}'.format(obs[task_name][robot_name]['position']))
-        print('current orientation of h1: {}'.format(quat_to_euler_angles(obs[task_name][robot_name]['orientation'])))
 
 env.simulation_app.close()

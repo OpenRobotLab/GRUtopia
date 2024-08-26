@@ -4,7 +4,7 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.datahub.web_ui_api import get_chat_control, get_log_data, send_chat_control
+from grutopia.core.datahub import DataHub
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.robot.robot_model import ControllerModel
@@ -37,16 +37,16 @@ class WebChatboxController(BaseController):
         return self.forward(text=str(action[0]))
 
     def forward(self, text: str) -> ArticulationAction:
-        send_chat_control(nickname=self._nickname, text=text, img='', role=self._role)
+        DataHub.send_chat_control(nickname=self._nickname, text=text, img='', role=self._role)
         return ArticulationAction()
 
     def get_obs(self) -> Dict[str, Any]:
-        chat_control = get_chat_control()
-        log_data = get_log_data()
-        if chat_control is not None:
-            self.chat_control = chat_control['data']
-        if log_data is not None:
-            self.log_data = log_data['data']
+        chat_control = DataHub.get_chat_control()
+        log_data = DataHub.get_log_data()
+        if chat_control:
+            self.chat_control = chat_control
+        if log_data:
+            self.log_data = log_data
         return {
             'chat_control': self.chat_control,
             'log_data': self.log_data,

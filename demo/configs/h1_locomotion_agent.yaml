@@ -1,0 +1,75 @@
+simulator:
+  physics_dt: 1/240
+  rendering_dt: 1/240
+
+agents:
+- type: DummyAgent
+  robot_name: h1
+  agent_config:
+    param_test: test
+    actions:
+      h1:
+        move_along_path:
+          - (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)
+
+task_config:
+  type: "SimpleAgentTask"
+  task_name_prefix: "h1_locomotion"
+  env_num: 2
+  offset_size: 25
+  episodes:
+  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
+    scene_scale: [0.25, 0.25, 0.25]
+    robots:
+      - name: h1
+        prim_path: "/World/h1"
+        type: "HumanoidRobot"
+        position: [ .0, .0, 1.05 ]
+        scale: [ 1, 1, 1 ]
+        controller_params:
+          - name: "move_by_speed"
+          - name: "joint_controller"
+          - name: "move_to_point"
+          - name: "move_along_path"
+          - name: "rotate"
+        sensor_params:
+          - name: "camera"
+            enable: True
+          - name: "tp_camera"
+            enable: False
+  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
+    robots:
+      - name: h1
+        prim_path: "/World/h1"
+        type: "HumanoidRobot"
+        position: [ .0, .0, 1.05 ]
+        scale: [ 1, 1, 1 ]
+        controller_params:
+          - name: "move_by_speed"
+          - name: "joint_controller"
+          - name: "move_to_point"
+          - name: "move_along_path"
+          - name: "rotate"
+        sensor_params:
+          - name: "camera"
+            enable: True
+          - name: "tp_camera"
+            enable: False
+  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
+    robots:
+      - name: h1
+        prim_path: "/World/h1"
+        type: "HumanoidRobot"
+        position: [ .0, .0, 1.05 ]
+        scale: [ 1, 1, 1 ]
+        controller_params:
+          - name: "move_by_speed"
+          - name: "joint_controller"
+          - name: "move_to_point"
+          - name: "move_along_path"
+          - name: "rotate"
+        sensor_params:
+          - name: "camera"
+            enable: True
+          - name: "tp_camera"
+            enable: False

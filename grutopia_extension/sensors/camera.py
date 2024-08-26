@@ -15,7 +15,8 @@ class Camera(BaseSensor):
     """
 
     def __init__(self, config: SensorModel, robot: BaseRobot, name: str = None, scene: Scene = None):
-        super().__init__(config, robot, name)
+        super().__init__(config, robot, scene)
+        self.name = name
         self._camera = self.create_camera()
 
     def create_camera(self) -> i_Camera:
@@ -38,19 +39,29 @@ class Camera(BaseSensor):
         log.debug(f'size            : {size}')
         return i_Camera(prim_path=prim_path, resolution=size)
 
-    def sensor_init(self) -> None:
+    def init(self) -> None:
+        """
+        Initialize the camera sensor.
+
+        TODO Add `camera frame config` into GRUtopia config file.
+        """
         if self.config.enable:
             self._camera.initialize()
-            self._camera.add_distance_to_image_plane_to_frame()
-            self._camera.add_semantic_segmentation_to_frame()
-            self._camera.add_instance_segmentation_to_frame()
-            self._camera.add_instance_id_segmentation_to_frame()
+            # self._camera.add_pointcloud_to_frame()
+            # self._camera.add_distance_to_image_plane_to_frame()
+            # self._camera.add_semantic_segmentation_to_frame()
+            # self._camera.add_instance_segmentation_to_frame()
+            # self._camera.add_instance_id_segmentation_to_frame()
             self._camera.add_bounding_box_2d_tight_to_frame()
 
     def get_data(self) -> Dict:
         if self.config.enable:
             rgba = self._camera.get_rgba()
-            depth = self._camera.get_depth()
             frame = self._camera.get_current_frame()
-            return {'rgba': rgba, 'depth': depth, 'frame': frame}
+            return {'rgba': rgba, 'frame': frame}
         return {}
+
+    def reset(self):
+        del self._camera
+        self._camera = self.create_camera()
+        self.init()

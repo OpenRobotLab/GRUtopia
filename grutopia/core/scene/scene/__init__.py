@@ -16,4 +16,4 @@ def create_scene(config_json_path: str, prim_path_root: str = 'background'):
     if config_json_path.endswith('usd') or config_json_path.endswith('usda') or config_json_path.endswith('usdc'):
         # Add usd directly
         return config_json_path, world_prim_path
-    raise RuntimeError("Env file path needs to end with .usd, .usda or .usdc .")
+    raise RuntimeError('Env file path needs to end with .usd, .usda or .usdc .')

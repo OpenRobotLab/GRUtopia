@@ -42,7 +42,7 @@
 Recent works have been exploring the scaling laws in the field of Embodied AI. Given the prohibitive costs of collecting real-world data, we believe the <b>Simulation-to-Real (Sim2Real) paradigm</b> is a more feasible path for scaling the learning of embodied models.
 
 We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), the first simulated interactive 3D society designed for various robots.
-It features several advancements: 
+It features several advancements:
 * 🏙️ <b>GRScenes</b>, the scene dataset, includes 100k interactive, finely annotated scenes, which can be freely combined into city-scale environments. In contrast to previous works mainly focusing on home, GRScenes covers 89 diverse scene categories, bridging the gap of <b>service-oriented environments</b> where general robots would initially be deployed.
 * 🧑‍🤝‍🧑 <b>GRResidents</b>, a Large Language Model (LLM) driven Non-Player Character (NPC) system that is responsible for social interaction, task generation, and task assignment, thus simulating <b>social scenarios</b> for embodied AI applications.
 * 🤖 <b>GRBench</b>, the benchmark, focuses on legged robots as primary agents and poses <b>moderately challenging</b> tasks involving Object Loco-Navigation, Social Loco-Navigation, and Loco-Manipulation.

@@ -1,12 +1,12 @@
 from threading import Thread
 
 from grutopia.core.config import RobotUserConfig
-from grutopia.core.config.npc import NPCUserConfig
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.robot.robot_model import ControllerModel
 from grutopia.core.util import log
-from grutopia.npc.llm_caller import LLMCaller, run_llm_caller
+from grutopia_extension.agents.npc_agent.config import NPCUserConfig
+from grutopia_extension.agents.npc_agent.llm_caller import LLMCaller, run_llm_caller
 
 
 class NPC:
@@ -51,26 +51,27 @@ class NPC:
                     sensor_1
                     ...
         """
-        for task_obs in obs.values():
-            for robot_obs in task_obs.values():
-                chat = robot_obs.get('web_chat', None)
-                if chat is not None and chat['chat_control']:
-                    position = robot_obs.get('position', None)
-                    orientation = robot_obs.get('orientation', None)
-                    user_messages = []
-                    for message in chat['chat_control']:
-                        if message['type'] == 'user':
-                            user_messages.append(message['message'])
-                    user_messages = user_messages[self.processed_user_message:]
-                    bbox_label_data = robot_obs['camera']['frame']['bounding_box_2d_tight']
-                    bbox = bbox_label_data['data']
-                    idToLabels = bbox_label_data['info']['idToLabels']
-                    for message in user_messages:
-                        log.info(f'send message: {message}')
-                        self.caller.infer(message)
-                        self.processed_user_message += 1
-                        self.caller.update_robot_view(bbox, idToLabels)
-                        self.caller.update_robot_pose(position, orientation)
-                    if not self.caller.response_queues.empty():
-                        response = self.caller.response_queues.get()
-                        self.web_chat.action_to_control([response])
+        if obs is None:
+            return
+        for robot_obs in obs.values():
+            chat = robot_obs.get('web_chat', None)
+            if chat is not None and chat['chat_control']:
+                position = robot_obs.get('position', None)
+                orientation = robot_obs.get('orientation', None)
+                user_messages = []
+                for message in chat['chat_control']:
+                    if message['type'] == 'user':
+                        user_messages.append(message['message'])
+                user_messages = user_messages[self.processed_user_message:]
+                bbox_label_data = robot_obs['camera']['frame']['bounding_box_2d_tight']
+                bbox = bbox_label_data['data']
+                idToLabels = bbox_label_data['info']['idToLabels']
+                for message in user_messages:
+                    log.info(f'send message: {message}')
+                    self.caller.infer(message)
+                    self.processed_user_message += 1
+                    self.caller.update_robot_view(bbox, idToLabels)
+                    self.caller.update_robot_pose(position, orientation)
+                if not self.caller.response_queues.empty():
+                    response = self.caller.response_queues.get()
+                    self.web_chat.action_to_control([response])

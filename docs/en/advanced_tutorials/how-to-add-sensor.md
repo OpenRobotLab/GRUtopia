@@ -51,7 +51,8 @@ class Camera(BaseSensor):
 
         prim_path = self.robot_user_config.prim_path + '/' + self.sensor_config.prim_path
         log.debug('camera_prim_path: ' + prim_path)
-        log.debug('name            : ' + '_'.join([self.robot_user_config.name, self.sensor_config.name]))
+        log.debug('name            : ' + '_'.join(
+            [self.robot_user_config.name, self.sensor_config.name]))
         return i_Camera(prim_path=prim_path, resolution=size)
 
     def sensor_init(self) -> None:

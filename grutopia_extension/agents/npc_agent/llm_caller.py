@@ -1,12 +1,12 @@
 from queue import Queue
 from typing import Dict, List, Literal, Tuple
 
+import httpx
 import numpy as np
-import requests
 
 from grutopia.core.util import log
-from grutopia.npc.prompt import in_context_example, system_message
-from grutopia.npc.utils import Env
+from grutopia_extension.agents.npc_agent.prompt import in_context_example, system_message
+from grutopia_extension.agents.npc_agent.utils import Env
 
 
 class LLMCaller:
@@ -69,7 +69,6 @@ class LLMCaller:
 
         Args:
             question (str): The question to ask.
-            facing_to_object_id (Optional[str]): The ID of the object the jetbot is facing to. Defaults to None.
 
         Returns:
             str: The response from LLM.
@@ -79,7 +78,7 @@ class LLMCaller:
         for _ in range(self.max_turn):
             payload = {'model': self.model_name, 'messages': messages}
             try:
-                response = requests.post(self.api_base_url, headers=self.header, json=payload).json()
+                response = httpx.post(self.api_base_url, headers=self.header, json=payload).json()
                 message = response['choices'][0]['message']
             except KeyError:
                 log.info(f'Got an unexpected result when calling openai api: {response}')
