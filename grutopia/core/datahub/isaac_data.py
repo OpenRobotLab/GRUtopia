@@ -23,8 +23,8 @@ class _IsaacData(BaseModel):
     """
     isaac status in grutopia
     """
-    actions: Optional[List[Dict[str, Any]]]
-    obs: Optional[List[Dict[str, Any]]]
+    actions: Optional[List[Dict[str, Any]]] = None
+    obs: Optional[List[Dict[str, Any]]] = None
 
 
 class IsaacData:

@@ -8,4 +8,4 @@ class MetricUserConfig(BaseModel):
     MetricUserConfig
     """
     type: str
-    name: Optional[str]
+    name: Optional[str] = None

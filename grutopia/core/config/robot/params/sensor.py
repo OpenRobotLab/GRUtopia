@@ -10,5 +10,5 @@ class SensorParams(BaseModel):
     """
     name: str
     enable: Optional[bool] = True
-    size: Optional[Tuple[int, int]]  # Camera only
-    scan_rate: Optional[int]  # RPS. Lidar only
+    size: Optional[Tuple[int, int]] = None  # Camera only
+    scan_rate: Optional[int] = None  # RPS. Lidar only

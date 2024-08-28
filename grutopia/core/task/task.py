@@ -1,4 +1,4 @@
-# import random
+import os
 import traceback
 from abc import ABC, abstractmethod
 from functools import wraps
@@ -42,7 +42,7 @@ class BaseTask(OmniBaseTask, ABC):
 
     def load(self):
         if self.config.scene_asset_path is not None:
-            source, prim_path = create_scene(self.config.scene_asset_path,
+            source, prim_path = create_scene(os.path.abspath(self.config.scene_asset_path),
                                              prim_path_root=f'World/env_{self.config.env_id}/scene')
             create_prim(prim_path,
                         usd_path=source,

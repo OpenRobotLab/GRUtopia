@@ -14,8 +14,8 @@ class RobotUserConfig(BaseModel):
 
     # common config
     position: Optional[List[float]] = [.0, .0, .0]
-    orientation: Optional[List[float]]
-    scale: Optional[List[float]]
+    orientation: Optional[List[float]] = None
+    scale: Optional[List[float]] = None
 
     # Parameters
     controller_params: Optional[List[ControllerParams]] = None

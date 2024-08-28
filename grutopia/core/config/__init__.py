@@ -18,7 +18,7 @@ class Env(BaseModel):
     """
     # background config(type None for nothing)
     bg_type: Union[str, None] = None
-    bg_path: Optional[str]
+    bg_path: Optional[str] = None
 
 
 class SimConfig(BaseModel):
@@ -34,14 +34,14 @@ class Config(BaseModel):
     """
     Config
     """
-    simulator: Optional[SimConfig]
+    simulator: Optional[SimConfig] = None
     env_set: Optional[Env] = None
     tasks: List[TaskUserConfig]
     npc: List[NPCUserConfig] = []
 
 
 class ConfigDictValidator(BaseModel):
-    simulator: Optional[SimConfig]
+    simulator: Optional[SimConfig] = None
     env_set: Optional[Env] = None
     task_config: List[TaskUserConfig]
 

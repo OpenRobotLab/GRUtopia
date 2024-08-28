@@ -7,8 +7,8 @@ from grutopia.core.config.scene.object_params import DynamicCube, UsdObj
 
 class Scene(BaseModel):
     type: str
-    name: Optional[str]
-    path: Optional[str]
+    name: Optional[str] = None
+    path: Optional[str] = None
 
 
 class Object(BaseModel):

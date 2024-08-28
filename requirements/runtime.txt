@@ -1,13 +1,5 @@
-aiofiles==23.2.1
 httpx==0.25.0
 inputs==0.5
 ipython==8.20.0
-jsondiff==2.0.0
-matplotlib==3.8.1
-numpy==1.26.0
-pillow==10.2.0
-pydantic==1.9.2
 pyyaml==6.0.1
-requests==2.31.0
 rsl_rl @ git+https://github.com/leggedrobotics/rsl_rl@a1d25d1
-setuptools==68.0.0
