@@ -141,6 +141,8 @@ def create_controllers(config: RobotUserConfig, robot_model: RobotModel, robot: 
     controller_map = {}
     available_controllers = {a.name: a for a in robot_model.controllers}
 
+    if config.controller_params is None:
+        return controller_map
     for controller_param in config.controller_params:
         controller_name = controller_param.name
         if controller_name in available_controllers:
