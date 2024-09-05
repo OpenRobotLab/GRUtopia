@@ -19,9 +19,6 @@ simulator:
   physics_dt: 1/240
   rendering_dt: 1/240
 
-env:
-  bg_type: null
-
 render:
   render: true
 
@@ -29,6 +26,7 @@ tasks:
 - type: "SingleInferenceTask"
   name: "h1_locomotion"
   env_num: 1
+  scene_asset_path: GRUtopia/assets/scenes/empty.usd
   offset_size: 1.0
   robots:  # Add robots here
   - name: h1
@@ -56,7 +54,7 @@ import numpy as np
 
 while env.simulation_app.is_running():
 
-    obs = env.step(actions=env_actions)
+    obs = env.step(actions=[{}])
 env.simulation_app.close()
 ```
 
