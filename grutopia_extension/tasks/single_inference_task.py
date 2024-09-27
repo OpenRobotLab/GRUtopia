@@ -1,6 +1,6 @@
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.runtime import TaskRuntime
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 
 

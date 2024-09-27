@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List, Tuple, Union
 
 from omni.isaac.core import World
@@ -8,9 +9,10 @@ from omni.isaac.core.utils.stage import add_reference_to_stage  # noqa F401
 from omni.physx.scripts import utils
 from pxr import Usd  # noqa
 
-from grutopia.core.agent import BaseAgent, create_agent
 # Init
+from grutopia.core.agent import BaseAgent, create_agent
 from grutopia.core.config import AgentConfig
+from grutopia.core.config.metric import MetricUserConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.runtime.task_runtime import TaskRuntime, TaskRuntimeManager
@@ -34,6 +36,11 @@ class SimulatorRunner:
         rendering_dt = eval(rendering_dt) if isinstance(rendering_dt, str) else rendering_dt
         self.dt = physics_dt
         log.debug(f'Simulator physics dt: {self.dt}')
+
+        self.metrics_config = None
+        self.metrics_results = {}
+        self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
+
         self._world = World(physics_dt=self.dt, rendering_dt=rendering_dt, stage_units_in_meters=1.0)
         self._scene = self._world.scene
         self._stage = self._world.stage
@@ -81,6 +88,11 @@ class SimulatorRunner:
                     self.task_name_to_agents_map[task.runtime.name] = []
                 self.task_name_to_agents_map[task.runtime.name].append(
                     create_agent(config=agent_config, task_name=task.runtime.name))
+
+    def init_metrics_results(self, metrics_config: List[MetricUserConfig]):
+        self.metrics_config = metrics_config
+        for metric_config in metrics_config:
+            self.metrics_results[metric_config.name] = []
 
     def reload_tasks(self, runtimes: List[TaskRuntime]):
         """
@@ -167,7 +179,11 @@ class SimulatorRunner:
         # Check task_runtime_manager is_done.
         finished_task = []
         for task in self.current_tasks.values():
+            for metric in task.metrics.values():
+                metric.update(obs[task.name])
             if task.is_done():
+                log.info(f'Task {task.name} finished.')
+                self.metrics_results[task.name] = task.calculate_metrics()
                 finished_task.append(task.runtime.name)
 
         # Set done task to with new episode.
@@ -176,6 +192,12 @@ class SimulatorRunner:
 
         # Check if episodes finished.
         if len(self.current_tasks) == 0:
+            # TODO metrics data post process(add hook in task)
+            if self.metrics_save_path == 'console':
+                log.info(json.dumps(self.metrics_results, indent=4))
+            else:
+                with open(self.metrics_save_path, 'w') as f:
+                    f.write(json.dumps(self.metrics_results))
             return obs, True
 
         if render:
@@ -263,6 +285,8 @@ class SimulatorRunner:
             del self.task_name_to_agents_map[task_name]
             self.task_name_to_agents_map[new_task_name] = []
             for conf in self.agent_configs:
+                # TODO check 是不是NPC， meta中有没有NPC参数需要更新 （NPC是唯一一个需要在程序运行中改变配之的Agent）
+                # TODO 考虑在Episode中添加Agent配置，流程如上
                 self.task_name_to_agents_map[new_task_name].append(create_agent(config=conf, task_name=new_task_name))
         # Log
         log.info('===================== episode ========================')

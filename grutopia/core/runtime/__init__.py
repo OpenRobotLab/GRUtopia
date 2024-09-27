@@ -4,7 +4,7 @@ import yaml
 
 from grutopia.core.config import AgentConfig, EpisodeConfigFile, SimConfig, ValidatedConfig
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.task_runtime import TaskRuntime, TaskRuntimeManager
+from grutopia.core.runtime.task_runtime import TaskRuntimeManager
 from grutopia.core.util import log
 
 
@@ -33,6 +33,7 @@ class SimulatorRuntime:
             'anti_aliasing': 0,
             'hide_ui': False,
         })
+        log.debug('SimulationApp init done')
 
         if webrtc:
             from omni.isaac.core.utils.extensions import enable_extension  # noqa
@@ -93,3 +94,4 @@ class SimulatorRuntime:
         self.task_runtime_manager = _trm
         self.env_num = _trm.env_num
         self.agents = config.agents
+        log.debug('SimulatorRuntime init done')

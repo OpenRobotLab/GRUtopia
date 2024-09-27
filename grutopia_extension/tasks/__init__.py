@@ -1,1 +1,1 @@
-from grutopia_extension.tasks import simple_agent_task, single_inference_task
+from grutopia_extension.tasks import simple_agent_task, single_inference_task, social_navigation_task
