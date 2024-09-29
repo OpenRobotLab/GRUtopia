@@ -3,26 +3,6 @@ robots:
 - type: "HumanoidRobot"
   usd_path: "GRUtopia/assets/robots/h1/h1.usd"
   gains: [0.0, 0.0]
-  joint_names:
-  - left_hip_yaw_joint
-  - right_hip_yaw_joint
-  - torso_joint
-  - left_hip_roll_joint
-  - right_hip_roll_joint
-  - left_shoulder_pitch_joint
-  - right_shoulder_pitch_joint
-  - left_hip_pitch_joint
-  - right_hip_pitch_joint
-  - left_shoulder_roll_joint
-  - right_shoulder_roll_joint
-  - left_knee_joint
-  - right_knee_joint
-  - left_shoulder_yaw_joint
-  - right_shoulder_yaw_joint
-  - left_ankle_joint
-  - right_ankle_joint
-  - left_elbow_joint
-  - right_elbow_joint
   controllers:
   - name: "move_by_speed"
     type: HumanoidMoveBySpeedController
@@ -98,6 +78,11 @@ robots:
     - name: move_by_speed
   - name: web_chat
     type: WebChatboxController
+  - name: recover
+    type: RecoverController
+    recover_height: 1.0
+    sub_controllers:
+    - name: joint_controller
   sensors:
   - name: "camera"
     type: "Camera"

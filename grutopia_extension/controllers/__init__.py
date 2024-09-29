@@ -4,6 +4,7 @@ from grutopia_extension.controllers import (
     move_along_path_points_controller,
     move_to_point_by_speed_controller,
     move_with_keyboard_controller,
+    recover_controller,
     rotate_controller,
     web_chat_box_controller,
 )

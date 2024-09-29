@@ -8,13 +8,13 @@ task_config:
   env_num: 1
   offset_size: 25
   episodes:
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    scene_scale: [0.25, 0.25, 0.25]
+  - scene_asset_path: GRUtopia/assets/scenes/empty.usd
+    scene_scale: [ 0.01, 0.01, 0.01 ]
     robots:
       - name: h1
         prim_path: "/World/h1"
         type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
+        position: [ 5.58, -0.77, 1.05 ]
         scale: [ 1, 1, 1 ]
         controller_params:
           - name: "move_by_speed"
@@ -22,132 +22,8 @@ task_config:
           - name: "move_to_point"
           - name: "move_along_path"
           - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
-        sensor_params:
-          - name: "camera"
-            enable: False
-          - name: "tp_camera"
-            enable: False
-  - scene_asset_path: GRUtopia/assets/scenes/grid.usd
-    robots:
-      - name: h1
-        prim_path: "/World/h1"
-        type: "HumanoidRobot"
-        position: [ .0, .0, 1.05 ]
-        scale: [ 1, 1, 1 ]
-        controller_params:
-          - name: "move_by_speed"
-          - name: "joint_controller"
-          - name: "move_to_point"
-          - name: "move_along_path"
-          - name: "rotate"
+          - name: "recover"
+          - name: "move_with_keyboard"
         sensor_params:
           - name: "camera"
             enable: False

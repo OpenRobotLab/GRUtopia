@@ -121,6 +121,8 @@ class Humanoid(IsaacRobot):
 
     def apply_actuator_model(self, control_action: ArticulationAction, controller_name: str,
                              joint_set: ArticulationSubset):
+        if joint_set is None or control_action is None:
+            return
         name = 'base_legs'
         actuator = self.actuators[name]
 
@@ -194,9 +196,6 @@ class HumanoidRobot(BaseRobot):
             usd_path=usd_path,
         )
 
-        if robot_model.joint_names is not None:
-            self.joint_subset = ArticulationSubset(self.isaac_robot, robot_model.joint_names)
-
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         if config.scale is not None:
             self._robot_scale = np.array(config.scale)
@@ -242,7 +241,7 @@ class HumanoidRobot(BaseRobot):
                 continue
             controller = self.controllers[controller_name]
             control = controller.action_to_control(controller_action)
-            self.isaac_robot.apply_actuator_model(control, controller_name, self.joint_subset)
+            self.isaac_robot.apply_actuator_model(control, controller_name, controller.get_joint_subset())
 
     def get_obs(self):
         position, orientation = self._robot_base.get_world_pose()

@@ -100,9 +100,11 @@ class BaseController(Base, ABC):
         """
         if hasattr(self, 'joint_subset'):
             return self.joint_subset
-        if len(self.sub_controllers) > 0:
-            return self.sub_controllers[0].get_joint_subset()
-        raise NotImplementedError('attr joint_subset not found')
+        if not hasattr(self, 'sub_controllers'):
+            return None
+        if self.sub_controllers is None or len(self.sub_controllers) == 0:
+            return None
+        return self.sub_controllers[0].get_joint_subset()
 
 
 def config_inject(user_config: ControllerParams, model: ControllerModel) -> ControllerModel:

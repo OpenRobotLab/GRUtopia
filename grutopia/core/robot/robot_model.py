@@ -17,7 +17,7 @@ class SensorModel(BaseModel):
     scan_rate: Optional[int] = None  # RPS. Lidar only
 
 
-class ControllerModel(BaseModel):
+class ControllerModel(BaseModel, extra='allow'):
     """Controller config in robot_model config."""
     name: str
     type: str
@@ -32,6 +32,7 @@ class ControllerModel(BaseModel):
     lateral_speed: Optional[float] = None
     threshold: Optional[float] = None
     policy_weights_path: Optional[str] = None
+    recover_height: Optional[float] = None
 
     map_data_path: Optional[str] = None  # navi only, npy BOG (binary occupancy grid) file
     reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
@@ -49,7 +50,6 @@ class RobotModel(BaseModel):
     controllers: Optional[List[ControllerModel]] = None
     sensors: Optional[List[SensorModel]] = None
     gains: Optional[List[float]] = None
-    joint_names: Optional[List[str]] = None
 
 
 class RobotModels(BaseModel):

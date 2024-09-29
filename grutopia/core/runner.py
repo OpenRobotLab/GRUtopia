@@ -140,9 +140,9 @@ class SimulatorRunner:
                     try:
                         task.robots[name].apply_action(action)
                     except Exception as e:
-                        log.error('task_name     : ', task_name)
-                        log.error('robot_name    : ', name)
-                        log.error('current_tasks : ', [i for i in self.current_tasks.keys()])
+                        log.error('task_name     : %s', task_name)
+                        log.error('robot_name    : %s', name)
+                        log.error('current_tasks : %s', [i for i in self.current_tasks.keys()])
                         raise e
 
         self.render_trigger += 1

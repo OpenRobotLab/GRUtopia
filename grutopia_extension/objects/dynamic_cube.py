@@ -17,6 +17,6 @@ class DynamicCube(ObjectCommon):
                 prim_path=self._config.prim_path,
                 name=self._config.name,
                 position=np.array(self._config.position),
-                scale=np.array([self._config.scale]),
-                color=np.array([self._config.color]),
+                scale=np.array(self._config.scale),
+                color=np.array(self._config.color),
             ))
