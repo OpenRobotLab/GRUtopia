@@ -28,7 +28,11 @@ class SimulatorRuntime:
         # Init Isaac Sim
         from isaacsim import SimulationApp  # noqa
         self.headless = headless
-        self._simulation_app = SimulationApp({'headless': self.headless, 'anti_aliasing': 0})
+        self._simulation_app = SimulationApp({
+            'headless': self.headless,
+            'anti_aliasing': 0,
+            'hide_ui': False,
+        })
 
         if webrtc:
             from omni.isaac.core.utils.extensions import enable_extension  # noqa
