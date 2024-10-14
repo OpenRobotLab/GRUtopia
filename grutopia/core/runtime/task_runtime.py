@@ -25,6 +25,10 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     # env
     env: Env
 
+    # custom setting
+    task_settings: Optional[Dict] = {}
+    metrics_save_path: Optional[str] = 'console'
+
     # scene
     scene_asset_path: Optional[str] = None
     scene_scale: Optional[List[float]] = [1.0, 1.0, 1.0]
@@ -91,6 +95,7 @@ class TaskRuntimeManager:
         self.task_name_prefix = task_user_config.task_name_prefix
         self.task_config: TaskConfig = task_user_config
         self.episodes: List[EpisodeConfig] = task_user_config.episodes
+        self.metrics_save_path = task_user_config.metrics_save_path
         self.active_runtimes: Dict[str, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()
@@ -102,6 +107,7 @@ class TaskRuntimeManager:
         del task_template['env_num']
         del task_template['episodes']
         del task_template['task_name_prefix']
+        del task_template['metrics_save_path']
         return task_template
 
     def _pop_next_episode(self) -> Union[EpisodeConfig, None]:

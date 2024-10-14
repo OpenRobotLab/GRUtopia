@@ -29,4 +29,4 @@ class NPCAgent(BaseAgent):
         """
         This agent won't be terminated.
         """
-        self.npc.feed(self.observation)
+        self.npc.feed(self.get_observation())

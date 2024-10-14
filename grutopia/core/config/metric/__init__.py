@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, Optional
 
 from pydantic import BaseModel
 
@@ -9,3 +9,4 @@ class MetricUserConfig(BaseModel):
     """
     type: str
     name: Optional[str] = None
+    metric_config: Optional[Dict] = {}

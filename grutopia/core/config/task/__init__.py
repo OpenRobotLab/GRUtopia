@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 
@@ -16,11 +16,15 @@ class TaskConfig(BaseModel, extra=Extra.allow):
 
     # inherit
     metrics: Optional[List[MetricUserConfig]] = []
+    metrics_save_path: Optional[str] = 'console'
 
     # path
     scene_root_path: Optional[str] = '/scene'
     robots_root_path: Optional[str] = '/robots'
     objects_root_path: Optional[str] = '/objects'
+
+    # custom setting
+    task_settings: Optional[Dict] = {}
 
     # offset
     offset_size: Optional[float] = 10.0

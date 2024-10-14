@@ -11,7 +11,7 @@ from omni.isaac.core.utils.prims import create_prim
 from grutopia.core.datahub import DataHub
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.runtime import TaskRuntime
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import create_object, create_scene
 from grutopia.core.task.metric import BaseMetric, create_metric
 from grutopia.core.util import log
@@ -40,7 +40,7 @@ class BaseTask(OmniBaseTask, ABC):
         self.work = True
 
         for metric_config in runtime.metrics:
-            self.metrics[metric_config.name] = create_metric(metric_config)
+            self.metrics[metric_config.type] = create_metric(metric_config, self.runtime)
 
     def load(self):
         """
