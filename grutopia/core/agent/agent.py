@@ -21,12 +21,13 @@ class BaseAgent(ABC):
     loop: Thread | None = None
     agent_step_loop = asyncio.new_event_loop()
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str):
+    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, extra: Dict):
         self.task_name: str = task_name
         self.robot_name: str = robot_name
         self.sync_mode: str = sync_mode
         self.agent_config: Dict = agent_config
         self._step_over: bool = True
+        self.extra: Dict = extra
 
     def get_observation(self) -> Dict:
         """
@@ -122,9 +123,10 @@ class BaseAgent(ABC):
         return decorator
 
 
-def create_agent(config: AgentConfig, task_name: str):
+def create_agent(config: AgentConfig, task_name: str, extra: Dict):
     agent_inst: BaseAgent = BaseAgent.agents[config.type](task_name=task_name,
                                                           robot_name=config.robot_name,
                                                           sync_mode=config.sync_mode,
-                                                          agent_config=config.agent_config)
+                                                          agent_config=config.agent_config,
+                                                          extra=extra)
     return agent_inst

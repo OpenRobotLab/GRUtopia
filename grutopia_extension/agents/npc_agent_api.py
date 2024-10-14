@@ -15,8 +15,8 @@ class NPCAgent(BaseAgent):
     This agent won't terminated.
     """
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str):
-        super().__init__(task_name, robot_name, agent_config, sync_mode)
+    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, extra: Dict):
+        super().__init__(task_name, robot_name, agent_config, sync_mode, extra)
         log.debug(f'=============== agent_config: {agent_config} ===============')
         try:
             cfg = NPCUserConfig(**agent_config)

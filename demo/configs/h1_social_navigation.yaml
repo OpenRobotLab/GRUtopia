@@ -50,5 +50,5 @@ task_config:
         enable: True
       - name: "tp_camera"
         enable: False
-    meta:
+    extra:
       prompt: "Prompt test 1"

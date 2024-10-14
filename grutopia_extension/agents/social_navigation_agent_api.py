@@ -10,8 +10,8 @@ class SocialNavigationAgent(BaseAgent):
     Dummy Agent that does nothing. And set is_done at the 20th call.
     """
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str):
-        super().__init__(task_name, robot_name, agent_config, sync_mode)
+    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, extra: Dict):
+        super().__init__(task_name, robot_name, agent_config, sync_mode, extra)
         log.debug(f'=============== agent_config: {agent_config} ===============')
 
         # TODO Add runtime validate here.

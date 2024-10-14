@@ -16,7 +16,7 @@ class EpisodeConfig(BaseModel, extra='allow'):
     scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
     robots: Optional[List[RobotUserConfig]] = []
     objects: Optional[List[Object]] = []
-    meta: Optional[Dict[str, Any]] = {}
+    extra: Optional[Dict[str, Any]] = {}
 
 
 class EpisodeConfigFile(BaseModel, extra='allow'):

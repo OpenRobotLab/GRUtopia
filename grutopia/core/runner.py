@@ -86,7 +86,7 @@ class SimulatorRunner:
                 if task.runtime.name not in self.task_name_to_agents_map:
                     self.task_name_to_agents_map[task.runtime.name] = []
                 self.task_name_to_agents_map[task.runtime.name].append(
-                    create_agent(config=agent_config, task_name=task.runtime.name))
+                    create_agent(config=agent_config, task_name=task.runtime.name, extra=task.runtime.extra))
 
     def reload_tasks(self, runtimes: List[TaskRuntime]):
         """
@@ -279,9 +279,8 @@ class SimulatorRunner:
             del self.task_name_to_agents_map[task_name]
             self.task_name_to_agents_map[new_task_name] = []
             for conf in self.agent_configs:
-                # TODO check 是不是NPC， meta中有没有NPC参数需要更新 （NPC是唯一一个需要在程序运行中改变配之的Agent）
-                # TODO 考虑在Episode中添加Agent配置，流程如上
-                self.task_name_to_agents_map[new_task_name].append(create_agent(config=conf, task_name=new_task_name))
+                self.task_name_to_agents_map[new_task_name].append(
+                    create_agent(config=conf, task_name=new_task_name, extra=next_task_runtime.extra))
         # Log
         log.info('===================== episode ========================')
         log.info(f'Next episode: {new_task_name} at {str(env_id)}')

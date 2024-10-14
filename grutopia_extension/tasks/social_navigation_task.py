@@ -17,7 +17,7 @@ class TaskSettingModel(BaseModel):
     # max_dialogue: str  # NPC
 
 
-class NavigationMetaMNodel(BaseModel):
+class NavigationExtraTaskInfoModel(BaseModel):
     prompt: Optional[str] = ''
 
 
@@ -28,13 +28,10 @@ class SocialBenchmarkTask(BaseTask):
         super().__init__(runtime, scene)
         self.step_counter = 0
         self.settings = TaskSettingModel(**runtime.task_settings)
-        self.episode_meta = NavigationMetaMNodel(**runtime.meta)
+        self.extra = NavigationExtraTaskInfoModel(**runtime.extra)
         log.info(f'task_settings: max_step       : {self.settings.max_step}.)')
-        # log.info(f'task_settings: verbose        : {self.settings.verbose}.)')
-        # log.info(f'task_settings: fall_threshold : {self.settings.fall_threshold}.)')
-        # log.info(f'task_settings: max_dialogue   : {self.settings.max_dialogue}.)')
         # Episode
-        log.info(f'Episode meta : prompt         : {self.episode_meta.prompt}.)')
+        log.info(f'Episode meta : prompt         : {self.extra.prompt}.)')
 
     def is_done(self) -> bool:
         self.step_counter = self.step_counter + 1

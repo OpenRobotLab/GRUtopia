@@ -46,8 +46,8 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     robots_root_path: Optional[str] = '/robots'
     objects_root_path: Optional[str] = '/objects'
 
-    # task meta info
-    meta: Optional[Dict[str, Any]] = {}
+    # task extra info
+    extra: Optional[Dict[str, Any]] = {}
 
 
 def setup_offset_for_assets(episode_dict):
