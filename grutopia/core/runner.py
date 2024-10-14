@@ -12,7 +12,6 @@ from pxr import Usd  # noqa
 # Init
 from grutopia.core.agent import BaseAgent, create_agent
 from grutopia.core.config import AgentConfig
-from grutopia.core.config.metric import MetricUserConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.runtime.task_runtime import TaskRuntime, TaskRuntimeManager
@@ -88,11 +87,6 @@ class SimulatorRunner:
                     self.task_name_to_agents_map[task.runtime.name] = []
                 self.task_name_to_agents_map[task.runtime.name].append(
                     create_agent(config=agent_config, task_name=task.runtime.name))
-
-    def init_metrics_results(self, metrics_config: List[MetricUserConfig]):
-        self.metrics_config = metrics_config
-        for metric_config in metrics_config:
-            self.metrics_results[metric_config.name] = []
 
     def reload_tasks(self, runtimes: List[TaskRuntime]):
         """
