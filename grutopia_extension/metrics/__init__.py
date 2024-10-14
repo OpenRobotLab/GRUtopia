@@ -1,1 +1,1 @@
-from grutopia_extension.metrics import simple_metric, social_navigation_metric
+from grutopia_extension.metrics import simple_metric
