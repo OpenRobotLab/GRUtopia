@@ -7,6 +7,7 @@ from typing import Dict
 from grutopia.core.config.agent import AgentConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.util import log
+from grutopia.core.util.chat import AgentChat
 
 
 def start_loop(loop):
@@ -28,6 +29,7 @@ class BaseAgent(ABC):
         self.agent_config: Dict = agent_config
         self._step_over: bool = True
         self.extra: Dict = extra
+        self.chat: AgentChat = AgentChat(self.task_name, self.robot_name)
 
     def get_observation(self) -> Dict:
         """

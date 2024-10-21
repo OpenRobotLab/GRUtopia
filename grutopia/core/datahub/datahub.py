@@ -1,8 +1,6 @@
 import datetime
 from typing import Any, Dict, List
 
-import httpx
-
 from grutopia.core.datahub.isaac_data import ActionData, IsaacData
 from grutopia.core.datahub.model_data import ChainOfThoughtDataItem, ChatControlData, LogData, ModelData
 from grutopia.core.util import AsyncRequest
@@ -50,8 +48,6 @@ class DataHub:
     GetChatControlUrl = ''
     GetLogDataUrl = ''
     ClearUrl = ''
-    AvatarUrls = {}
-    DefaultAvatarUrl = ''
 
     @classmethod
     def datahub_init(
@@ -87,12 +83,6 @@ class DataHub:
 
         cls.ClearUrl = cls.WebBEUrl + '/api/grutopia/clear'
 
-        cls.AvatarUrls = {
-            'user': f'http://{cls.remote_address.split(":")[0]}:8080/static/avatar_00.jpg',  # noqa
-            'agent': f'http://{cls.remote_address.split(":")[0]}:8080/static/avatar_01.jpg',  # noqa
-        }
-        cls.DefaultAvatarUrl = f'http://{cls.remote_address.split(":")[0]}:8080/static/avatar_default.jpg'  # noqa
-
     def __init__(self):
         pass
 
@@ -100,7 +90,7 @@ class DataHub:
     def get_actions_by_task_name(cls, task_name: str) -> Dict[str, Dict]:
         """
         Get action by task name.
-        TODO async
+
         Args:
             task_name (str): task name
 
@@ -108,9 +98,7 @@ class DataHub:
             Action of this
         """
         if cls.sim_remote:
-            r = httpx.get(cls.GetActionByTaskNameUrl + task_name)
-            if r.status_code == 200:
-                return r.json()
+            raise NotImplementedError('Remote get actions not implemented.')
         else:
             return IsaacData.get_action_by_task_name(task_name)
 
@@ -118,7 +106,6 @@ class DataHub:
     def get_obs_by_task_name(cls, task_name: str) -> Dict:
         """
         Get observation by task name
-        TODO Async
 
         Args:
             task_name (str): Task name
@@ -127,9 +114,7 @@ class DataHub:
             obs (Any): Observation data
         """
         if cls.sim_remote:
-            r = httpx.get(cls.GetObsByTaskNameUrl + task_name)
-            if r.status_code == 200:
-                return r.json()
+            raise NotImplementedError('Remote get observation data not implemented.')
         else:
             return IsaacData.get_obs_by_task_name(task_name)
 
@@ -137,7 +122,6 @@ class DataHub:
     def get_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str) -> Dict:
         """
         Get observation by task name
-        TODO Async
 
         Args:
             robot_name (str): robot name
@@ -147,9 +131,7 @@ class DataHub:
             obs (Any): Observation data
         """
         if cls.sim_remote:
-            r = httpx.get(cls.GetObsByTaskNameAndRobotNameUrl + task_name + '/' + robot_name)
-            if r.status_code == 200:
-                return r.json()
+            raise NotImplementedError('Remote get observation data not implemented.')
         else:
             return IsaacData.get_obs_by_task_name_and_robot_name(task_name, robot_name)
 
@@ -157,15 +139,12 @@ class DataHub:
     def set_obs_data(cls, obs: Dict[str, Dict[str, Any]]):
         """
         Set observation
-        TODO Async
 
         Args:
             obs (Dict[str, Dict[str, Any]]): Observation data with task_name as key.
         """
         if cls.sim_remote:
-            r = httpx.post(cls.SetObsUrl, )
-            if r.status_code == 200:
-                return r.json()
+            raise NotImplementedError('Remote set observation data not implemented.')
         else:
             IsaacData.set_obs_data(obs)
 
@@ -173,13 +152,12 @@ class DataHub:
     def set_actions(cls, actions: Dict[str, ActionData]):
         """
         Set actions (dict, task_name(str) as key)
-        TODO Async, Robot-wise
 
         Args:
             actions (Dict[str, ActionData]): Action data (dict) with task_name as key
         """
         if cls.sim_remote:
-            httpx.post(cls.SetActionsUrl, json={'actions': actions})
+            raise NotImplementedError('Remote set actions not implemented.')
         else:
             IsaacData.set_actions(actions)
 
@@ -195,7 +173,6 @@ class DataHub:
             bool: status of the task (finished or not)
         """
         if cls.sim_remote:
-            # TODO Implement this
             raise NotImplementedError('get_episode_finish NotImplementedError')
         else:
             return IsaacData.get_episode_finished(task_name)
@@ -209,8 +186,7 @@ class DataHub:
             task_name (str): task_name.
         """
         if cls.sim_remote:
-            # TODO Implement this
-            pass
+            raise NotImplementedError('set_episode_finish NotImplementedError')
         else:
             IsaacData.set_episode_finished(task_name)
 
@@ -223,20 +199,17 @@ class DataHub:
             str: task index for the new task.
         """
         if cls.sim_remote:
-            r = httpx.get(cls.GenTaskIdxUrl)
-            if r.status_code == 200 and r.json()['data'] is not None:
-                return r.json()['data']
-            raise RuntimeError(f'Failed to get task_name, r.json: {r.json()}')
+            raise NotImplementedError('gen_task_idx NotImplementedError')
         else:
             return IsaacData.gen_task_idx()
 
     @classmethod
-    def send_chain_of_thought(cls, cot: str, uuid: str = 'none') -> None:
+    def send_chain_of_thought(cls, cot: str, task_name: str) -> None:
         """
         chain of thought data
 
         Args:
-            uuid (str): uuid of chain of thought data, defaults to "none".
+            task_name (str): name of task, like id of chat group.
             cot (str): chain of thought data.
         """
 
@@ -247,9 +220,9 @@ class DataHub:
         for i in cot:
             res_data.append(cot_format(i))
         if cls.chat_remote:
-            AsyncRequest.post(uuid, cls.SendCoTUrl, res_data)
+            raise NotImplementedError('Remote send chain of thought not implemented.')
         else:
-            ModelData.append_chan_of_thought([ChainOfThoughtDataItem(**i) for i in res_data])
+            ModelData.append_chan_of_thought([ChainOfThoughtDataItem(**i) for i in res_data], task_name)
 
     @classmethod
     def send_chat_control(cls,
@@ -257,7 +230,9 @@ class DataHub:
                           text: str,
                           img: str = None,
                           role: str = 'user',
-                          uuid: str = 'none') -> None:
+                          task_name: str = None,
+                          at: list[str] = None,
+                          parent_idx: int = -1) -> None:
         """Send a new message to the chatbox.
 
         Args:
@@ -265,44 +240,46 @@ class DataHub:
             text (str): text to send to the chatbox.
             img (str, optional): image to send to the chatbox. Defaults to None.
             role (str, optional): role name, user or agent. Defaults to "user".
-            uuid (str, optional): uuid of the message. Defaults to 'none'.
+            task_name (str): name of task, like id of chat group.
+            at (list[str], optional): who this chat talk to. Defaults to All.
+            parent_idx (int, optional): index of the parent message in chatbox. Defaults to -1.
         """
-        avatar_url = cls.AvatarUrls.get(role, cls.DefaultAvatarUrl)
         res_data = {
             'type': role,
             'name': nickname,
             'time': datetime.datetime.now().strftime('%H:%M'),
             'message': text,
-            'photo': avatar_url,
+            'photo': None,  # TODO: Gen a photo with name(different color for each Agent or User)
             'img': img,
+            'at': at,
+            'parent_idx': parent_idx,
         }
         if cls.chat_remote:
-            AsyncRequest.post(uuid, cls.SendChatControlUrl, res_data)
+            raise NotImplementedError('Remote send chat control not implemented.')
         else:
-            ModelData.append_chat_control(ChatControlData(**res_data))
+            ModelData.append_chat_control(ChatControlData(**res_data), task_name)
 
     @classmethod
-    def send_log_data(cls,
-                      log_data: str,
-                      log_type: str = 'message',
-                      user: str = 'Bob',
-                      photo_url: str = None,
-                      uuid: str = 'none') -> None:
+    def send_log_data(
+        cls,
+        log_data: str,
+        log_type: str = 'message',
+        user: str = 'Bob',
+        photo_url: str = None,
+        task_name: str = None,
+    ) -> None:
         """Send log data.
 
         Args:
-            uuid (str): uuid of log, default is none.
             log_data (str): log data.
             log_type (str): type of log. 'message' or 'user'.
             user (str): logger name. default: Bob.
             photo_url (str): log photo url path.
-
+            task_name (str): name of task, like id of chat group.
         """
         if log_type == 'message':
             res_data = {'type': 'message', 'message': log_data}
         else:  # user
-            if photo_url is None:
-                photo_url = cls.DefaultAvatarUrl
             if log_type != 'user':
                 return
             res_data = {
@@ -310,49 +287,44 @@ class DataHub:
                 'name': user,
                 'time': datetime.datetime.now().strftime('%H:%M'),
                 'message': log_data,
-                'photo': photo_url
+                'photo': photo_url,
             }
         if cls.chat_remote:
-            AsyncRequest.post(uuid, cls.SendLogDataUrl, res_data)
+            raise NotImplementedError('Remote send log data not implemented.')
         else:
-            ModelData.append_log_data(LogData(**res_data))
+            ModelData.append_log_data(LogData(**res_data), task_name)
 
     @classmethod
-    def get_log_data(cls, uuid: str = 'none') -> List[Dict]:
+    def get_log_data(cls, task_name: str) -> List[Dict]:
         """
         Get log data.
 
         Args:
-            uuid (str): log data uuid. default: none.
+            task_name (str): name of task, like id of chat group.
 
         Returns:
             log_data (List[Dict]): log data.
         """
         if cls.chat_remote:
-            ok, json_data = AsyncRequest.get(uuid, cls.GetLogDataUrl)
-            if ok and json_data is not None and 'data' in json_data:
-                return json_data['data']
-            return []
-        return ModelData.get_log_data()
+            raise NotImplementedError('Remote get log data not implemented.')
+        return ModelData.get_log_data(task_name)
 
     @classmethod
-    def get_chat_control(cls, uuid: str = 'none') -> List[Dict[str, Any]]:
+    def get_chat_control(cls, task_name: str, read_idx: int) -> List[Dict[str, Any]]:
         """
         Get chat control data.
 
         Args:
-            uuid (str): chat control uuid. default: none.
+            task_name (str): name of task, like id of chat group.
+            read_idx (int): where to start reading chat control data(list).
 
         Returns:
             chat_control (List[Dict[str, Any]]): chat control data.
         """
         if cls.chat_remote:
-            ok, json_data = AsyncRequest.get(uuid, cls.GetChatControlUrl)
-            if ok and json_data is not None and 'data' in json_data:
-                return json_data['data']
-            return []
+            raise NotImplementedError('Remote get chat data not implemented.')
         else:
-            return ModelData.get_chat_control()
+            return ModelData.get_chat_control(task_name, read_idx)
 
     @classmethod
     def clear(cls, uuid: str = 'none'):
