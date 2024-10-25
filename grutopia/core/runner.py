@@ -86,7 +86,7 @@ class SimulatorRunner:
                 if task.runtime.name not in self.task_name_to_agents_map:
                     self.task_name_to_agents_map[task.runtime.name] = []
                 self.task_name_to_agents_map[task.runtime.name].append(
-                    create_agent(config=agent_config, task_name=task.runtime.name, extra=task.runtime.extra))
+                    create_agent(config=agent_config, task_name=task.runtime.name, task_runtime=task.runtime))
 
     def reload_tasks(self, runtimes: List[TaskRuntime]):
         """
@@ -192,11 +192,8 @@ class SimulatorRunner:
             else:
                 with open(self.metrics_save_path, 'w') as f:
                     f.write(json.dumps(self.metrics_results))
-            return obs, True
 
-        if render:
-            return obs, False
-        return {}, False
+        return obs, False
 
     def get_obs(self) -> Dict:
         """
@@ -280,7 +277,7 @@ class SimulatorRunner:
             self.task_name_to_agents_map[new_task_name] = []
             for conf in self.agent_configs:
                 self.task_name_to_agents_map[new_task_name].append(
-                    create_agent(config=conf, task_name=new_task_name, extra=next_task_runtime.extra))
+                    create_agent(config=conf, task_name=new_task_name, task_runtime=next_task_runtime))
         # Log
         log.info('===================== episode ========================')
         log.info(f'Next episode: {new_task_name} at {str(env_id)}')

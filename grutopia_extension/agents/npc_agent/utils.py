@@ -150,3 +150,10 @@ class Env:
 
     def __call__(self, code: str) -> str:
         return self.shell(code)
+
+
+class Message(BaseModel):
+    message: str
+    at: Optional[List[str]] = []
+    parent_idx: Optional[int] = -1
+    role: Optional[str] = 'agent'

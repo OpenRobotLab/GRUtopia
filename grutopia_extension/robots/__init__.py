@@ -1,1 +1,1 @@
-from grutopia_extension.robots import humanoid
+from grutopia_extension.robots import humanoid, npc

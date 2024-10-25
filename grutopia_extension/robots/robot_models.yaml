@@ -90,3 +90,4 @@ robots:
   - name: "tp_camera"
     type: "Camera"
     prim_path: "torso_link/TPCamera"
+- type: NPC

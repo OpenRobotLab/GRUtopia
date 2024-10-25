@@ -140,8 +140,7 @@ class Env:
             if self.runner.task_name_to_env_map[task_name] in self.runtime.task_runtime_manager.active_runtimes
         }
 
-        _, finish = self._runner.step(action_after_reshape)
-        observations = self.get_observations()
+        observations, finish = self._runner.step(action_after_reshape)
 
         if finish:
             self._simulation_runtime.simulation_app.close()

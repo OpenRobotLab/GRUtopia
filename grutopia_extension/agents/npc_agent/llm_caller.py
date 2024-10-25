@@ -6,7 +6,7 @@ import numpy as np
 
 from grutopia.core.util import log
 from grutopia_extension.agents.npc_agent.prompt import in_context_example, system_message
-from grutopia_extension.agents.npc_agent.utils import Env
+from grutopia_extension.agents.npc_agent.utils import Env, Message
 
 
 class LLMCaller:
@@ -64,27 +64,41 @@ class LLMCaller:
         else:
             return 'Continue. If you need some information, write code to get it, wrap your code in ```python and ```. If you have got the final answer, tell the answer in the format: [answer]YOUR FINAL ANSWER[/answer].', False
 
-    def _infer(self, question: str) -> str:
+    def _infer(self, question_dict: dict) -> Message:
         """Given the facing-to object's ID and question, generate the response by LLM.
 
         Args:
-            question (str): The question to ask.
+            question_dict (dict): The question to ask.
 
         Returns:
-            str: The response from LLM.
+            Message: The response from LLM.
         """
+        question: str = question_dict['message']
         log.info(f'construct messages for question: {question}')
         messages = self._construct_init_messages(question)
         for _ in range(self.max_turn):
+            response = ''
             payload = {'model': self.model_name, 'messages': messages}
             try:
                 response = httpx.post(self.api_base_url, headers=self.header, json=payload).json()
                 message = response['choices'][0]['message']
             except KeyError:
                 log.info(f'Got an unexpected result when calling openai api: {response}')
-                return 'Got an unexpected result when calling openai api.'
+                return Message(
+                    **{
+                        'message': 'Got an unexpected result when calling openai api.',
+                        'at': question_dict['name'],
+                        'parent_idx': question_dict['idx'],
+                        'role': 'agent'
+                    })
             except Exception as e:
-                return f'Got an exception when calling openai api: {e}'
+                return Message(
+                    **{
+                        'message': f'Got an exception when calling openai api: {e}',
+                        'at': question_dict['name'],
+                        'parent_idx': question_dict['idx'],
+                        'role': 'agent'
+                    })
             messages.append(message)
             result, is_end = self._parse_and_execution(message['content'])
             if is_end:
@@ -101,13 +115,24 @@ class LLMCaller:
                         'text': result
                     }]
                 }])
-                return result
+                return Message(**{
+                    'message': result,
+                    'at': question_dict['name'],
+                    'parent_idx': question_dict['idx'],
+                    'role': 'agent'
+                })
             messages.append({'role': 'user', 'content': [{'type': 'text', 'text': result}]})
 
-        return 'Sorry, I cannot answer this question.'
+        return Message(
+            **{
+                'message': 'Sorry, I cannot answer this question.',
+                'at': question_dict['name'],
+                'parent_idx': question_dict['idx'],
+                'role': 'agent'
+            })
 
-    def infer(self, question: str) -> None:
-        self.request_queue.put(question)
+    def infer(self, question_dict: dict) -> None:
+        self.request_queue.put(question_dict)
 
     def update_robot_view(self, bbox: np.ndarray, idToLabels: Dict[str, Dict[Literal['class'], str]]) -> None:
         """Get the face-to object ID by 2D bounding box.

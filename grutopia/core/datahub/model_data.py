@@ -21,6 +21,7 @@ class ChainOfThoughtDataItem(BaseModel):
 
 
 class ChatControlData(BaseModel):
+    idx: Optional[int] = Field(-1, examples=[0, 1], description='index of this message in chat')
     type: str = Field(..., examples=['agent'], description='message(notification)|agent(response)|user(question)')
     name: Optional[str] = Field(None, examples=['Agent'], description='nickname')
     time: Optional[str] = Field(None, examples=['18:20'], description='time of the message')
@@ -84,6 +85,7 @@ class ModelData:
     def append_chat_control(cls, data: ChatControlData, task_name: str = 'default'):
         if task_name not in cls.data['chat_control_data']:
             cls.data['chat_control_data'][task_name] = []
+        data.idx = len(cls.data['chat_control_data'])
         cls.data['chat_control_data'][task_name].append(data.dict())
 
     @classmethod

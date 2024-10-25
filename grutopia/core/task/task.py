@@ -105,7 +105,9 @@ class BaseTask(OmniBaseTask, ABC):
         obs = {}
         for robot_name, robot in self.robots.items():
             try:
-                obs[robot_name] = robot.get_obs()
+                _obs = robot.get_obs()
+                if _obs:
+                    obs[robot_name] = _obs
             except Exception as e:
                 log.error(self.name)
                 log.error(e)

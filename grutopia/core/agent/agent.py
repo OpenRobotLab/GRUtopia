@@ -6,6 +6,7 @@ from typing import Dict
 
 from grutopia.core.config.agent import AgentConfig
 from grutopia.core.datahub import DataHub
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 from grutopia.core.util.chat import AgentChat
 
@@ -22,13 +23,14 @@ class BaseAgent(ABC):
     loop: Thread | None = None
     agent_step_loop = asyncio.new_event_loop()
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, extra: Dict):
+    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str,
+                 task_runtime: TaskRuntime):
         self.task_name: str = task_name
-        self.robot_name: str = robot_name
+        self.robot_name: str = robot_name + '_' + str(task_runtime.env.env_id)
         self.sync_mode: str = sync_mode
         self.agent_config: Dict = agent_config
         self._step_over: bool = True
-        self.extra: Dict = extra
+        self.task_runtime: TaskRuntime = task_runtime
         self.chat: AgentChat = AgentChat(self.task_name, self.robot_name)
 
     def get_observation(self) -> Dict:
@@ -125,10 +127,10 @@ class BaseAgent(ABC):
         return decorator
 
 
-def create_agent(config: AgentConfig, task_name: str, extra: Dict):
+def create_agent(config: AgentConfig, task_name: str, task_runtime: TaskRuntime):
     agent_inst: BaseAgent = BaseAgent.agents[config.type](task_name=task_name,
                                                           robot_name=config.robot_name,
                                                           sync_mode=config.sync_mode,
                                                           agent_config=config.agent_config,
-                                                          extra=extra)
+                                                          task_runtime=task_runtime)
     return agent_inst

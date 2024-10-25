@@ -32,8 +32,9 @@ class BaseRobot:
         """
         config = self.user_config
         robot_model = self.robot_model
-        scene.add(self.isaac_robot)
-        log.debug('self.isaac_robot: ' + str(self.isaac_robot))
+        if self.isaac_robot:
+            scene.add(self.isaac_robot)
+            log.debug('self.isaac_robot: ' + str(self.isaac_robot))
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 

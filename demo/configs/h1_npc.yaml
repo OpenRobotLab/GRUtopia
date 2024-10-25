@@ -12,11 +12,10 @@ agents:
         move_along_path:
           - (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)
 - type: NPCAgent
+  robot_name: npc
   agent_config:
-    name: "npc-0"
     model_name: gpt-4o
     openai_api_key: "YOUR_OPENAI_API_KEY"
-    scene_data_path: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json
 
 task_config:
   type: "SimpleAgentTask"
@@ -45,6 +44,11 @@ task_config:
       sensor_params:
       - name: "tp_camera"
         enable: false
+    - name: npc
+      type: NPC
+      prim_path: null
+    extra:
+      npc_scene_data_config: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json
   - scene_asset_path: GRUtopia/assets/scenes/demo_house/demo_house.usd
     scene_scale: [0.01, 0.01, 0.01]
 #   - scene_asset_path: GRUtopia/assets/scenes/grid.usd
@@ -66,3 +70,8 @@ task_config:
       sensor_params:
       - name: "tp_camera"
         enable: false
+    - name: npc
+      type: NPC
+      prim_path: null
+    extra:
+      npc_scene_data_config: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json

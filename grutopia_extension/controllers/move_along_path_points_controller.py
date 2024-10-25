@@ -35,7 +35,7 @@ class MoveAlongPathPointsController(BaseController):
                 rotation_speed: float = 8,
                 threshold: float = 0.02) -> ArticulationAction:
 
-        if self.path_points is not path_points:
+        if self.path_points != path_points:
             self.path_points = path_points
             self.path_point_idx = 0
             log.info('reset path points')
