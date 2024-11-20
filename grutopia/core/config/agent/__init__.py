@@ -14,5 +14,5 @@ class AgentConfig(BaseModel):
     # TODO: `robot_name` will be changed to a required parameter later.
     #       And consider adding a disembodied robot for NPCs.
     robot_name: Optional[Union[str, None]] = None
-    sync_mode: Optional[AgentModeEnum] = AgentModeEnum.async_mode
+    sync_mode: Optional[AgentModeEnum] = AgentModeEnum.sync_mode
     agent_config: Dict[str, Any] = {}

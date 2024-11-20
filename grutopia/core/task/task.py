@@ -128,9 +128,9 @@ class BaseTask(OmniBaseTask, ABC):
 
     def is_done(self) -> bool:
         """
-        Returns True of the task is done.
+        Returns True of the task is done. The result should be decided by the state of the task.
         """
-        return DataHub.get_episode_finished(self.runtime.name)
+        raise NotImplementedError
 
     def individual_reset(self):
         """

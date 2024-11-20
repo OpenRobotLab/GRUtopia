@@ -4,7 +4,9 @@ import yaml
 
 from grutopia.core.config import AgentConfig, EpisodeConfigFile, SimConfig, ValidatedConfig
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.task_runtime import TaskRuntimeManager
+from grutopia.core.runtime.distributed_task_runtime_manager import DistributedTaskRuntimeManager
+from grutopia.core.runtime.local_task_runtime_manager import LocalTaskRuntimeManager
+from grutopia.core.runtime.task_runtime import BaseTaskRuntimeManager, TaskRuntime, create_task_runtime_manager
 from grutopia.core.util import log
 
 
@@ -21,7 +23,7 @@ class SimulatorRuntime:
         self.config_file_path = config_path
         self.config = None
         self.simulator: Optional[SimConfig] = None
-        self.task_runtime_manager: Optional[TaskRuntimeManager] = None
+        self.task_runtime_manager: Optional[BaseTaskRuntimeManager] = None
         self.agents: Optional[List[AgentConfig]] = []
         self.init(self.get_config_from_file())
 
@@ -89,9 +91,15 @@ class SimulatorRuntime:
                              chat=str(config.datahub_config.chat),
                              remote=config.datahub_config.remote)
 
-        _trm = TaskRuntimeManager(config.task_config)
+        _trm = create_task_runtime_manager(config.task_config)
         self.simulator = config.simulator
         self.task_runtime_manager = _trm
         self.env_num = _trm.env_num
         self.agents = config.agents
         log.debug('SimulatorRuntime init done')
+
+    def active_runtime(self) -> Dict[str, TaskRuntime]:
+        """
+        Get active runtimes.
+        """
+        return self.task_runtime_manager.active_runtime()

@@ -1,12 +1,10 @@
-from copy import deepcopy
+from functools import wraps
 from typing import Any, Dict, List, Optional, Union
 
-import numpy as np
 from pydantic import BaseModel, Extra
 
 from grutopia.core.config import EpisodeConfig, Object, RobotUserConfig, TaskConfig
 from grutopia.core.config.metric import MetricUserConfig
-from grutopia.core.datahub import DataHub
 
 
 class Env(BaseModel):
@@ -70,21 +68,20 @@ def setup_offset_for_assets(episode_dict):
             o['position'] = [offset[idx] + pos for idx, pos in enumerate(o['position'])]
 
 
-class TaskRuntimeManager:
-    """
-    Task Runtime Manager
-
-    - Init task_runtime_manager at first time (with env_num)
-    - Gen runtime for task reload (reuse env_id, offset and so on).
+class BaseTaskRuntimeManager:
+    """Base class of task runtime manager.
 
     Attributes:
         env_num (int): Env number.
         task_name_prefix (str): Task name prefix.
         task_config (TaskConfig): Task config that user input.
         episodes (List[EpisodeConfig]): Rest episodes.
-        active_runtimes (str): Activated runtimes, format like => { env_id: TaskRuntime } .
+        active_runtimes (str): Activated runtimes, format like => { env_id: TaskRuntime }.
         offset_size (float): Offset size.
+        all_allocated (bool): true if all tasks are allocated.
     """
+
+    managers = {}
 
     def __init__(self, task_user_config: TaskConfig = None):
         """
@@ -99,7 +96,7 @@ class TaskRuntimeManager:
         self.active_runtimes: Dict[str, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()
-        self.init()
+        self.all_allocated = False
 
     def gen_runtime_template(self):
         task_template = self.task_config.model_dump()
@@ -110,66 +107,55 @@ class TaskRuntimeManager:
         del task_template['metrics_save_path']
         return task_template
 
-    def _pop_next_episode(self) -> Union[EpisodeConfig, None]:
+    def active_runtime(self) -> Dict[str, TaskRuntime]:
         """
-        Pop next episode from episodes' list.
-
-        Returns:
-            EpisodeConfig: next episode assets. To be assembled to TaskRuntime.
+        Get active runtimes.
         """
-        if self.episodes:
-            return self.episodes.pop()
-        return None
+        return self.active_runtimes
 
-    def get_next_task_runtime(self, last_env: Env) -> Union[TaskRuntime, None]:
+    def get_next_task_runtime(self, last_env: Optional[Env] = None) -> Union[TaskRuntime, None]:
         """
         Get next task runtime with env of last episode.
-        Clean last task runtime in active_runtimes.
-        Set new task runtime to active_runtimes.
-
         Args:
             last_env (Env):  Env of last episode.
 
         Returns:
             TaskRuntime: TaskRuntime for next task.
         """
-        next_episode = self._pop_next_episode()
-        if next_episode is None:
-            del self.active_runtimes[str(last_env.env_id)]
-            return None
+        raise NotImplementedError()
 
-        assets = next_episode.model_dump()
-        next_episode_dict = deepcopy(self.runtime_template)
-        next_episode_dict.update(**assets)
-
-        # Update task_idx
-        task_idx = DataHub.gen_task_idx()
-        next_episode_dict['name'] = f'{self.task_config.task_name_prefix}_{str(task_idx)}'
-        next_episode_dict['task_idx'] = task_idx
-        next_episode_dict['root_path'] = f'/World/env_{str(last_env.env_id)}'
-        next_episode_dict['env'] = last_env
-
-        setup_offset_for_assets(next_episode_dict)
-        task_runtime = TaskRuntime(**next_episode_dict)
-        if str(last_env.env_id) in self.active_runtimes:
-            del self.active_runtimes[str(last_env.env_id)]
-            self.active_runtimes[str(last_env.env_id)] = task_runtime
-        return task_runtime
-
-    def init(self):
+    def all_task_allocated(self) -> bool:
         """
-        Initialize of task_runtime_manager. (only run once)
-        Initialize the first batch of active_runtimes to be simulated simultaneously according to `env_num`.
-
-        Set init Env.
-            1. Set up env_id
-            2. Set up offset in isaac sim (2D tuple)
+        Return if all tasks are allocated
         """
-        _column_length = int(np.sqrt(self.env_num))
-        for env_id in range(self.env_num):
-            row = int(env_id // _column_length)
-            column = env_id % _column_length
-            offset = [row * self.offset_size, column * self.offset_size, 0]
-            new_env = {'env_id': env_id, 'offset': offset}
-            task_runtime = self.get_next_task_runtime(Env(**new_env))
-            self.active_runtimes[str(env_id)] = task_runtime
+        return self.all_allocated
+
+    @classmethod
+    def register(cls, name: str):
+        """Register a task runtime manager class with its name(decorator).
+
+        Args:
+            name(str): name of the task runtime manager class.
+        """
+
+        def decorator(manager_class):
+            cls.managers[name] = manager_class
+
+            @wraps(manager_class)
+            def wrapped_function(*args, **kwargs):
+                return manager_class(*args, **kwargs)
+
+            return wrapped_function
+
+        return decorator
+
+
+def create_task_runtime_manager(task_user_config: TaskConfig):
+    match task_user_config.operation_mode:
+        case 'local':
+            manager_type = 'LocalTaskRuntimeManager'
+        case 'distributed':
+            manager_type = 'DistributedTaskRuntimeManager'
+
+    inst: BaseTaskRuntimeManager = BaseTaskRuntimeManager.managers[manager_type](task_user_config)
+    return inst

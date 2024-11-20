@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Dict
+from typing import Any, Dict
 
 from grutopia.core.agent import BaseAgent
 from grutopia.core.runtime.task_runtime import TaskRuntime
@@ -19,10 +19,13 @@ class DummyAgent(BaseAgent):
         self.counter = 0
         log.debug(f'=============== agent_config: {agent_config} ===============')
 
-    def decision_making(self):
+    def decision_making(self, obs: Any) -> Any:
         time.sleep(float(random.randint(3, 5)))
         self.counter += 1
         log.info(f'Task_id: {self.task_name}, DummyAgent.counter: {self.counter}')
         if self.counter % 2 == 0:
             log.info(self.counter)
-            self.terminate()
+            return self.terminate()
+
+    def terminate(self) -> Any:
+        pass

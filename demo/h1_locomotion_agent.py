@@ -25,6 +25,7 @@ if is_in_container():
     webrtc = True
 
 env = Env(sim_runtime)
+env.vector_reset()
 
 import numpy as np
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
@@ -35,7 +36,7 @@ i = 0
 move_action = {'move_along_path': [path]}
 rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
 path_finished = False
-actions = {'h1': move_action}
+actions = {'h1_0': move_action}
 
 while env.simulation_app.is_running():
     i += 1

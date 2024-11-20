@@ -10,6 +10,7 @@ import_extensions()
 # import custom extensions here.
 
 env = Env(sim_runtime)
+env.vector_reset()
 
 while env.simulation_app.is_running():
     obs = env.step(actions={})

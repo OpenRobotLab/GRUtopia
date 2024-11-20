@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from grutopia.core.agent import BaseAgent
 from grutopia.core.datahub import DataHub
@@ -28,7 +28,8 @@ class NPCAgent(BaseAgent):
             raise e
         self.npc = NPC(cfg, task_runtime.extra)
 
-    def decision_making(self):
+    # TODO: Figure out a better way to implement this method.
+    def decision_making(self, obs: Any) -> Any:
         """
         This agent won't be terminated.
         """
