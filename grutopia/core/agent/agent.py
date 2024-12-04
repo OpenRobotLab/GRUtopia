@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from functools import wraps
 from threading import Thread
-from typing import Dict
+from typing import Any, Dict, Optional
 
 from grutopia.core.config.agent import AgentConfig
 from grutopia.core.datahub import DataHub
@@ -18,6 +18,7 @@ def start_loop(loop):
 
 class BaseAgent(ABC):
     """Base class for all agents."""
+
     agents = {}
     # async status
     loop: Thread | None = None
@@ -33,51 +34,71 @@ class BaseAgent(ABC):
         self.task_runtime: TaskRuntime = task_runtime
         self.chat: AgentChat = AgentChat(self.task_name, self.robot_name)
 
-    def get_observation(self) -> Dict:
+    def _get_observation(self) -> Any:
         """
         Get observation from Datahub.
         Called in self.decision_making by users.
+        This method only applies to async mode.
 
         Returns:
-            Dict: observation dict.
+            Any: observation data.
         """
+
+        # TODO: make datahub more generic
         if self.robot_name:
             return DataHub.get_obs_by_task_name_and_robot_name(self.task_name, self.robot_name)
         else:
             return DataHub.get_obs_by_task_name(self.task_name)
 
-    @staticmethod
-    def set_actions(action_dict: Dict):
+    def _set_actions(actions: Any):
         """
         Set actions for this task (for all robots) to datahub.
         Called in self.decision_making by users.
+        This method only applies to async mode.
 
         Args:
-            action_dict (Dict): Dict with actions
+            action (Any): action data
         """
-        DataHub.set_actions(action_dict)
+        # TODO: make datahub more generic
+        DataHub.set_actions(actions)
 
-    def terminate(self):
+    def terminate(self) -> Any:
         """
-        Set task finish for task with self.task_name to Datahub.
+        Set task finish by sending termination action.
         Called in self.decision_making by users.
-        """
-        log.info(f'Task {self.task_name} finished')
-        DataHub.set_episode_finished(self.task_name)
 
-    @abstractmethod
-    def decision_making(self):
-        """
-        Make decision with `self.observation` and set action to `self.`
+        Returns:
+        Any: The termination action data.
         """
         raise NotImplementedError
 
-    def step(self):
+    @abstractmethod
+    def decision_making(self, obs: Any) -> Any:
+        """
+        Make decision with the given observation and return action
+
+        Args:
+            obs (Any): The observation data.
+
+        Returns:
+            Any: The action data.
+        """
+        raise NotImplementedError
+
+    def step(self, obs: Optional[Any] = None) -> Optional[Any]:
         """
         Get observation, make decision, set actions.
+        For sync mode, the action will be returned directly.
+        For async mode, the action will be set to datahub.
+
+        Args:
+            obs (Optional[Any]): The observation data used for decision making.
+
+        Returns:
+            Optional[Any]: The action to be taken.
         """
         if self.sync_mode == 'sync':
-            self.decision_making()
+            return self.decision_making(obs)
         elif self.sync_mode == 'async':
             self._step_async()
 
@@ -85,7 +106,8 @@ class BaseAgent(ABC):
         """
         Get observation, make decision, set action. Async.
         """
-        self.decision_making()
+        obs = self._get_observation()
+        self._set_actions(self.decision_making(obs))
         self._step_over = True
 
     def _step_async(self):
@@ -128,9 +150,11 @@ class BaseAgent(ABC):
 
 
 def create_agent(config: AgentConfig, task_name: str, task_runtime: TaskRuntime):
-    agent_inst: BaseAgent = BaseAgent.agents[config.type](task_name=task_name,
-                                                          robot_name=config.robot_name,
-                                                          sync_mode=config.sync_mode,
-                                                          agent_config=config.agent_config,
-                                                          task_runtime=task_runtime)
+    agent_inst: BaseAgent = BaseAgent.agents[config.type](
+        task_name=task_name,
+        robot_name=config.robot_name,
+        sync_mode=config.sync_mode,
+        agent_config=config.agent_config,
+        task_runtime=task_runtime,
+    )
     return agent_inst

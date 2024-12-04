@@ -11,6 +11,7 @@ agents:
 #    openai_api_key: "YOUR_OPENAI_API_KEY"
 #    scene_data_path: GRUtopia/assets/scenes/demo_house/object_dict_with_caption.json
 - type: DummyAgent
+  robot_name: h1
   agent_config:
     test: true
 

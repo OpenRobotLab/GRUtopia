@@ -33,6 +33,13 @@ class SimConfig(BaseModel):
     rendering_interval: Optional[int] = None
 
 
+class DistributionConfig(BaseModel):
+    """
+    Config of distribution, only for distributed operation mode
+    """
+    worker_num: Optional[int] = 1
+
+
 class ValidatedConfig(BaseModel):
     """
     Config validator for input file (yaml -> dict).

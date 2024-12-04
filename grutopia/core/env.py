@@ -1,13 +1,14 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.runtime.task_runtime import TaskRuntime
 
 
 class Env:
     """
-    Env base class. All envs should inherit from this class(or subclass).
+    Vector Env
     ----------------------------------------------------------------------
     """
 
@@ -38,7 +39,7 @@ class Env:
 
     @property
     def active_runtimes(self):
-        return self.runtime.task_runtime_manager.active_runtimes
+        return self.runtime.active_runtime()
 
     def get_dt(self):
         """
@@ -48,109 +49,51 @@ class Env:
         """
         return self._runner.dt
 
-    def step(self, actions: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    def step(self, actions: Dict[str, Dict[str, Any]]) -> Tuple[Dict, Dict[str, bool]]:
         """
         run step with given action(with isaac step)
-
-
-        format of input actions :
-        -------------------------
-
-        .. code-block::
-
-            {
-                "task_1_name":
-                {
-                    "robot_1": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                    "robot_2": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                },
-                "task_2_name":
-                {
-                    "robot_1": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                    "robot_2": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                },
-            }
-
-
-        format of actions send to runner:
-        ---------------------------------
-
-        .. code-block::
-
-
-            {
-                "task_1_name":
-                {
-                    "robot_1_1": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                    "robot_2_1": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                },
-                "task_2_name":
-                {
-                    "robot_1_2": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                    "robot_2_2": {
-                        "controller_1": [1, 2, 3],
-                        "controller_2": [1, 2, 3]
-                    },
-                },
-            }
-
-        Intro:
-        ------
-
-        Because robots' name in all tasks need to be unique.
-        And the suffix of robot_name is `env_id`.
 
         Args:
             actions (Dict[str, Dict[str, Any]]): action(with isaac step)
 
         Returns:
-            Dict[str, Dict[str, Any]]: observations(with isaac step)
+            Tuple[Dict, Dict[str, bool]]: A tuple of two values. The first is a dict of observations.
+            The second is a dict that maps task name to termination status.
         """
-        _actions = {}
-        for task_name, action in actions.items():
-            _action = {}
-            env_id = self.runner.task_name_to_env_map[task_name]
-            for k, v in action.items():
-                _action[f'{k}_{env_id}'] = v
-            _actions[task_name] = _action
-        action_after_reshape = {
-            self.active_runtimes[self.runner.task_name_to_env_map[task_name]].name: action
-            for task_name, action in _actions.items()
-            if self.runner.task_name_to_env_map[task_name] in self.runtime.task_runtime_manager.active_runtimes
-        }
+        return self._runner.step(actions)
 
-        observations, finish = self._runner.step(action_after_reshape)
+    def reset(self, task: Optional[str] = None) -> Tuple[Dict, TaskRuntime]:
+        """
+        Reset the task.
 
-        if finish:
-            self._simulation_runtime.simulation_app.close()
+        Args:
+            task (str): A task name to reset. if task is None, it always means the reset is invoked for the first time
+            before agents invoke step(). The function will return the initial obs from the world.
 
-        return observations
+        Returns:
+            Tuple[Dict, TaskRuntime]: A tuple of two values. The first is a dict of observations.  The second is a
+                TaskRuntime object representing the new task runtime.
+        """
+        return self._runner.reset(task)
 
-    def reset(self):
-        """reset the environment(use isaac word reset)"""
-        self._runner.reset()
-        return self.get_observations(), {}
+    def vector_reset(self) -> Tuple[Dict, List[TaskRuntime]]:
+        """
+        Reset all sub envs. It is always invoked for initialization before stepping through the world
+
+        Returns:
+            Tuple[Dict, TaskRuntime]: A tuple of two values. The first is a dict of observations. The second is a list of TaskRuntime.
+        """
+
+        obs = {}
+        task_runtime_list = []
+
+        for _ in range(self.env_num):
+            obs, new_runtime = self.reset()
+            if new_runtime is not None:
+                task_runtime_list.append(new_runtime)
+
+        self.runner.warm_up()
+        return obs, task_runtime_list
 
     def get_observations(self) -> Dict[str, Dict[str, Any]]:
         """
@@ -172,9 +115,13 @@ class Env:
     @property
     def simulation_runtime(self):
         """config of simulation environment"""
-        return self._simulation_runtime
+        return self._simulation_runtime.active_runtime()
 
     @property
     def simulation_app(self):
         """simulation app instance"""
         return self._simulation_runtime.simulation_app
+
+    def finished(self) -> bool:
+        """check if all tasks are finished"""
+        return len(self._runner.current_tasks) == 0

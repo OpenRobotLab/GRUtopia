@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Extra
 
@@ -10,6 +10,7 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     """
     Task config that user input.
     """
+
     type: str
     task_name_prefix: str
     env_num: Optional[int] = 1
@@ -31,3 +32,9 @@ class TaskConfig(BaseModel, extra=Extra.allow):
 
     # episode
     episodes: Union[List[EpisodeConfig], str]
+
+    # Operation_mode is used to specify the execution environment for the task.
+    # It accepts one of the following values:
+    # - `local`: Indicates that the task will be executed on a single compute node.
+    # - `distributed`: Indicates that the task will be executed across multiple compute nodes.
+    operation_mode: Literal['local', 'distributed'] = 'local'

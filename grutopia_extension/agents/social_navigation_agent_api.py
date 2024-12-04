@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from grutopia.core.agent import BaseAgent
 from grutopia.core.runtime.task_runtime import TaskRuntime
@@ -20,6 +20,6 @@ class SocialNavigationAgent(BaseAgent):
         if 'xxx' not in agent_config:
             raise KeyError('xxx not in agent_config. Please check your runtime.')
 
-    def decision_making(self):
+    def decision_making(self, obs: Any) -> Any:
         # TODO Add logic here.
         pass

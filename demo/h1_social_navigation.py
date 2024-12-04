@@ -11,6 +11,7 @@ import_extensions()
 # import custom extensions here.
 
 env = Env(sim_runtime)
+env.vector_reset()
 
 import numpy as np
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
@@ -21,17 +22,21 @@ i = 0
 move_action = {'move_along_path': [path]}
 rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
 path_finished = False
-actions = {'h1': move_action}
+actions = {'h1_0': move_action}
 
-while env.simulation_app.is_running():
+while env.simulation_app.is_running() and not env.finished():
     i += 1
     env_actions = {}
-    for task_runtime in env.active_runtimes.values():
+    for task_runtime in sim_runtime.active_runtime().values():
         env_actions[task_runtime.name] = actions
 
-    obs = env.step(actions=env_actions)
+    _, terminated_status = env.step(actions=env_actions)
+
+    for task_name, terminated in terminated_status.items():
+        if terminated:
+            env.reset(task_name)
 
     if i % 1000 == 0:
         print(i)
 
-env.simulation_app.close()
+env.close()

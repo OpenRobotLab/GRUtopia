@@ -19,6 +19,8 @@ import_extensions()
 # import custom extensions here.
 
 env = Env(sim_runtime)
+obs, _ = env.vector_reset()
+print(f'========INIT OBS{obs}=============')
 
 import numpy as np
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
@@ -31,7 +33,7 @@ rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
 path_finished = False
 recover_action = {'recover': []}
 keyboard_action = {'move_with_keyboard': []}
-actions = {'h1': move_action}
+actions = {'h1_0': move_action}
 
 while env.simulation_app.is_running():
     i += 1
@@ -39,14 +41,14 @@ while env.simulation_app.is_running():
     for task_runtime in env.active_runtimes.values():
         env_actions[task_runtime.name] = actions
 
-    obs = env.step(actions=env_actions)
+    env.step(actions=env_actions)
 
     if i % 1000 == 0:
         print(i)
 
     if i % 3000 == 0:
-        actions['h1'] = recover_action
+        actions['h1_0'] = recover_action
     if (i - 100) % 3000 == 0:  # recover for 100 steps
-        actions['h1'] = keyboard_action
+        actions['h1_0'] = keyboard_action
 
 env.simulation_app.close()

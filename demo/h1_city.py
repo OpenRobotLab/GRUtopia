@@ -17,9 +17,11 @@ import_extensions()
 # import custom extensions here.
 
 env = Env(sim_runtime)
+obs, _ = env.vector_reset()
+print(f'========INIT OBS{obs}=============')
 
 i = 0
-actions = {'h1': {'move_with_keyboard': []}}
+actions = {'h1_0': {'move_with_keyboard': []}}
 
 while env.simulation_app.is_running():
     i += 1
@@ -27,7 +29,7 @@ while env.simulation_app.is_running():
     for task_runtime in env.active_runtimes.values():
         env_actions[task_runtime.name] = actions
 
-    obs = env.step(actions=env_actions)
+    env.step(actions=env_actions)
 
     if i % 100 == 0:
         print(i)
