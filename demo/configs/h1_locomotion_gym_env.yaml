@@ -1,0 +1,59 @@
+simulator:
+  physics_dt: 1/240
+  rendering_dt: 1/240
+
+agents:
+- type: DummyAgent
+  robot_name: h1
+
+task_config:
+  type: "SocialBenchmarkTask"
+  task_name_prefix: "h1_locomotion"
+  env_num: 1
+  offset_size: 10
+  operation_mode: "local"
+  metrics:
+  - type: SimpleMetric
+    metric_config: # custom metric config
+      robot_name: h1
+  metrics_save_path: console
+  task_settings:
+    max_step: 3
+  episodes:
+  - scene_asset_path: GRUtopia/assets/scenes/empty.usd
+    scene_scale: [0.25, 0.25, 0.25]
+    robots:
+      - name: h1
+        prim_path: "/World/h1"
+        type: "HumanoidRobot"
+        position: [ .0, .0, 1.05 ]
+        scale: [ 1, 1, 1 ]
+        controller_params:
+          - name: "move_by_speed"
+          - name: "joint_controller"
+          - name: "move_to_point"
+          - name: "move_along_path"
+          - name: "rotate"
+        sensor_params:
+          - name: "camera"
+            enable: True
+          - name: "tp_camera"
+            enable: False
+  - scene_asset_path: GRUtopia/assets/scenes/empty.usd
+    robots:
+      - name: h1
+        prim_path: "/World/h1"
+        type: "HumanoidRobot"
+        position: [ .0, .0, 1.05 ]
+        scale: [ 1, 1, 1 ]
+        controller_params:
+          - name: "move_by_speed"
+          - name: "joint_controller"
+          - name: "move_to_point"
+          - name: "move_along_path"
+          - name: "rotate"
+        sensor_params:
+          - name: "camera"
+            enable: True
+          - name: "tp_camera"
+            enable: False

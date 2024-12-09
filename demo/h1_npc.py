@@ -1,5 +1,5 @@
 from grutopia.core.datahub import DataHub
-from grutopia.core.env import Env
+from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia_extension import import_extensions
 
@@ -10,19 +10,17 @@ import_extensions()
 # import custom extensions here.
 
 env = Env(sim_runtime)
-env.vector_reset()
+obs, _ = env.reset()
+print(f'========INIT OBS{obs}=============')
 
-actions = {'h1_0': {'move_with_keyboard': []}}
+keyboard_action = {'move_with_keyboard': []}
 i = 0
 while env.simulation_app.is_running():
     i += 1
-    env_actions = {}
-    for task_runtime in env.active_runtimes.values():
-        env_actions[task_runtime.name] = actions
-    env.step(actions=env_actions)
+    env.step(action=keyboard_action)
 
     if i % 5000 == 0:
         print(i)
 
 DataHub.clear()
-env.simulation_app.close()
+env.close()
