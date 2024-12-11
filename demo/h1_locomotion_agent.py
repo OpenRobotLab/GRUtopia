@@ -1,4 +1,4 @@
-from grutopia.core.env import Env
+from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util.container import is_in_container
 from grutopia_extension import import_extensions
@@ -25,7 +25,8 @@ if is_in_container():
     webrtc = True
 
 env = Env(sim_runtime)
-env.vector_reset()
+obs, info = env.reset()
+print(f'========INIT OBS{obs}=============')
 
 import numpy as np
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
@@ -35,16 +36,10 @@ i = 0
 
 move_action = {'move_along_path': [path]}
 rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
-path_finished = False
-actions = {'h1_0': move_action}
 
 while env.simulation_app.is_running():
     i += 1
-    env_actions = {}
-    for task_runtime in env.active_runtimes.values():
-        env_actions[task_runtime.name] = actions
-
-    obs = env.step(actions=env_actions)
+    env.step(action=move_action)
 
     if i % 1000 == 0:
         print(i)

@@ -9,6 +9,7 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 from grutopia.core.util.chat import AgentChat
+from grutopia.core.util.space import get_action_space_by_task, get_observation_space_by_task
 
 
 def start_loop(loop):
@@ -33,6 +34,8 @@ class BaseAgent(ABC):
         self._step_over: bool = True
         self.task_runtime: TaskRuntime = task_runtime
         self.chat: AgentChat = AgentChat(self.task_name, self.robot_name)
+        self.action_space = get_action_space_by_task(self.task_runtime.type)
+        self.observation_space = get_observation_space_by_task(self.task_runtime.type)
 
     def _get_observation(self) -> Any:
         """
