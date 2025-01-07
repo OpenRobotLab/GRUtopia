@@ -42,17 +42,15 @@ class NPC:
 
         """
         if obs is None:
-            return None
-        if not unread_chat_list:
-            return None
+            return []
         response_list = []
         for message in unread_chat_list:
             if npc_name in message['at']:
-                robot_obs = obs[message['robot_name']]
+                robot_obs = obs[message['name']]
                 position = robot_obs.get('position', None)
                 orientation = robot_obs.get('orientation', None)
 
-                bbox_label_data = robot_obs['camera']['frame']['bounding_box_2d_tight']
+                bbox_label_data = robot_obs['camera']['bounding_box_2d_tight']
                 bbox = bbox_label_data['data']
                 idToLabels = bbox_label_data['info']['idToLabels']
                 # for message in user_messages:

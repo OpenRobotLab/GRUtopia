@@ -45,6 +45,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     objects_root_path: Optional[str] = '/objects'
 
     # task extra info
+    loop: Optional[bool] = False
     extra: Optional[Dict[str, Any]] = {}
 
 
@@ -97,6 +98,7 @@ class BaseTaskRuntimeManager:
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()
         self.all_allocated = False
+        self.loop = task_user_config.loop
 
     def gen_runtime_template(self):
         task_template = self.task_config.model_dump()
@@ -151,11 +153,10 @@ class BaseTaskRuntimeManager:
 
 
 def create_task_runtime_manager(task_user_config: TaskConfig):
-    match task_user_config.operation_mode:
-        case 'local':
-            manager_type = 'LocalTaskRuntimeManager'
-        case 'distributed':
-            manager_type = 'DistributedTaskRuntimeManager'
+    if task_user_config.operation_mode == 'local':
+        manager_type = 'LocalTaskRuntimeManager'
+    elif task_user_config.operation_mode == 'distributed':
+        manager_type = 'DistributedTaskRuntimeManager'
 
     inst: BaseTaskRuntimeManager = BaseTaskRuntimeManager.managers[manager_type](task_user_config)
     return inst

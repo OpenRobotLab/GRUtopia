@@ -33,6 +33,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         super().__init__(task_user_config=task_user_config)
         self._current_env_id = 0
         self._column_length = int(np.sqrt(self.env_num))
+        self._loop = False
 
     def _pop_next_episode(self) -> Union[EpisodeConfig, None]:
         """
@@ -60,6 +61,10 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         Raises:
             ValueError: If too many sub envs have been created.
         """
+        if self._loop:
+            print('===================== loop =====================')
+            return [i for i in self.active_runtimes.values()][0]
+
         if last_env is None and self._current_env_id >= self.env_num:
             raise ValueError('Too many sub envs have been created.')
 
@@ -90,6 +95,10 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         if str(last_env.env_id) in self.active_runtimes:
             del self.active_runtimes[str(last_env.env_id)]
         self.active_runtimes[str(last_env.env_id)] = task_runtime
+
+        # Change _loop param after the first reset
+        # TODO: Make it more elegant.
+        self._loop = self.loop
 
         return task_runtime
 

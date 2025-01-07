@@ -8,7 +8,6 @@ from omni.isaac.core.scenes.scene import Scene
 from omni.isaac.core.tasks import BaseTask as OmniBaseTask
 from omni.isaac.core.utils.prims import create_prim
 
-from grutopia.core.datahub import DataHub
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
@@ -38,6 +37,7 @@ class BaseTask(OmniBaseTask, ABC):
         self.metrics: Dict[str, BaseMetric] = {}
         self.steps = 0
         self.work = True
+        self.loaded = False
 
         for metric_config in runtime.metrics:
             self.metrics[metric_config.type] = create_metric(metric_config, self.runtime)
@@ -64,6 +64,7 @@ class BaseTask(OmniBaseTask, ABC):
 
         log.info(self.robots)
         log.info(self.objects)
+        self.loaded = True
 
     def set_up_scene(self, scene: Scene) -> None:
         """
@@ -74,24 +75,8 @@ class BaseTask(OmniBaseTask, ABC):
             scene (Scene): [description]
         """
         self._scene = scene
-        self.load()
-
-    def clean_scene(self):
-        """
-        Clean scene when reload
-        """
-        for obj in self.objects.keys():
-            # Using try here because we want to ignore all exceptions
-            try:
-                self.scene.remove_object(obj)
-            finally:
-                log.info('objs cleaned.')
-        for robot in self.robots.keys():
-            # Using try here because we want to ignore all exceptions
-            try:
-                self.scene.remove_object(robot)
-            finally:
-                log.info('robots cleaned.')
+        if not self.loaded:
+            self.load()
 
     def get_observations(self) -> Dict[str, Any]:
         """
@@ -156,7 +141,25 @@ class BaseTask(OmniBaseTask, ABC):
         return
 
     def cleanup(self) -> None:
-        pass
+        """Called before calling a reset() on the world to removed temporary objects that were added during
+        simulation for instance.
+        """
+        for obj in self.objects.keys():
+            # Using try here because we want to ignore all exceptions
+            try:
+                self.scene.remove_object(obj)
+            finally:
+                log.info('objs cleaned.')
+        for robot_name, robot in self.robots.items():
+            # Using try here because we want to ignore all exceptions
+            for controller in robot.controllers.values():
+                controller.cleanup()
+            for sensor in robot.sensors.values():
+                sensor.cleanup()
+            try:
+                self.scene.remove_object(robot_name)
+            finally:
+                log.info('robots cleaned.')
 
     @classmethod
     def register(cls, name: str):

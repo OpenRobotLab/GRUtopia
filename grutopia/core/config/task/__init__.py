@@ -38,3 +38,6 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     # - `local`: Indicates that the task will be executed on a single compute node.
     # - `distributed`: Indicates that the task will be executed across multiple compute nodes.
     operation_mode: Literal['local', 'distributed'] = 'local'
+    # loop: Keep repeating the first episode.
+    # (reset means next_episode)
+    loop: Optional[bool] = False

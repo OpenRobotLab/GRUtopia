@@ -53,6 +53,20 @@ class BaseAgent(ABC):
         else:
             return DataHub.get_obs_by_task_name(self.task_name)
 
+    def set_observation(self, obs: Dict[str, Dict[str, Any]]) -> Dict:
+        """
+        Set observation in Datahub.
+        Called in self.decision_making by users.
+
+        Returns:
+            Dict: observation dict.
+        """
+        if self.robot_name:
+            return DataHub.set_obs_by_task_name_and_robot_name(self.task_name, self.robot_name, obs=obs)
+        else:
+            return DataHub.set_obs_by_task_name(self.task_name, obs)
+
+    @staticmethod
     def _set_actions(actions: Any):
         """
         Set actions for this task (for all robots) to datahub.

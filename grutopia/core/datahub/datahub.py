@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from grutopia.core.datahub.isaac_data import ActionData, IsaacData
 from grutopia.core.datahub.model_data import ChainOfThoughtDataItem, ChatControlData, LogData, ModelData
-from grutopia.core.util import AsyncRequest
+from grutopia.core.util import log
 
 
 class DataHub:
@@ -35,19 +35,6 @@ class DataHub:
     sim_remote = False
     chat_remote = True
     remote_address = ''
-    WebBEUrl = ''
-    GetAllObsUrl = ''
-    SetObsUrl = ''
-    GetObsByTaskNameUrl = ''
-    SetActionsUrl = ''
-    GetActionByTaskNameUrl = ''
-    GenTaskIdUrl = ''
-    SendChatControlUrl = ''
-    SendCoTUrl = ''
-    SendLogDataUrl = ''
-    GetChatControlUrl = ''
-    GetLogDataUrl = ''
-    ClearUrl = ''
 
     @classmethod
     def datahub_init(
@@ -56,32 +43,10 @@ class DataHub:
         chat: str = 'remote',
         remote: str = '127.0.0.1:9000',
     ):
-        cls.sim_remote = sim == 'remote'
-        cls.chat_remote = chat == 'remote'
+        log.info('============== Datahub init ===============')
+        cls.sim_remote = False
+        cls.chat_remote = False
         cls.remote_address = remote
-        cls.set_attr()
-
-    @classmethod
-    def set_attr(cls) -> None:
-        # BE url path init
-        cls.WebBEUrl = f'http://{cls.remote_address}'  # noqa
-        cls.GetAllObsUrl = cls.WebBEUrl + '/api/stream/get_all_obs'
-
-        cls.SetObsUrl = cls.WebBEUrl + '/api/isaac/set_obs/'
-        cls.GetObsByTaskNameUrl = cls.WebBEUrl + '/api/isaac/get_obs_by_id/'
-        cls.GetObsByTaskNameAndRobotNameUrl = cls.WebBEUrl + '/api/isaac/get_obs_by_task_name_and_robot_name/'
-        cls.SetActionsUrl = cls.WebBEUrl + '/api/isaac/set_actions/'
-        cls.GetActionByTaskNameUrl = cls.WebBEUrl + '/api/isaac/get_action_by_id/'
-
-        cls.GenTaskIdxUrl = cls.WebBEUrl + '/api/isaac/gen_task_idx'
-
-        cls.SendChatControlUrl = cls.WebBEUrl + '/api/grutopia/append_chat_control_data'
-        cls.SendCoTUrl = cls.WebBEUrl + '/api/grutopia/append_chain_of_thought_data'
-        cls.SendLogDataUrl = cls.WebBEUrl + '/api/grutopia/append_log_data'
-        cls.GetChatControlUrl = cls.WebBEUrl + '/api/grutopia/getChatList'
-        cls.GetLogDataUrl = cls.WebBEUrl + '/api/grutopia/getloglist'
-
-        cls.ClearUrl = cls.WebBEUrl + '/api/grutopia/clear'
 
     def __init__(self):
         pass
@@ -101,6 +66,19 @@ class DataHub:
             raise NotImplementedError('Remote get actions not implemented.')
         else:
             return IsaacData.get_action_by_task_name(task_name)
+
+    @classmethod
+    def get_obs_data(cls) -> Dict:
+        """
+        Set observation
+
+        Args:
+            obs (Dict[str, Dict[str, Any]]): Observation data with task_name as key.
+        """
+        if cls.sim_remote:
+            raise NotImplementedError('Remote get observation data not implemented.')
+        else:
+            return IsaacData.get_obs()
 
     @classmethod
     def get_obs_by_task_name(cls, task_name: str) -> Dict:
@@ -147,6 +125,36 @@ class DataHub:
             raise NotImplementedError('Remote set observation data not implemented.')
         else:
             IsaacData.set_obs_data(obs)
+
+    @classmethod
+    def set_obs_by_task_name(cls, task_name: str, obs: Dict[str, Dict[str, Any]]) -> None:
+        """
+        Set observation by task name
+
+        Args:
+            task_name (str): Task name
+            obs (Dict[str, Dict[str, Any]]): Observation data with task_name as key.
+        """
+        if cls.sim_remote:
+            raise NotImplementedError('Remote set observation data not implemented.')
+        else:
+            return IsaacData.set_obs_data_by_task_name(task_name, obs)
+
+    @classmethod
+    def set_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str,
+                                                                                                      Any]]) -> None:
+        """
+        Set observation by task name and robot name
+
+        Args:
+            robot_name (str): robot name
+            task_name (str): Task name
+            obs (Dict[str, Dict[str, Any]]): Observation data with task_name as key.
+        """
+        if cls.sim_remote:
+            raise NotImplementedError('Remote set observation data not implemented.')
+        else:
+            return IsaacData.set_obs_by_task_name_and_robot_name(task_name, robot_name, obs)
 
     @classmethod
     def set_actions(cls, actions: Dict[str, ActionData]):
@@ -332,6 +340,6 @@ class DataHub:
         Clear all data in webui.
         """
         if cls.chat_remote:
-            AsyncRequest.post(uuid, cls.ClearUrl, None)
+            raise NotImplementedError('Remote clear chat data not implemented.')
         else:
             ModelData.clear()

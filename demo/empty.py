@@ -1,4 +1,4 @@
-from grutopia.core.env import Env
+from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia_extension import import_extensions
 

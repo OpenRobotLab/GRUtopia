@@ -1,11 +1,11 @@
 FROM nvcr.io/nvidia/isaac-sim:4.0.0
 
-RUN apt update
-RUN apt install -y nginx vim git
+RUN apt-get update
+RUN apt-get install -y --allow-downgrades perl-base=5.34.0-3ubuntu1 netbase
+RUN apt-get install -y nginx vim git
 
 COPY ./webui/fe/html /usr/share/nginx/html
 RUN chmod -R 755 /usr/share/nginx/html
-
 COPY ./webui/fe/isaac/index.html /isaac-sim/extscache/omni.services.streamclient.webrtc-1.3.8/web/index.html
 COPY . /isaac-sim/GRUtopia
 WORKDIR /isaac-sim/GRUtopia
@@ -24,7 +24,5 @@ RUN bash -c "cd ../ && \
     echo ' . /isaac-sim/python.env.init' >> /root/.bashrc && \
     echo 'set +e' >> /root/.bashrc && \
     echo 'export MDL_SYSTEM_PATH=/isaac-sim/materials/' >> /root/.bashrc"
-
 WORKDIR /isaac-sim
-
 ENTRYPOINT ["/bin/bash"]

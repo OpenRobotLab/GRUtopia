@@ -1,7 +1,6 @@
 from queue import Queue
 from typing import Dict, List, Literal, Tuple
 
-import httpx
 import numpy as np
 
 from grutopia.core.util import log
@@ -17,17 +16,30 @@ class LLMCaller:
         max_interaction_turn: int,
         model_name: str,
         openai_api_key: str,
-        api_base_url: str,
+        azure_endpoint: str = None,
+        use_azure: bool = True,
     ) -> None:
+        try:
+            from openai import AzureOpenAI, OpenAI
+        except ModuleNotFoundError:
+            log.error('ModuleNotFoundError: No module named \'openai\'. Please install it first.')
+            return
+
         self.model_name = model_name
         self.request_queue = Queue()
         self.response_queues = Queue()
         self.env = Env(scene_data_path)
         self.system_message = system_message
         self.max_turn = max_interaction_turn
-        self.header = {'Authorization': f'Bearer {openai_api_key}'}
-        self.api_base_url = api_base_url
         self.history_messages = []
+        with open(openai_api_key, 'r', encoding='utf-8') as file:
+            openai_api_key = file.read().strip()
+        try:
+            self.llm = AzureOpenAI(api_key=openai_api_key,
+                                   api_version='2024-04-01-preview',
+                                   azure_endpoint=azure_endpoint) if use_azure else OpenAI(api_key=openai_api_key)
+        except Exception as e:
+            log.error(f'Failed to initialize OpenAI: {e}')
 
     def _construct_init_messages(self, question: str) -> List[dict]:
         messages = [{
@@ -78,16 +90,18 @@ class LLMCaller:
         messages = self._construct_init_messages(question)
         for _ in range(self.max_turn):
             response = ''
-            payload = {'model': self.model_name, 'messages': messages}
             try:
-                response = httpx.post(self.api_base_url, headers=self.header, json=payload).json()
-                message = response['choices'][0]['message']
+                response = self.llm.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
+                )
+                message = dict(response.choices[0].message)
             except KeyError:
                 log.info(f'Got an unexpected result when calling openai api: {response}')
                 return Message(
                     **{
                         'message': 'Got an unexpected result when calling openai api.',
-                        'at': question_dict['name'],
+                        'at': [question_dict['name']],
                         'parent_idx': question_dict['idx'],
                         'role': 'agent'
                     })
@@ -95,7 +109,7 @@ class LLMCaller:
                 return Message(
                     **{
                         'message': f'Got an exception when calling openai api: {e}',
-                        'at': question_dict['name'],
+                        'at': [question_dict['name']],
                         'parent_idx': question_dict['idx'],
                         'role': 'agent'
                     })
@@ -117,7 +131,7 @@ class LLMCaller:
                 }])
                 return Message(**{
                     'message': result,
-                    'at': question_dict['name'],
+                    'at': [question_dict['name']],
                     'parent_idx': question_dict['idx'],
                     'role': 'agent'
                 })
@@ -126,7 +140,7 @@ class LLMCaller:
         return Message(
             **{
                 'message': 'Sorry, I cannot answer this question.',
-                'at': question_dict['name'],
+                'at': [question_dict['name']],
                 'parent_idx': question_dict['idx'],
                 'role': 'agent'
             })
@@ -184,4 +198,11 @@ def run_llm_caller(caller: LLMCaller):
             caller.response_queues.put(response)
         except Exception as e:
             log.error(f'Exception occurred in llm infer when process prompt={prompt}: {e}')
-            caller.response_queues.put('Exception occurred, please check the log.')
+            caller.response_queues.put(
+                Message(
+                    **{
+                        'message': 'Exception occurred, please check the log.',
+                        'at': [prompt['name']],
+                        'parent_idx': prompt['idx'],
+                        'role': 'agent'
+                    }))

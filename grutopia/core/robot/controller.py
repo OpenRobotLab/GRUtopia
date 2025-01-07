@@ -92,6 +92,12 @@ class BaseController(Base, ABC):
     def robot(self, value):
         self._robot = value
 
+    def cleanup(self):
+        """
+        Operations that need to be cleaned up before switching scenes (or resetting)
+        """
+        pass
+
     def get_joint_subset(self) -> ArticulationSubset:
         """Get the joint subset controlled by the controller.
 

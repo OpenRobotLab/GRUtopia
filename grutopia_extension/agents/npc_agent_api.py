@@ -14,7 +14,7 @@ class NPCAgent(BaseAgent):
     """
     NPC Agent.
 
-    This agent won't terminated.
+    This agent won't be terminated.
     """
 
     def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str,

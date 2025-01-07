@@ -26,6 +26,6 @@ task_config:
           - name: "move_with_keyboard"
         sensor_params:
           - name: "camera"
-            enable: False
+            enable: True
           - name: "tp_camera"
             enable: False

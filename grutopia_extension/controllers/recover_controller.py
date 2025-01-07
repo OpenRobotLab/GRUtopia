@@ -23,18 +23,22 @@ class RecoverController(BaseController):
         self.target_position = None
         self.num_joints = None
 
-    def forward(self) -> ArticulationAction:
+    def forward(
+        self,
+        target_position: List | np.ndarray,
+        target_orientation: List | np.ndarray = np.array([1.0, 0.0, 0.0, 0.0])
+    ) -> ArticulationAction:
         if self.num_joints is None:
             self.num_joints = self.get_joint_subset().num_joints
         current_position = self.robot.get_world_pose()[0]
-        error = 1.5  # a big enough default value.
-        if self.target_position is not None:
-            error = np.linalg.norm(current_position - self.target_position)
-        if error > 1.0:
-            self.target_position = current_position + np.array([0.0, 0.0, self.recover_height])
-            log.info(f'current pos is {current_position}, recovering to {self.target_position}')
-        self.robot.isaac_robot.set_world_pose(self.target_position, np.array([1.0, 0.0, 0.0, 0.0]))
+        log.info(f'current pos is {current_position}, recovering to {target_position}')
+        self.robot.isaac_robot.set_world_pose(target_position, target_orientation)
         self.robot.isaac_robot.set_world_velocity(np.zeros(6))
+
+        self.robot.isaac_robot.set_joint_velocities(np.zeros(len(self.robot.isaac_robot.dof_names)))
+        self.robot.isaac_robot.set_joint_positions(np.zeros(len(self.robot.isaac_robot.dof_names)))
+        self.robot.isaac_robot.set_linear_velocity(np.zeros(3))
+
         return self.sub_controllers[0].forward(
             joint_positions=np.zeros(self.num_joints),
             joint_velocities=np.zeros(self.num_joints),
@@ -49,5 +53,8 @@ class RecoverController(BaseController):
         Returns:
             ArticulationAction: joint signals to apply.
         """
-        assert len(action) == 0, 'action must be empty'
-        return self.forward()
+        # assert len(action) == 0, 'action must be empty'
+        if len(action) > 1:
+            return self.forward(action[0], action[1])
+
+        return self.forward(action[0])

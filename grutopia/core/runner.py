@@ -1,5 +1,6 @@
 import json
-from typing import Dict, List, Optional, Tuple, Union
+import os
+from typing import Dict, Optional, Tuple, Union
 
 from omni.isaac.core import World
 from omni.isaac.core.loggers import DataLogger
@@ -11,11 +12,11 @@ from pxr import Usd  # noqa
 
 # Init
 from grutopia.core.runtime import SimulatorRuntime
-from grutopia.core.runtime.task_runtime import BaseTaskRuntimeManager, TaskRuntime
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import delete_prim_in_stage  # noqa F401
 from grutopia.core.scene import create_object, create_scene  # noqa F401
 from grutopia.core.task.task import BaseTask, create_task
-from grutopia.core.util import log
+from grutopia.core.util import AsyncRequest, log  # noqa F401
 from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
@@ -26,17 +27,19 @@ class SimulatorRunner:
 
         self._simulator_runtime = simulator_runtime
         physics_dt = self._simulator_runtime.simulator.physics_dt if self._simulator_runtime.simulator.physics_dt is not None else None
-        rendering_dt = self._simulator_runtime.simulator.rendering_dt if self._simulator_runtime.simulator.rendering_dt is not None else None
+        self.rendering_dt = self._simulator_runtime.simulator.rendering_dt if self._simulator_runtime.simulator.rendering_dt is not None else None
         physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
-        rendering_dt = eval(rendering_dt) if isinstance(rendering_dt, str) else rendering_dt
+        self.rendering_dt = eval(self.rendering_dt) if isinstance(self.rendering_dt, str) else self.rendering_dt
         self.dt = physics_dt
         log.debug(f'Simulator physics dt: {self.dt}')
 
         self.metrics_config = None
         self.metrics_results = {}
-        self.metrics_save_path = (simulator_runtime.task_runtime_manager.metrics_save_path)
+        self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
+        if not os.path.exists(self.metrics_save_path) and self.metrics_save_path != 'console':
+            os.makedirs(self.metrics_save_path)
 
-        self._world = World(physics_dt=self.dt, rendering_dt=rendering_dt, stage_units_in_meters=1.0)
+        self._world = World(physics_dt=self.dt, rendering_dt=self.rendering_dt, stage_units_in_meters=1.0)
         self._scene = self._world.scene
         self._stage = self._world.stage
 
@@ -50,6 +53,7 @@ class SimulatorRunner:
                                 if self._simulator_runtime.simulator.rendering_interval is not None else 5)
         log.info(f'rendering interval: {self.render_interval}')
         self.render_trigger = 0
+        self.loop = False
 
     @property
     def current_tasks(self) -> dict[str, BaseTask]:
@@ -60,46 +64,20 @@ class SimulatorRunner:
         for _ in range(steps):
             self._world.step(render=render)
 
-    def init_tasks(self, tasks_runtime_manager: BaseTaskRuntimeManager):
-        self.task_runtime_manager = tasks_runtime_manager
-        for config in tasks_runtime_manager.active_runtimes.values():
-            task = create_task(config, self._scene)
-            self._world.add_task(task)
-            self.task_name_to_env_map[task.runtime.name] = str(task.runtime.env.env_id)
-
+    def reload(self):
         self._world.reset()
-        self.warm_up()
-
-    def reload_tasks(self, runtimes: List[TaskRuntime]):
-        """
-        Reload tasks with list of TaskRuntimes.
-
-        Args:
-            runtimes (List[TaskRuntime]): Runtimes of task to be reloaded.
-        """
-        tasks = []
-        for runtime in runtimes:
-            task = create_task(runtime, self._scene)
-            if task.name in self.current_tasks:
-                self.clear_single_task(task.name)
-            else:
-                continue
-            self._world.add_task(task)
-            tasks.append(task)
-        for task in tasks:
-            task.set_up_scene(self._scene)
-            task.cleanup()
-        if tasks:
-            SimulationContext.reset(self._world, soft=False)
-            self._world.scene._finalize(self._world.physics_sim_view)
-        for task in tasks:
-            task.post_reset()
-            self.finished_tasks.discard(task.name)
+        self._world.clear()
+        self._world.stop()
+        del self._world
+        self._world = World(physics_dt=self.dt, rendering_dt=self.rendering_dt, stage_units_in_meters=1.0)
+        self._scene = self._world.scene
+        self._stage = self._world.stage
+        self.reset()
 
     def step(self, actions: Union[Dict, None] = None, render: bool = True) -> Tuple[Dict, Dict[str, bool]]:
         """
         Assemble Actions to Robots of each task, and run Isaac's world step.
-        The method will return termination status of each tasks, agents are expected to reset terminated task before continuing next step.
+        The method will return termination status of each task, agents are expected to reset terminated task before continuing next step.
 
         Args:
             actions (Dict): Action dict. task_name as key.
@@ -143,13 +121,31 @@ class SimulatorRunner:
         # Get obs
         obs = self.get_obs()
 
+        # Add render obs
+        for task_name, task_obs in obs.items():
+            for robot_name, robot_obs in task_obs.items():
+                obs[task_name][robot_name]['render'] = render
+
         # update metrics
         for task in self.current_tasks.values():
+            for metric in task.metrics.values():
+                metric.update(obs[task.name])
             if task.is_done():
                 self.finished_tasks.add(task.name)
                 log.info(f'Task {task.name} finished.')
                 if task.name not in self.metrics_results:
                     self.metrics_results[task.name] = task.calculate_metrics()
+                self.metrics_results[task.name] = task.calculate_metrics()
+                # TO DELETE
+                self.metrics_results[task.name]['normally_end'] = True
+                with open(
+                        os.path.join(
+                            self.metrics_save_path,
+                            task.runtime.scene_asset_path.split('/')[-2] + '_' +
+                            '_'.join(task.runtime.extra['target'].split('/')) + str(task.runtime.extra['episode_idx']) +
+                            '.json'), 'w') as f:
+                    f.write(json.dumps(self.metrics_results))
+                exit()
 
             # finished tasks will no longer update metrics
             if task.name not in self.finished_tasks:
@@ -175,10 +171,18 @@ class SimulatorRunner:
             obs[task_name] = task.get_observations()
         return obs
 
+    def stop(self):
+        """
+        Stop all current operations and clean up the **World**
+        """
+        self._world.reset()
+        self._world.clear()
+        self._world.stop()
+
     def get_current_time_step_index(self) -> int:
         return self._world.current_time_step_index
 
-    def reset(self, task: Optional[str] = None) -> Tuple[Dict, TaskRuntime]:
+    def reset(self, task: Optional[str] = None) -> Tuple[Dict, Union[TaskRuntime, None]]:
         """
         Reset the task.
 
@@ -191,12 +195,13 @@ class SimulatorRunner:
             TaskRuntime object representing the new task runtime.
         """
         obs = self.get_obs()
-        new_task_runtime = None
+        new_task_runtime: Union[TaskRuntime, None] = None
 
         if task is not None and task not in self.current_tasks:
             return obs, new_task_runtime
 
         # switch to next episodes
+        # self.stop()
         new_task_runtime = self.next_episode(task)
         self.finished_tasks.discard(task)
         obs = self.get_obs()
@@ -209,9 +214,9 @@ class SimulatorRunner:
 
     def _finalize(self):
         """
-        Finalize the tasks and do some post processing.
+        Finalize the tasks and do some post-processing.
 
-        This function is called after all tasks are finished. Currently it handle the metrics saving.
+        This function is called after all tasks are finished. Currently, it handles the metrics saving.
 
         """
         if len(self.current_tasks) == 0:
@@ -240,14 +245,14 @@ class SimulatorRunner:
             log.warning(f'Clear task {task_name} fail. The task {task_name} is not in current_tasks.')
             return
         old_task = self.current_tasks[task_name]
-        old_task.clean_scene()
+        old_task.cleanup()
         del self.current_tasks[task_name]
         self._world._task_scene_built = False
         self._world._data_logger = DataLogger()
         log.info(f'Clear stage: /World/env_{self.task_name_to_env_map[task_name]}')
         clear_stage_by_prim_path(f'/World/env_{self.task_name_to_env_map[task_name]}')
 
-    def next_episode(self, task_name: Optional[str] = None) -> TaskRuntime:
+    def next_episode(self, task_name: Optional[str] = None) -> Union[TaskRuntime, None]:
         """
         Switch to the next episode.
 
@@ -268,8 +273,9 @@ class SimulatorRunner:
             if task_name not in self.current_tasks:
                 raise RuntimeError(f'Task with task_name {task_name} not in current task_runtime_manager.')
             old_task = self.current_tasks[task_name]
+            old_task_runtime = old_task.runtime
             self.clear_single_task(task_name)
-            runtime_env = old_task.runtime.env
+            runtime_env = old_task_runtime.env
 
         next_task_runtime: Union[TaskRuntime, None] = (self.task_runtime_manager.get_next_task_runtime(runtime_env))
         if next_task_runtime is None:
@@ -280,7 +286,6 @@ class SimulatorRunner:
         task = create_task(next_task_runtime, self._scene)
         self._world.add_task(task)
         task.set_up_scene(self._scene)
-        task.cleanup()
         self._reset_sim_context()
         task.post_reset()
         new_task_name = f'{next_task_runtime.name}'

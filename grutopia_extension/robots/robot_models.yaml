@@ -85,9 +85,37 @@ robots:
     - name: joint_controller
   sensors:
   - name: "camera"
-    type: "Camera"
+    type: "RepCamera"
     prim_path: "logo_link/Camera"
   - name: "tp_camera"
-    type: "Camera"
+    type: "RepCamera"
+    prim_path: "torso_link/TPCamera"
+- type: "CameraRobot"
+  usd_path: "GRUtopia/assets/robots/h1/camera.usd"
+  controllers:
+  - name: "move_to_point"
+    type: "MoveToPointOracleController"
+    forward_speed: 0.005
+    rotation_speed: 0.005
+    threshold: 0.05
+  - name: "move_along_path"
+    type: MoveAlongPathPointsController
+    forward_speed: 0.005
+    rotation_speed: 0.005
+    threshold: 0.1
+    sub_controllers:
+    - name: move_to_point
+  - name: "rotate"
+    type: RotateOracleController
+    rotation_speed: 0.005
+    threshold: 0.02
+  - name: web_chat
+    type: WebChatboxController
+  sensors:
+  - name: "camera"
+    type: "RepCamera"
+    prim_path: "Xform/Camera"
+  - name: "tp_camera"
+    type: "RepCamera"
     prim_path: "torso_link/TPCamera"
 - type: NPC

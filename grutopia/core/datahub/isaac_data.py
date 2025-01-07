@@ -87,6 +87,45 @@ class IsaacData:
             cls.data.obs[task_id] = obs_data
 
     @classmethod
+    def set_obs_data_by_task_name(cls, task_name: str, obs: Dict[str, Dict[str, Any]]) -> None:
+        """
+        Set isaac observations data by task name
+
+        Args:
+            task_name: isaac task name
+            obs (Dict[str, Dict[str, Any]]): obs data with robot_name key.
+        """
+        for robot_name, obs_data in obs.items():
+            cls.data.obs[task_name][robot_name] = obs_data
+
+    @classmethod
+    def set_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str,
+                                                                                                      Any]]) -> None:
+        """
+        Set isaac observation by task name and robot name
+
+        Args:
+            task_name: isaac task name
+            robot_name: isaac robot name
+            obs (Dict[str, Dict[str, Any]]): obs data with task_name key.
+        """
+        cls.data.obs[task_name][robot_name] = obs
+
+    @classmethod
+    def get_obs(cls) -> Dict[str, Dict]:
+        """
+        Get isaac observation by task name
+
+        Args:
+            task_name: isaac task name
+
+        Returns:
+            isaac observation data
+
+        """
+        return cls.data.obs
+
+    @classmethod
     def get_obs_by_task_name(cls, task_name: str) -> Dict[str, Dict]:
         """
         Get isaac observation by task name
@@ -130,6 +169,8 @@ class IsaacData:
             actions (Dict[str, ActionData]): action data with task_name key
         """
         for task_name, action in actions.items():
+            if cls.data.actions.get(task_name) is None:
+                cls.data.actions[task_name] = {}
             cls.data.actions[task_name].update(action.model_dump())
 
     @classmethod

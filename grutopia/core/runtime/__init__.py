@@ -34,6 +34,7 @@ class SimulatorRuntime:
             'headless': self.headless,
             'anti_aliasing': 0,
             'hide_ui': False,
+            'multi_gpu': False
         })
         log.debug('SimulationApp init done')
 

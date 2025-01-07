@@ -45,6 +45,12 @@ class BaseSensor(ABC):
     def reset(self):
         raise NotImplementedError()
 
+    def cleanup(self):
+        """
+        Operations that need to be cleaned up before switching scenes (or resetting)
+        """
+        pass
+
     @classmethod
     def register(cls, name: str):
         """

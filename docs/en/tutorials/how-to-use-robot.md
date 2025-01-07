@@ -45,7 +45,7 @@ try this demo:
 ```python
 
 from grutopia.core.runtime import SimulatorRuntime
-from grutopia.core.env import Env
+from grutopia.core.gym_env import Env
 
 file_path = '{path/to/your/config}'
 sim_runtime = SimulatorRuntime(file_path)

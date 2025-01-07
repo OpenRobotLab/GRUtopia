@@ -7,7 +7,7 @@ agents:
   robot_name: h1
 
 task_config:
-  type: "SocialBenchmarkTask"
+  type: "SimpleAgentTask"
   task_name_prefix: "h1_locomotion"
   env_num: 1
   offset_size: 10

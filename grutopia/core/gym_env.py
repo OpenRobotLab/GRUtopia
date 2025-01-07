@@ -3,8 +3,8 @@ from typing import Any
 import gymnasium as gym
 
 import grutopia.core.util.space as space
-from grutopia.core.config import ValidatedConfig
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.util import log
 
 
 class Env(gym.Env):
@@ -26,22 +26,26 @@ class Env(gym.Env):
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
         self._runner = SimulatorRunner(simulator_runtime=simulator_runtime)
+        log.info(f'==================== {self._robot_name} ======================')
 
         return
 
     def _validate(self):
+        """This method is designed for **only** 1 env + 1 robot."""
         if self._runtime.env_num > 1:
             raise ValueError(f'Only support single env now, but env num is {self._runtime.env_num}')
 
         robot_name = None
-        config = ValidatedConfig(**self._runtime.config)
-        for episode in config.task_config.episodes:
-            if len(episode.robots) != 1:
-                raise ValueError(f'Only support single agent now, but episode requires {len(episode.robots)} agents')
+        episodes = self._runtime.task_runtime_manager.episodes
+        log.debug(f'================ len(episodes): {len(episodes)} ==================')
+
+        for runtime in self._runtime.task_runtime_manager.episodes:
+            if len(runtime.robots) != 1:
+                raise ValueError(f'Only support single agent now, but episode requires {len(runtime.robots)} agents')
             if robot_name is None:
-                robot_name = episode.robots[0].name
+                robot_name = runtime.robots[0].name
             else:
-                if robot_name != episode.robots[0].name:
+                if robot_name != runtime.robots[0].name:
                     raise ValueError('Only support single agent now, but episode requires multiple agents')
 
         self._robot_name = f'{robot_name}_{0}'
@@ -68,23 +72,25 @@ class Env(gym.Env):
         info = {}
 
         origin_obs, task_runtime = self.runner.reset(self._current_task_name)
-        if task_runtime is not None:
-            self._current_task_name = task_runtime.name
-            info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime
-            obs = origin_obs[task_runtime.name][self._robot_name]
+        if task_runtime is None:
+            self.close()
+
+        self._current_task_name = task_runtime.name
+        info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime
+        obs = origin_obs[task_runtime.name][self._robot_name]
 
         return obs, info
 
-    def step(self, action: gym.Space) -> tuple[gym.Space, float, bool, bool, dict[str, Any]]:
+    def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
         """
         run step with given action(with isaac step)
 
 
         Args:
-            action (gym.Space): an action provided by the agent to update the environment state.
+            action (Any): an action provided by the agent to update the environment state.
 
         Returns:
-            observation (gym.Space): An element of the environment's :attr:`observation_space` as the next observation due to the agent actions.
+            observation (Any): An element of the environment's :attr:`observation_space` as the next observation due to the agent actions.
 
             reward (float): The reward as a result of taking the action.
             terminated (bool): Whether the agent reaches the terminal state. If true, the user needs to call :meth:`reset`.
@@ -93,7 +99,7 @@ class Env(gym.Env):
                 Can be used to end the episode prematurely before a terminal state is reached.
                 If true, the user needs to call :meth:`reset`.
             info (dict): Contains auxiliary diagnostic information (helpful for debugging, learning, and logging).
-                Currently it contains nothing.
+                Currently, it contains nothing.
         """
 
         obs = {}
@@ -123,7 +129,7 @@ class Env(gym.Env):
 
     @property
     def active_runtimes(self):
-        return self.runtime.active_runtime()
+        return self._runtime.active_runtime()
 
     def get_dt(self):
         """

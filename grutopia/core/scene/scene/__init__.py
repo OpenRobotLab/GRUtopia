@@ -3,6 +3,7 @@ from grutopia.core.scene.scene.util import usd_op
 
 def create_scene(config_json_path: str, prim_path_root: str = 'background'):
     """
+    TODO: rename.
     Create a scene from config.(But just input usd file yet.)
     Args:
         config_json_path (str): path to scene config file(use to be a .usd file)
