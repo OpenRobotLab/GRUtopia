@@ -39,7 +39,10 @@ class SimulatorRunner:
         if not os.path.exists(self.metrics_save_path) and self.metrics_save_path != 'console':
             os.makedirs(self.metrics_save_path)
 
-        self._world = World(physics_dt=self.dt, rendering_dt=self.rendering_dt, stage_units_in_meters=1.0)
+        self._world: World = World(physics_dt=self.dt,
+                                   rendering_dt=self.rendering_dt,
+                                   stage_units_in_meters=1.0,
+                                   sim_params={'use_fabric': self._simulator_runtime.simulator.use_fabric})
         self._scene = self._world.scene
         self._stage = self._world.stage
 

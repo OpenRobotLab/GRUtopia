@@ -1,6 +1,7 @@
 simulator:
   physics_dt: 1/240
   rendering_dt: 1/240
+  use_fabric: false
 
 task_config:
   type: "SingleInferenceTask"

@@ -31,6 +31,7 @@ class SimConfig(BaseModel):
     physics_dt: Optional[float | str] = 1 / 60
     rendering_dt: Optional[float | str] = 1 / 60
     rendering_interval: Optional[int] = None
+    use_fabric: Optional[bool] = False
 
 
 class DistributionConfig(BaseModel):

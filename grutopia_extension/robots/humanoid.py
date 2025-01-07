@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, List
 
 import numpy as np
 import torch
@@ -208,6 +208,11 @@ class HumanoidRobot(BaseRobot):
                                             name=config.name + 'right_ankle')
         self._robot_left_ankle = RigidPrim(prim_path=config.prim_path + '/left_ankle_link',
                                            name=config.name + 'left_ankle')
+
+        self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]
+
+    def get_rigid_bodies(self) -> List[RigidPrim]:
+        return self._rigid_bodies
 
     def post_reset(self):
         super().post_reset()

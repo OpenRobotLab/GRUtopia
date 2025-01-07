@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from omni.isaac.core.prims import RigidPrim
@@ -35,6 +35,8 @@ class BaseRobot:
         if self.isaac_robot:
             scene.add(self.isaac_robot)
             log.debug('self.isaac_robot: ' + str(self.isaac_robot))
+        for rigid_body in self.get_rigid_bodies():
+            scene.add(rigid_body)
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 
@@ -102,6 +104,9 @@ class BaseRobot:
 
     def get_world_pose(self) -> Tuple[np.ndarray, np.ndarray]:
         return self.isaac_robot.get_world_pose()
+
+    def get_rigid_bodies(self) -> List[RigidPrim]:
+        return []
 
     @classmethod
     def register(cls, name: str):
