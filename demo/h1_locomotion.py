@@ -22,16 +22,10 @@ env = Env(sim_runtime)
 obs, _ = env.reset()
 # print(f'========INIT OBS{obs}=============')
 
-import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat
-
 path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
 i = 0
 
 move_action = {'move_along_path': [path]}
-rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
-recover_action = {'recover': []}
-keyboard_action = {'mh1_locomotion.pyove_with_keyboard': []}
 
 while env.simulation_app.is_running():
     i += 1
@@ -40,8 +34,5 @@ while env.simulation_app.is_running():
     if i % 500 == 0:
         print(i)
         # print(obs)
-
-    if (i - 100) % 2000 == 0:  # recover for 100 steps
-        env_action = keyboard_action
 
 env.simulation_app.close()

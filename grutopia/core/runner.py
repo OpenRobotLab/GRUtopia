@@ -38,7 +38,10 @@ class SimulatorRunner:
         physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
         self.rendering_dt = eval(self.rendering_dt) if isinstance(self.rendering_dt, str) else self.rendering_dt
         self.dt = physics_dt
-        log.debug(f'Simulator physics dt: {self.dt}')
+        self.use_fabric = self._simulator_runtime.simulator.use_fabric
+        log.info(
+            f'simulator params: physics dt={self.dt}, rendering dt={self.rendering_dt}, use_fabric={self.use_fabric}'
+        )
 
         self.metrics_config = None
         self.metrics_results = {}
@@ -50,7 +53,7 @@ class SimulatorRunner:
             physics_dt=self.dt,
             rendering_dt=self.rendering_dt,
             stage_units_in_meters=1.0,
-            sim_params={'use_fabric': self._simulator_runtime.simulator.use_fabric},
+            sim_params={'use_fabric': self.use_fabric},
         )
         self._scene = self._world.scene
         self._stage = self._world.stage

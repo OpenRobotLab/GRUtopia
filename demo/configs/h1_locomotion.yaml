@@ -15,7 +15,7 @@ task_config:
       - name: h1
         prim_path: "/World/h1"
         type: "HumanoidRobot"
-        position: [ 5.58, -0.77, 1.05 ]
+        position: [ 0.0, 0.0, 1.05 ]
         scale: [ 1, 1, 1 ]
         controller_params:
           - name: "move_by_speed"
