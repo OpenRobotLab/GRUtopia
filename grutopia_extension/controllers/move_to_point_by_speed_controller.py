@@ -38,7 +38,7 @@ class MoveToPointBySpeedController(BaseController):
         robot_vec = np.array([np.cos(robot_z_rot), np.sin(robot_z_rot), 0])
         robot_vec /= np.linalg.norm(robot_vec)
 
-        target_vec = (goal_position - start_position)
+        target_vec = goal_position - start_position
         if np.linalg.norm(target_vec) == 0:
             return 0
         target_vec /= np.linalg.norm(target_vec)
@@ -55,13 +55,15 @@ class MoveToPointBySpeedController(BaseController):
         signed_angle = angle * angle_sign
         return signed_angle
 
-    def forward(self,
-                start_position: np.ndarray,
-                start_orientation: np.ndarray,
-                goal_position: np.ndarray,
-                forward_speed: float = 1,
-                rotation_speed: float = 8,
-                threshold: float = 0.02) -> ArticulationAction:
+    def forward(
+        self,
+        start_position: np.ndarray,
+        start_orientation: np.ndarray,
+        goal_position: np.ndarray,
+        forward_speed: float = 1,
+        rotation_speed: float = 8,
+        threshold: float = 0.02,
+    ) -> ArticulationAction:
         # Just make sure we ignore z components
         start_position[-1] = 0
         goal_position[-1] = 0
@@ -84,9 +86,9 @@ class MoveToPointBySpeedController(BaseController):
             )
 
         if dist_from_goal < threshold * 2:
-            forward_speed *= (dist_from_goal / (threshold * 2))**3
+            forward_speed *= (dist_from_goal / (threshold * 2)) ** 3
 
-        forward_speed *= (1 - (abs(angle_to_goal) * 2 / np.pi))**3
+        forward_speed *= (1 - (abs(angle_to_goal) * 2 / np.pi)) ** 3
         rotation_speed *= angle_to_goal
         # Call sub controller
         return self.sub_controllers[0].forward(
@@ -106,12 +108,14 @@ class MoveToPointBySpeedController(BaseController):
         """
         assert len(action) == 1, 'action must contain 1 elements'
         start_position, start_orientation = self.robot.get_world_pose()
-        return self.forward(start_position=start_position,
-                            start_orientation=start_orientation,
-                            goal_position=np.array(action[0]),
-                            forward_speed=self.forward_speed,
-                            rotation_speed=self.rotation_speed,
-                            threshold=self.threshold * self.robot.get_robot_scale()[0])
+        return self.forward(
+            start_position=start_position,
+            start_orientation=start_orientation,
+            goal_position=np.array(action[0]),
+            forward_speed=self.forward_speed,
+            rotation_speed=self.rotation_speed,
+            threshold=self.threshold * self.robot.get_robot_scale()[0],
+        )
 
     def get_obs(self) -> Dict[str, Any]:
         if self.goal_position is None or self.last_threshold is None:

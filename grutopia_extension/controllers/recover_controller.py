@@ -24,9 +24,7 @@ class RecoverController(BaseController):
         self.num_joints = None
 
     def forward(
-        self,
-        target_position: List | np.ndarray,
-        target_orientation: List | np.ndarray = np.array([1.0, 0.0, 0.0, 0.0])
+        self, target_position: List | np.ndarray, target_orientation: List | np.ndarray = np.array([1.0, 0.0, 0.0, 0.0])
     ) -> ArticulationAction:
         if self.num_joints is None:
             self.num_joints = self.get_joint_subset().num_joints

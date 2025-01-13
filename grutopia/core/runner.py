@@ -21,13 +21,20 @@ from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
 class SimulatorRunner:
-
     def __init__(self, simulator_runtime: SimulatorRuntime):
         self.task_runtime_manager = simulator_runtime.task_runtime_manager
 
         self._simulator_runtime = simulator_runtime
-        physics_dt = self._simulator_runtime.simulator.physics_dt if self._simulator_runtime.simulator.physics_dt is not None else None
-        self.rendering_dt = self._simulator_runtime.simulator.rendering_dt if self._simulator_runtime.simulator.rendering_dt is not None else None
+        physics_dt = (
+            self._simulator_runtime.simulator.physics_dt
+            if self._simulator_runtime.simulator.physics_dt is not None
+            else None
+        )
+        self.rendering_dt = (
+            self._simulator_runtime.simulator.rendering_dt
+            if self._simulator_runtime.simulator.rendering_dt is not None
+            else None
+        )
         physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
         self.rendering_dt = eval(self.rendering_dt) if isinstance(self.rendering_dt, str) else self.rendering_dt
         self.dt = physics_dt
@@ -39,10 +46,12 @@ class SimulatorRunner:
         if not os.path.exists(self.metrics_save_path) and self.metrics_save_path != 'console':
             os.makedirs(self.metrics_save_path)
 
-        self._world: World = World(physics_dt=self.dt,
-                                   rendering_dt=self.rendering_dt,
-                                   stage_units_in_meters=1.0,
-                                   sim_params={'use_fabric': self._simulator_runtime.simulator.use_fabric})
+        self._world: World = World(
+            physics_dt=self.dt,
+            rendering_dt=self.rendering_dt,
+            stage_units_in_meters=1.0,
+            sim_params={'use_fabric': self._simulator_runtime.simulator.use_fabric},
+        )
         self._scene = self._world.scene
         self._stage = self._world.stage
 
@@ -52,8 +61,11 @@ class SimulatorRunner:
         # finished_tasks contains all the finished tasks in current tasks dict
         self.finished_tasks = set()
 
-        self.render_interval = (self._simulator_runtime.simulator.rendering_interval
-                                if self._simulator_runtime.simulator.rendering_interval is not None else 5)
+        self.render_interval = (
+            self._simulator_runtime.simulator.rendering_interval
+            if self._simulator_runtime.simulator.rendering_interval is not None
+            else 5
+        )
         log.info(f'rendering interval: {self.render_interval}')
         self.render_trigger = 0
         self.loop = False
@@ -142,11 +154,16 @@ class SimulatorRunner:
                 # TO DELETE
                 self.metrics_results[task.name]['normally_end'] = True
                 with open(
-                        os.path.join(
-                            self.metrics_save_path,
-                            task.runtime.scene_asset_path.split('/')[-2] + '_' +
-                            '_'.join(task.runtime.extra['target'].split('/')) + str(task.runtime.extra['episode_idx']) +
-                            '.json'), 'w') as f:
+                    os.path.join(
+                        self.metrics_save_path,
+                        task.runtime.scene_asset_path.split('/')[-2]
+                        + '_'
+                        + '_'.join(task.runtime.extra['target'].split('/'))
+                        + str(task.runtime.extra['episode_idx'])
+                        + '.json',
+                    ),
+                    'w',
+                ) as f:
                     f.write(json.dumps(self.metrics_results))
                 exit()
 
@@ -280,7 +297,7 @@ class SimulatorRunner:
             self.clear_single_task(task_name)
             runtime_env = old_task_runtime.env
 
-        next_task_runtime: Union[TaskRuntime, None] = (self.task_runtime_manager.get_next_task_runtime(runtime_env))
+        next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
         if next_task_runtime is None:
             self._reset_sim_context()
             return next_task_runtime

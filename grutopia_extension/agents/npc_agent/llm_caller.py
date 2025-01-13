@@ -4,12 +4,14 @@ from typing import Dict, List, Literal, Tuple
 import numpy as np
 
 from grutopia.core.util import log
-from grutopia_extension.agents.npc_agent.prompt import in_context_example, system_message
+from grutopia_extension.agents.npc_agent.prompt import (
+    in_context_example,
+    system_message,
+)
 from grutopia_extension.agents.npc_agent.utils import Env, Message
 
 
 class LLMCaller:
-
     def __init__(
         self,
         scene_data_path: str,
@@ -35,32 +37,20 @@ class LLMCaller:
         with open(openai_api_key, 'r', encoding='utf-8') as file:
             openai_api_key = file.read().strip()
         try:
-            self.llm = AzureOpenAI(api_key=openai_api_key,
-                                   api_version='2024-04-01-preview',
-                                   azure_endpoint=azure_endpoint) if use_azure else OpenAI(api_key=openai_api_key)
+            self.llm = (
+                AzureOpenAI(api_key=openai_api_key, api_version='2024-04-01-preview', azure_endpoint=azure_endpoint)
+                if use_azure
+                else OpenAI(api_key=openai_api_key)
+            )
         except Exception as e:
             log.error(f'Failed to initialize OpenAI: {e}')
 
     def _construct_init_messages(self, question: str) -> List[dict]:
-        messages = [{
-            'role': 'system',
-            'content': [{
-                'type': 'text',
-                'text': self.system_message
-            }]
-        }, {
-            'role': 'user',
-            'content': [{
-                'type': 'text',
-                'text': question
-            }]
-        }, {
-            'role': 'assistant',
-            'content': [{
-                'type': 'text',
-                'text': in_context_example
-            }]
-        }]
+        messages = [
+            {'role': 'system', 'content': [{'type': 'text', 'text': self.system_message}]},
+            {'role': 'user', 'content': [{'type': 'text', 'text': question}]},
+            {'role': 'assistant', 'content': [{'type': 'text', 'text': in_context_example}]},
+        ]
         code_result, _ = self._parse_and_execution(in_context_example)
         messages.append({'role': 'user', 'content': [{'type': 'text', 'text': code_result}]})
         messages.extend(self.history_messages)
@@ -74,7 +64,10 @@ class LLMCaller:
         elif '[answer]' in response.lower():
             return response.lower().split('[answer]')[1].split('[/answer]')[0], True
         else:
-            return 'Continue. If you need some information, write code to get it, wrap your code in ```python and ```. If you have got the final answer, tell the answer in the format: [answer]YOUR FINAL ANSWER[/answer].', False
+            return (
+                'Continue. If you need some information, write code to get it, wrap your code in ```python and ```. If you have got the final answer, tell the answer in the format: [answer]YOUR FINAL ANSWER[/answer].',
+                False,
+            )
 
     def _infer(self, question_dict: dict) -> Message:
         """Given the facing-to object's ID and question, generate the response by LLM.
@@ -103,38 +96,35 @@ class LLMCaller:
                         'message': 'Got an unexpected result when calling openai api.',
                         'at': [question_dict['name']],
                         'parent_idx': question_dict['idx'],
-                        'role': 'agent'
-                    })
+                        'role': 'agent',
+                    }
+                )
             except Exception as e:
                 return Message(
                     **{
                         'message': f'Got an exception when calling openai api: {e}',
                         'at': [question_dict['name']],
                         'parent_idx': question_dict['idx'],
-                        'role': 'agent'
-                    })
+                        'role': 'agent',
+                    }
+                )
             messages.append(message)
             result, is_end = self._parse_and_execution(message['content'])
             if is_end:
-                self.history_messages.extend([{
-                    'role': 'user',
-                    'content': [{
-                        'type': 'text',
-                        'text': question
-                    }]
-                }, {
-                    'role': 'assistant',
-                    'content': [{
-                        'type': 'text',
-                        'text': result
-                    }]
-                }])
-                return Message(**{
-                    'message': result,
-                    'at': [question_dict['name']],
-                    'parent_idx': question_dict['idx'],
-                    'role': 'agent'
-                })
+                self.history_messages.extend(
+                    [
+                        {'role': 'user', 'content': [{'type': 'text', 'text': question}]},
+                        {'role': 'assistant', 'content': [{'type': 'text', 'text': result}]},
+                    ]
+                )
+                return Message(
+                    **{
+                        'message': result,
+                        'at': [question_dict['name']],
+                        'parent_idx': question_dict['idx'],
+                        'role': 'agent',
+                    }
+                )
             messages.append({'role': 'user', 'content': [{'type': 'text', 'text': result}]})
 
         return Message(
@@ -142,8 +132,9 @@ class LLMCaller:
                 'message': 'Sorry, I cannot answer this question.',
                 'at': [question_dict['name']],
                 'parent_idx': question_dict['idx'],
-                'role': 'agent'
-            })
+                'role': 'agent',
+            }
+        )
 
     def infer(self, question_dict: dict) -> None:
         self.request_queue.put(question_dict)
@@ -161,10 +152,8 @@ class LLMCaller:
             _id = str(bbox[row_idx][0])
             semantic_label = idToLabels[_id]['class']
             sub_bbox = np.array(
-                [int(bbox[row_idx][1]),
-                 int(bbox[row_idx][2]),
-                 int(bbox[row_idx][3]),
-                 int(bbox[row_idx][4])])
+                [int(bbox[row_idx][1]), int(bbox[row_idx][2]), int(bbox[row_idx][3]), int(bbox[row_idx][4])]
+            )
             self._process_2d_bbox(semantic_label, sub_bbox)
 
     def _process_2d_bbox(self, label: str, bbox: List[float]) -> None:
@@ -204,5 +193,7 @@ def run_llm_caller(caller: LLMCaller):
                         'message': 'Exception occurred, please check the log.',
                         'at': [prompt['name']],
                         'parent_idx': prompt['idx'],
-                        'role': 'agent'
-                    }))
+                        'role': 'agent',
+                    }
+                )
+            )

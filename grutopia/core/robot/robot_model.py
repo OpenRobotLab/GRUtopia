@@ -7,6 +7,7 @@ from grutopia.core.config.robot.params import ControllerParams
 
 class SensorModel(BaseModel):
     """Sensor config in robot_model config."""
+
     name: str
     prim_path: Optional[str] = None
     type: str
@@ -19,6 +20,7 @@ class SensorModel(BaseModel):
 
 class ControllerModel(BaseModel, extra='allow'):
     """Controller config in robot_model config."""
+
     name: str
     type: str
     joint_names: Optional[List[str]] = None
@@ -45,6 +47,7 @@ class ControllerModel(BaseModel, extra='allow'):
 
 class RobotModel(BaseModel):
     """Robot config in robot_model config."""
+
     type: str
     usd_path: Optional[str] = None  # If Optional, use default usd_path
     controllers: Optional[List[ControllerModel]] = None
@@ -54,4 +57,5 @@ class RobotModel(BaseModel):
 
 class RobotModels(BaseModel):
     """robot_model config file structure."""
+
     robots: Optional[List[RobotModel]] = None

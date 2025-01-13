@@ -48,10 +48,12 @@ def quaternion_to_gravity_component(quaternion: np.ndarray):
 
     # Rotate the gravity quaternion by the object's quaternion
     rotated_gravity_quaternion = quaternion_multiply(
-        quaternion, quaternion_multiply(gravity_quaternion_global, quaternion_conjugate(quaternion)))
+        quaternion, quaternion_multiply(gravity_quaternion_global, quaternion_conjugate(quaternion))
+    )
 
     # Extract the result as a numpy array
     gravity_component_local = np.array(
-        [rotated_gravity_quaternion[1], rotated_gravity_quaternion[2], rotated_gravity_quaternion[3]])
+        [rotated_gravity_quaternion[1], rotated_gravity_quaternion[2], rotated_gravity_quaternion[3]]
+    )
 
     return gravity_component_local

@@ -9,6 +9,7 @@ class ObjectCommon:
     """
     Object common class.
     """
+
     objs = {}
 
     def __init__(self, config: ObjectConfig):

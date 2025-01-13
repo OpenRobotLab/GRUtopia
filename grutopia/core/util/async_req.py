@@ -7,13 +7,7 @@ import httpx
 
 LOGGING_CONFIG = {
     'version': 1,
-    'handlers': {
-        'default': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'http',
-            'stream': 'ext://sys.stderr'
-        }
-    },
+    'handlers': {'default': {'class': 'logging.StreamHandler', 'formatter': 'http', 'stream': 'ext://sys.stderr'}},
     'formatters': {
         'http': {
             'format': '%(levelname)s [%(asctime)s] %(name)s - %(message)s',
@@ -29,7 +23,7 @@ LOGGING_CONFIG = {
             'handlers': ['default'],
             'level': 'ERROR',
         },
-    }
+    },
 }
 
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -67,7 +61,7 @@ class AsyncRequest:
             asyncio.run_coroutine_threadsafe(cls.async_get(request_id, url, **kwargs), message_send_loop)
         elif cls.res_info[key] is not None:
             res = cls.res_info[key].json()
-            del (cls.res_info[key])
+            del cls.res_info[key]
             return True, res
         return False, cls.res_info[key]
 
@@ -93,12 +87,12 @@ class AsyncRequest:
         key = url + request_id
         if key in cls.res_info and cls.res_info[key] is not None:
             res = cls.res_info[key].json()
-            del (cls.res_info[key])
+            del cls.res_info[key]
             return True, res
         return False, None
 
     @classmethod
     def start_loop(cls):
-        t = Thread(target=start_loop, args=(message_send_loop, ))
+        t = Thread(target=start_loop, args=(message_send_loop,))
         t.daemon = True
         t.start()

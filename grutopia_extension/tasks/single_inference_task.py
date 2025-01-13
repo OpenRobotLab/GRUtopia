@@ -6,7 +6,6 @@ from grutopia.core.task import BaseTask
 
 @BaseTask.register('SingleInferenceTask')
 class SimpleInferenceTask(BaseTask):
-
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
 

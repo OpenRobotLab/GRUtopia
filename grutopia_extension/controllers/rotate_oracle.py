@@ -29,7 +29,6 @@ class RotateOracleController(BaseController):
         start_orientation,
         goal_orientation,
     ) -> float:
-
         def quat_conjugate(q):
             w, x, y, z = q
             return np.array([w, -x, -y, -z])
@@ -53,13 +52,16 @@ class RotateOracleController(BaseController):
 
         return theta
 
-    def forward(self,
-                start_orientation: np.ndarray,
-                goal_orientation: np.ndarray,
-                rotation_speed: float = 3,
-                threshold: float = 0.02) -> ArticulationAction:
-        theta = RotateOracleController.get_delta_z_rot(start_orientation=start_orientation,
-                                                       goal_orientation=goal_orientation)
+    def forward(
+        self,
+        start_orientation: np.ndarray,
+        goal_orientation: np.ndarray,
+        rotation_speed: float = 3,
+        threshold: float = 0.02,
+    ) -> ArticulationAction:
+        theta = RotateOracleController.get_delta_z_rot(
+            start_orientation=start_orientation, goal_orientation=goal_orientation
+        )
         theta = (theta + np.pi) % (2 * np.pi) - np.pi
         if abs(theta) < threshold:
             return {'pos': None, 'rot': [0, 0, quat_to_euler_angles(goal_orientation)[2]]}
@@ -82,17 +84,20 @@ class RotateOracleController(BaseController):
         """
         assert len(action) == 1, 'action must contain 1 elements'
         start_orientation = self.robot.get_world_pose()[1]
-        return self.forward(start_orientation=start_orientation,
-                            goal_orientation=action[0],
-                            rotation_speed=self.rotation_speed,
-                            threshold=self.threshold)
+        return self.forward(
+            start_orientation=start_orientation,
+            goal_orientation=action[0],
+            rotation_speed=self.rotation_speed,
+            threshold=self.threshold,
+        )
 
     def get_obs(self) -> Dict[str, Any]:
         if self.goal_orientation is None or self.threshold is None:
             return {}
         start_orientation = self.robot.get_world_pose()[1]
-        delta_z_rot = RotateOracleController.get_delta_z_rot(start_orientation=start_orientation,
-                                                             goal_orientation=self.goal_orientation)
+        delta_z_rot = RotateOracleController.get_delta_z_rot(
+            start_orientation=start_orientation, goal_orientation=self.goal_orientation
+        )
         finished = True if abs(delta_z_rot) < self.threshold else False
         return {
             'finished': finished,

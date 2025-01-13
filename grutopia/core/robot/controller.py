@@ -12,8 +12,10 @@ from omni.isaac.core.utils.types import ArticulationAction
 from grutopia.core.config.robot import RobotUserConfig
 from grutopia.core.config.robot.params import ControllerParams
 from grutopia.core.robot.robot import BaseRobot
+
 # yapf: disable
 from grutopia.core.robot.robot_model import ControllerModel, RobotModel
+
 # yapf: enable
 from grutopia.core.util import log
 
@@ -22,6 +24,7 @@ from grutopia.core.util import log
 
 class BaseController(Base, ABC):
     """Base class of controller."""
+
     controllers = {}
 
     def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
@@ -133,8 +136,9 @@ def config_inject(user_config: ControllerParams, model: ControllerModel) -> Cont
     return conf
 
 
-def create_controllers(config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot,
-                       scene: Scene) -> Dict[str, BaseController]:
+def create_controllers(
+    config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot, scene: Scene
+) -> Dict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:
@@ -158,11 +162,13 @@ def create_controllers(config: RobotUserConfig, robot_model: RobotModel, robot: 
             controller_cls = BaseController.controllers[controller_config.type]
             controller_ins: BaseController = controller_cls(config=controller_config, robot=robot, scene=scene)
             if controller_config.sub_controllers is not None:
-                inject_sub_controllers(parent=controller_ins,
-                                       configs=controller_config.sub_controllers,
-                                       available=available_controllers,
-                                       robot=robot,
-                                       scene=scene)
+                inject_sub_controllers(
+                    parent=controller_ins,
+                    configs=controller_config.sub_controllers,
+                    available=available_controllers,
+                    robot=robot,
+                    scene=scene,
+                )
         else:
             log.debug(available_controllers)
             raise KeyError(f'{controller_name} not registered in controllers of {config.type}')
@@ -173,8 +179,13 @@ def create_controllers(config: RobotUserConfig, robot_model: RobotModel, robot: 
     return controller_map
 
 
-def inject_sub_controllers(parent: BaseController, configs: List[ControllerParams],
-                           available: Dict[str, ControllerModel], robot: BaseRobot, scene: Scene):
+def inject_sub_controllers(
+    parent: BaseController,
+    configs: List[ControllerParams],
+    available: Dict[str, ControllerModel],
+    robot: BaseRobot,
+    scene: Scene,
+):
     """Recursively create and inject sub-controlllers into parent controller.
 
     Args:
@@ -195,11 +206,9 @@ def inject_sub_controllers(parent: BaseController, configs: List[ControllerParam
         controller_cls = BaseController.controllers[controller_config.type]
         controller_ins = controller_cls(config=controller_config, robot=robot, scene=scene)
         if controller_config.sub_controllers is not None:
-            inject_sub_controllers(controller_ins,
-                                   configs=controller_config.sub_controllers,
-                                   available=available,
-                                   robot=robot,
-                                   scene=scene)
+            inject_sub_controllers(
+                controller_ins, configs=controller_config.sub_controllers, available=available, robot=robot, scene=scene
+            )
         sub_controllers.append(controller_ins)
 
     parent.sub_controllers = sub_controllers

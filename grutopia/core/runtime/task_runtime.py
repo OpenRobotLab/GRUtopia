@@ -16,6 +16,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     """
     Runtime task configuration that runs in `grutopia.core.robot.task`.
     """
+
     type: str
     name: str  # id of task.
     task_idx: str

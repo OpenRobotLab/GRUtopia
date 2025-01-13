@@ -8,13 +8,17 @@ from grutopia_extension.agents.npc_agent.utils import Message
 
 
 class NPC:
-
     def __init__(self, config: NPCUserConfig, extra: Dict) -> None:
         self.config = config
-        self.caller = LLMCaller(extra['npc_scene_data_config'], config.max_interaction_turn, config.model_name,
-                                config.openai_api_key, config.api_base_url)
+        self.caller = LLMCaller(
+            extra['npc_scene_data_config'],
+            config.max_interaction_turn,
+            config.model_name,
+            config.openai_api_key,
+            config.api_base_url,
+        )
         self.processed_user_message = 0
-        self.thread = Thread(target=run_llm_caller, args=(self.caller, ))
+        self.thread = Thread(target=run_llm_caller, args=(self.caller,))
         self.thread.daemon = True
         self.thread.start()
 

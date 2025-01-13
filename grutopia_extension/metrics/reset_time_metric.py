@@ -24,8 +24,11 @@ class ResetTimeMetric(BaseMetric):
         """
         action = DataHub.get_actions_by_task_name(self.task_runtime.name)
         # log.debug(f"======== get action: {action} ========")
-        self.fall_times = self.fall_times + 1 if action and len(
-            action['controllers']) > 0 and 'recover' == action['controllers'][0]['controller'] else self.fall_times
+        self.fall_times = (
+            self.fall_times + 1
+            if action and len(action['controllers']) > 0 and 'recover' == action['controllers'][0]['controller']
+            else self.fall_times
+        )
 
     def calc(self, task_info: dict):
         """

@@ -10,7 +10,6 @@ from grutopia.core.util import log
 
 @BaseRobot.register('NPC')
 class NPC(BaseRobot):
-
     def __init__(self, config: RobotUserConfig, robot_model: RobotModel, scene: Scene):
         super().__init__(config, robot_model, scene)
         self.name_of_robots_in_scene = []

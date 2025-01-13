@@ -17,7 +17,6 @@ CLASS_NAMES = set()
 
 
 class ClassProperty:
-
     def __init__(self, f_get):
         self.f_get = f_get
 
@@ -242,8 +241,8 @@ def assert_valid_key(key, valid_keys, name=None):
     if name is None:
         name = 'value'
     assert key in valid_keys, 'Invalid {} received! Valid options are: {}, got: {}'.format(
-        name,
-        valid_keys.keys() if isinstance(valid_keys, dict) else valid_keys, key)
+        name, valid_keys.keys() if isinstance(valid_keys, dict) else valid_keys, key
+    )
 
 
 def create_class_from_registry_and_config(cls_name, cls_registry, cfg, cls_type_descriptor):
@@ -349,8 +348,7 @@ class UniquelyNamed:
     def __init__(self):
         global NAMES
         # Register this objects, making sure it's name is unique
-        assert self.name not in NAMES, \
-            f'UniquelyNamed objects with name {self.name} already exists!'
+        assert self.name not in NAMES, f'UniquelyNamed objects with name {self.name} already exists!'
         NAMES.add(self.name)
 
     # def __del__(self):
@@ -429,8 +427,7 @@ class UniquelyNamedNonInstance:
     def __init_subclass__(cls, **kwargs):
         global CLASS_NAMES
         # Register this objects, making sure it's name is unique
-        assert cls.name not in CLASS_NAMES, \
-            f'UniquelyNamed class with name {cls.name} already exists!'
+        assert cls.name not in CLASS_NAMES, f'UniquelyNamed class with name {cls.name} already exists!'
         CLASS_NAMES.add(cls.name)
 
     @ClassProperty
@@ -613,8 +610,10 @@ class Serializable:
         """
         # Sanity check the idx with the expected state size
         state_dict, idx = self._deserialize(state=state)
-        assert idx == self.state_size, f'Invalid state deserialization occurred! Expected {self.state_size} total ' \
-                                       f'values to be deserialized, only {idx} were.'
+        assert idx == self.state_size, (
+            f'Invalid state deserialization occurred! Expected {self.state_size} total '
+            f'values to be deserialized, only {idx} were.'
+        )
 
         return state_dict
 
@@ -750,8 +749,10 @@ class SerializableNonInstance:
         """
         # Sanity check the idx with the expected state size
         state_dict, idx = cls._deserialize(state=state)
-        assert idx == cls.state_size, f'Invalid state deserialization occurred! Expected {cls.state_size} total ' \
-                                      f'values to be deserialized, only {idx} were.'
+        assert idx == cls.state_size, (
+            f'Invalid state deserialization occurred! Expected {cls.state_size} total '
+            f'values to be deserialized, only {idx} were.'
+        )
 
         return state_dict
 

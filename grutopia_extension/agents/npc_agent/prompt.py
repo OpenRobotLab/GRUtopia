@@ -44,7 +44,7 @@ current_position, current_orientation = ... # your current position and orientat
 6. Before you set some literal values in your code, check if it exists by print all possible values.
 7. The coordinates is only used for spatial reasoning. Your answer MUST not contain any coordinates or object IDs. You MUST use natural language to describe location or relationship.
 8. Spatial relationships other than "near" like "above", "in" should be also thought as "near".
-""" # noqa W291
+"""  # noqa W291
 
 in_context_example = """At First, I need to know categories of object in the room, my position and orientation. I can write code to print them.
 

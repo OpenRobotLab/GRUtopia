@@ -26,8 +26,9 @@ class JointController(BaseController):
         if self.joint_subset is None:
             return ArticulationAction(joint_positions=joint_positions, joint_velocities=joint_velocities)
 
-        return self.joint_subset.make_articulation_action(joint_positions=joint_positions,
-                                                          joint_velocities=joint_velocities)
+        return self.joint_subset.make_articulation_action(
+            joint_positions=joint_positions, joint_velocities=joint_velocities
+        )
 
     def action_to_control(self, action: List | np.ndarray) -> ArticulationAction:
         """Convert input action (in 1d array format) to joint signals to apply.
@@ -49,7 +50,10 @@ class JointController(BaseController):
             joint_pos = np.array(action[0]) if action[0] is not None else None
             joint_vel = np.array(action[1]) if action[1] is not None else None
             if joint_pos is None:
-                joint_pos = self.robot.isaac_robot.get_joint_positions(
-                ) if self.joint_subset is None else self.joint_subset.get_joint_positions()
+                joint_pos = (
+                    self.robot.isaac_robot.get_joint_positions()
+                    if self.joint_subset is None
+                    else self.joint_subset.get_joint_positions()
+                )
 
         return self.forward(joint_positions=joint_pos, joint_velocities=joint_vel)

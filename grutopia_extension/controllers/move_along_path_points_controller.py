@@ -27,13 +27,15 @@ class MoveAlongPathPointsController(BaseController):
 
         super().__init__(config=config, robot=robot, scene=scene)
 
-    def forward(self,
-                start_position: np.ndarray,
-                start_orientation: np.ndarray,
-                path_points: np.ndarray,
-                forward_speed: float = 1,
-                rotation_speed: float = 8,
-                threshold: float = 0.02) -> ArticulationAction:
+    def forward(
+        self,
+        start_position: np.ndarray,
+        start_orientation: np.ndarray,
+        path_points: np.ndarray,
+        forward_speed: float = 1,
+        rotation_speed: float = 8,
+        threshold: float = 0.02,
+    ) -> ArticulationAction:
 
         if self.path_points != path_points:
             self.path_points = path_points
@@ -74,12 +76,14 @@ class MoveAlongPathPointsController(BaseController):
         assert len(action) == 1, 'action must contain 1 elements'
         assert len(action[0]) > 0, 'path points cannot be empty'
         start_position, start_orientation = self.robot.get_world_pose()
-        return self.forward(start_position=start_position,
-                            start_orientation=start_orientation,
-                            path_points=action[0],
-                            forward_speed=self.forward_speed,
-                            rotation_speed=self.rotation_speed,
-                            threshold=self.threshold * self.robot.get_robot_scale()[0])
+        return self.forward(
+            start_position=start_position,
+            start_orientation=start_orientation,
+            path_points=action[0],
+            forward_speed=self.forward_speed,
+            rotation_speed=self.rotation_speed,
+            threshold=self.threshold * self.robot.get_robot_scale()[0],
+        )
 
     def get_obs(self) -> Dict[str, Any]:
         finished = False

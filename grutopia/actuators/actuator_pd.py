@@ -49,8 +49,9 @@ class ImplicitActuator(ActuatorBase):
         # This is a no-op. There is no state to reset for implicit actuators.
         pass
 
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         """Compute the aproximmate torques for the actuated joint (physX does not compute this explicitly)."""
         # store approximate torques for reward computation
         error_pos = control_action.joint_positions - joint_pos
@@ -101,8 +102,9 @@ class IdealPDActuator(ActuatorBase):
     def reset(self, env_ids: Sequence[int]):
         pass
 
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         # compute errors
         error_pos = control_action.joint_positions - joint_pos
         error_vel = control_action.joint_velocities - joint_vel
@@ -181,8 +183,9 @@ class DCMotor(IdealPDActuator):
     Operations.
     """
 
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         # save current joint vel
         self._joint_vel[:] = joint_vel
         # calculate the desired joint torques

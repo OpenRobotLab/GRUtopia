@@ -27,7 +27,7 @@ class SocialNavigationSuccessMetric(BaseMetric):
     def reset(self):
         self.landmarks = None
         self.position = None
-        self.distance = 0.
+        self.distance = 0.0
 
     def update(self, task_obs: dict):
         """
@@ -39,8 +39,9 @@ class SocialNavigationSuccessMetric(BaseMetric):
             return
         self.distance += np.linalg.norm(self.position[:2] - robot_obs['position'][:2])
         self.position = robot_obs['position'][:2]
-        self.landmarks = robot_obs['camera']['landmarks'] if robot_obs['camera'][
-            'landmarks'] is not None else self.landmarks
+        self.landmarks = (
+            robot_obs['camera']['landmarks'] if robot_obs['camera']['landmarks'] is not None else self.landmarks
+        )
 
     def calc(self, task_info: dict):
         """

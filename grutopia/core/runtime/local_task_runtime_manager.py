@@ -5,7 +5,12 @@ import numpy as np
 
 from grutopia.core.config import EpisodeConfig, TaskConfig
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.task_runtime import BaseTaskRuntimeManager, Env, TaskRuntime, setup_offset_for_assets
+from grutopia.core.runtime.task_runtime import (
+    BaseTaskRuntimeManager,
+    Env,
+    TaskRuntime,
+    setup_offset_for_assets,
+)
 
 
 @BaseTaskRuntimeManager.register('LocalTaskRuntimeManager')
@@ -85,7 +90,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
 
         # Update task_idx
         task_idx = DataHub.gen_task_idx()
-        next_episode_dict['name'] = (f'{self.task_config.task_name_prefix}_{str(task_idx)}')
+        next_episode_dict['name'] = f'{self.task_config.task_name_prefix}_{str(task_idx)}'
         next_episode_dict['task_idx'] = task_idx
         next_episode_dict['root_path'] = f'/World/env_{str(last_env.env_id)}'
         next_episode_dict['env'] = last_env

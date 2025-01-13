@@ -13,7 +13,7 @@ class RobotUserConfig(BaseModel):
     create_robot: bool = True
 
     # common config
-    position: Optional[List[float]] = [.0, .0, .0]
+    position: Optional[List[float]] = [0.0, 0.0, 0.0]
     orientation: Optional[List[float]] = None
     scale: Optional[List[float]] = None
 

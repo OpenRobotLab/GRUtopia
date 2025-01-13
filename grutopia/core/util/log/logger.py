@@ -11,19 +11,19 @@ class Logger(object):
     PS:
         more format details at : https://docs.python.org/zh-cn/3/library/logging.html
     """
+
     level_relations = {
         'debug': logging.DEBUG,
         'info': logging.INFO,
         'warning': logging.WARNING,
         'error': logging.ERROR,
-        'critical': logging.CRITICAL
+        'critical': logging.CRITICAL,
     }
 
     # '[%(asctime)s][%(levelname)s] %(pathname)s[line:%(lineno)d] -: %(message)s'
-    def __init__(self,
-                 filename: str = None,
-                 level: str = 'info',
-                 fmt: str = '[%(asctime)s][%(levelname)s] %(message)s'):
+    def __init__(
+        self, filename: str = None, level: str = 'info', fmt: str = '[%(asctime)s][%(levelname)s] %(message)s'
+    ):
         if filename == 'None':
             filename = None
         self.log = logging.getLogger(filename)

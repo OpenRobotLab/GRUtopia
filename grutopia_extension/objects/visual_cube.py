@@ -6,7 +6,6 @@ from grutopia.core.scene.object import ObjectCommon, ObjectConfig, Scene
 
 @ObjectCommon.register('VisualCube')
 class VisualCube(ObjectCommon):
-
     def __init__(self, config: ObjectConfig):
         super().__init__(config=config)
         self._config = config
@@ -19,4 +18,5 @@ class VisualCube(ObjectCommon):
                 position=np.array(self._config.position),
                 scale=np.array([self._config.scale]),
                 color=np.array([self._config.color]),
-            ))  # noqa: F401,F403
+            )
+        )  # noqa: F401,F403

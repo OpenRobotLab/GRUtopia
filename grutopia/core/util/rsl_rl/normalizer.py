@@ -5,7 +5,6 @@ import torch
 
 
 class RunningMeanStd(object):
-
     def __init__(self, epsilon: float = 1e-4, shape: Tuple[int, ...] = ()):
         """
         Calculates the running mean and std of a data stream
@@ -41,7 +40,6 @@ class RunningMeanStd(object):
 
 
 class Normalizer(RunningMeanStd):
-
     def __init__(self, input_dim, epsilon=1e-4, clip_obs=10.0):
         super().__init__(shape=input_dim)
         self.epsilon = epsilon
@@ -64,7 +62,6 @@ class Normalizer(RunningMeanStd):
 
 
 class Normalize(torch.nn.Module):
-
     def __init__(self):
         super(Normalize, self).__init__()
         self.normalize = torch.nn.functional.normalize

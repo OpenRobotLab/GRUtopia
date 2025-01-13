@@ -8,6 +8,7 @@ class SensorParams(BaseModel):
     """
     Sensor config validator
     """
+
     name: str
     enable: Optional[bool] = True
     size: Optional[Tuple[int, int]] = None  # Camera only

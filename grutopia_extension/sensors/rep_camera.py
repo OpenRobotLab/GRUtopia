@@ -100,7 +100,8 @@ class RepCamera(BaseSensor):
                 if len(output_data['bounding_box_2d_tight']['data']) > 0:
                     output_data['landmarks'] = self._get_face_to_instances(
                         output_data['bounding_box_2d_tight']['data'],
-                        output_data['bounding_box_2d_tight']['info']['idToLabels'])
+                        output_data['bounding_box_2d_tight']['info']['idToLabels'],
+                    )
                 else:
                     output_data['landmarks'] = []
                 continue

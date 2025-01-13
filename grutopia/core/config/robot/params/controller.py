@@ -7,6 +7,7 @@ class ControllerParams(BaseModel):
     """
     Controller config validator
     """
+
     name: str
     joint_names: Optional[List[str]] = None
     map_data_path: Optional[str] = None  # navi only, npy BOG (binary occupancy grid) file

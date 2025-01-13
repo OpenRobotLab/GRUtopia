@@ -14,7 +14,6 @@ from grutopia_extension.robots.humanoid import Humanoid
 
 @BaseRobot.register('CameraRobot')
 class CameraRobot(BaseRobot):
-
     def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
         super().__init__(config, robot_model, scene)
         self._sensor_config = robot_model.sensors

@@ -19,15 +19,16 @@ class SimpleMetric(BaseMetric):
 
     def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
-        self.distance: float = 0.
+        self.distance: float = 0.0
         self.position = None
         self.param = SimpleMetricParam(**config.metric_config)
         _robot_name = self.param.robot_name
-        self.robot_name = _robot_name + '_' + str(
-            self.task_runtime.env.env_id)  # real robot name in isaac sim: {robot_name}_{env_id}
+        self.robot_name = (
+            _robot_name + '_' + str(self.task_runtime.env.env_id)
+        )  # real robot name in isaac sim: {robot_name}_{env_id}
 
     def reset(self):
-        self.distance = 0.
+        self.distance = 0.0
 
     def update(self, task_obs: dict):
         """

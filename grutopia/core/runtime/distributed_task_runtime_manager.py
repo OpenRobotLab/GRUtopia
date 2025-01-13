@@ -7,7 +7,6 @@ from grutopia.core.runtime.task_runtime import BaseTaskRuntimeManager, Env, Task
 # TODO: use ray to implement task runtime manager for the distributed version
 @BaseTaskRuntimeManager.register('DistributedTaskRuntimeManager')
 class DistributedTaskRuntimeManager(BaseTaskRuntimeManager):
-
     def __init__(self, task_user_config: TaskConfig = None):
         pass
 

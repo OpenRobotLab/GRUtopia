@@ -10,6 +10,7 @@ class EpisodeConfig(BaseModel, extra='allow'):
     """
     Episode config class.
     """
+
     scene_asset_path: Optional[str] = None
     scene_scale: Optional[List[float]] = [1.0, 1.0, 1.0]
     scene_position: Optional[List[float]] = [0, 0, 0]
@@ -23,4 +24,5 @@ class EpisodeConfigFile(BaseModel, extra='allow'):
     """
     Episode config file model.
     """
+
     episodes: List[EpisodeConfig]

@@ -11,6 +11,7 @@ from grutopia.core.util import log
 
 class BaseSensor(ABC):
     """Base class of sensor."""
+
     sensors = {}
 
     def __init__(self, config: SensorModel, robot: BaseRobot, scene: Scene):
@@ -93,8 +94,9 @@ def config_inject(params: SensorParams, model: SensorModel) -> SensorModel:
     return conf
 
 
-def create_sensors(config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot,
-                   scene: Scene) -> Dict[str, BaseSensor]:
+def create_sensors(
+    config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot, scene: Scene
+) -> Dict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:

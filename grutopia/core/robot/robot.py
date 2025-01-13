@@ -14,6 +14,7 @@ from grutopia.core.util import log
 
 class BaseRobot:
     """Base class of robot."""
+
     robots = {}
 
     def __init__(self, config: RobotUserConfig, robot_model: RobotModel, scene: Scene):

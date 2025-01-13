@@ -23,6 +23,7 @@ class BaseTask(OmniBaseTask, ABC):
     * enable register for auto register task
     * contains scene/robots/objs.
     """
+
     tasks = {}
 
     def __init__(self, runtime: TaskRuntime, scene: Scene):
@@ -47,13 +48,16 @@ class BaseTask(OmniBaseTask, ABC):
         Load assets to scene.
         """
         if self.runtime.scene_asset_path is not None:
-            source, prim_path = create_scene(os.path.abspath(self.runtime.scene_asset_path),
-                                             prim_path_root=f'World/env_{self.runtime.env.env_id}/scene')
+            source, prim_path = create_scene(
+                os.path.abspath(self.runtime.scene_asset_path),
+                prim_path_root=f'World/env_{self.runtime.env.env_id}/scene',
+            )
             create_prim(
                 prim_path,
                 usd_path=source,
                 scale=self.runtime.scene_scale,
-                translation=[self.runtime.env.offset[idx] + i for idx, i in enumerate(self.runtime.scene_position)])
+                translation=[self.runtime.env.offset[idx] + i for idx, i in enumerate(self.runtime.scene_position)],
+            )
 
         self.robots = init_robots(self.runtime, self._scene)
         self.objects = {}

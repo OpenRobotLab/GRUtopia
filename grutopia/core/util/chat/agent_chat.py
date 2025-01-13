@@ -23,12 +23,9 @@ class AgentChat:
             parent_idx (int): index of parent message(this message is a reply to parent message).
             role (str): role of agent (agent as default, don't change this pls).
         """
-        DataHub.send_chat_control(nickname=self.robot_name,
-                                  task_name=self.task_name,
-                                  role=role,
-                                  text=message,
-                                  at=at,
-                                  parent_idx=parent_idx)
+        DataHub.send_chat_control(
+            nickname=self.robot_name, task_name=self.task_name, role=role, text=message, at=at, parent_idx=parent_idx
+        )
 
     def get_message(self) -> List[Dict]:
         """

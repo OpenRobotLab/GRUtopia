@@ -73,10 +73,7 @@ html_static_path = ['_static']
 
 html_theme_options = {
     'menu': [
-        {
-            'name': 'GitHub',
-            'url': 'https://github.com/OpenRobotLab/GRUtopia.git'
-        },
+        {'name': 'GitHub', 'url': 'https://github.com/OpenRobotLab/GRUtopia.git'},
     ],
     # Specify the language of shared menu
     'menu_lang': 'en',

@@ -9,11 +9,10 @@ from grutopia.core.task import BaseTask
 
 
 class BenchmarkTaskModel(BaseModel):
-    timeout: float | str = 60.  # timeout: minute
+    timeout: float | str = 60.0  # timeout: minute
 
 
 class BenchmarkTask(BaseTask):
-
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
         config = BenchmarkTaskModel(**runtime.meta)

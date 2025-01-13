@@ -7,7 +7,6 @@ from grutopia.core.task import BaseTask
 
 @BaseTask.register('SimpleAgentTask')
 class SimpleAgentTask(BaseTask):
-
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
         self.stop_count = 0

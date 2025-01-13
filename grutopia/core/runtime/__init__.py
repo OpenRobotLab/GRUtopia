@@ -2,11 +2,22 @@ from typing import Dict, List, Optional
 
 import yaml
 
-from grutopia.core.config import AgentConfig, EpisodeConfigFile, SimConfig, ValidatedConfig
+from grutopia.core.config import (
+    AgentConfig,
+    EpisodeConfigFile,
+    SimConfig,
+    ValidatedConfig,
+)
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.distributed_task_runtime_manager import DistributedTaskRuntimeManager
+from grutopia.core.runtime.distributed_task_runtime_manager import (
+    DistributedTaskRuntimeManager,
+)
 from grutopia.core.runtime.local_task_runtime_manager import LocalTaskRuntimeManager
-from grutopia.core.runtime.task_runtime import BaseTaskRuntimeManager, TaskRuntime, create_task_runtime_manager
+from grutopia.core.runtime.task_runtime import (
+    BaseTaskRuntimeManager,
+    TaskRuntime,
+    create_task_runtime_manager,
+)
 from grutopia.core.util import log
 
 
@@ -29,13 +40,11 @@ class SimulatorRuntime:
 
         # Init Isaac Sim
         from isaacsim import SimulationApp  # noqa
+
         self.headless = headless
-        self._simulation_app = SimulationApp({
-            'headless': self.headless,
-            'anti_aliasing': 0,
-            'hide_ui': False,
-            'multi_gpu': False
-        })
+        self._simulation_app = SimulationApp(
+            {'headless': self.headless, 'anti_aliasing': 0, 'hide_ui': False, 'multi_gpu': False}
+        )
         log.debug('SimulationApp init done')
 
         if webrtc:
@@ -65,8 +74,7 @@ class SimulatorRuntime:
     @staticmethod
     def read_yaml_file(file_path) -> Dict:
         if file_path:
-            if not file_path.endswith('.yaml') or \
-                    file_path.endswith('.yml'):
+            if not file_path.endswith('.yaml') or file_path.endswith('.yml'):
                 log.error('runtime file not end with .yaml or .yml')
                 raise FileNotFoundError('runtime file not end with .yaml or .yml')
             with open(file_path, 'r') as f:
@@ -88,9 +96,11 @@ class SimulatorRuntime:
             config.task_config.episodes = EpisodeConfigFile(**episodes_dict).episodes
 
         # Init Datahub
-        DataHub.datahub_init(sim=str(config.datahub_config.sim),
-                             chat=str(config.datahub_config.chat),
-                             remote=config.datahub_config.remote)
+        DataHub.datahub_init(
+            sim=str(config.datahub_config.sim),
+            chat=str(config.datahub_config.chat),
+            remote=config.datahub_config.remote,
+        )
 
         _trm = create_task_runtime_manager(config.task_config)
         self.simulator = config.simulator

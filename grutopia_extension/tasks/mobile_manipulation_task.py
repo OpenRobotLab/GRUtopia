@@ -25,7 +25,6 @@ class MobileManipulationModel(BaseModel):
 
 @BaseTask.register('MobileManipulationBenchmarkTask')
 class MobileManipulationBenchmarkTask(BaseTask):
-
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
         self.step_counter = 0

@@ -7,12 +7,14 @@ class LogData(BaseModel):
     type: str = Field(..., examples=['agent'], description='message(notification)|agent(response)|user(question)')
     name: Optional[str] = Field(None, examples=['Bob'], description='nickname')
     time: Optional[str] = Field(None, examples=['17:20'], description='time of the message')
-    message: str = Field(...,
-                         examples=['his image shows a blue computer screen with a white background.'],
-                         description='text content of the message')
-    photo: Optional[str] = Field(None,
-                                 examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'],
-                                 description='avatar url')
+    message: str = Field(
+        ...,
+        examples=['his image shows a blue computer screen with a white background.'],
+        description='text content of the message',
+    )
+    photo: Optional[str] = Field(
+        None, examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'], description='avatar url'
+    )
 
 
 class ChainOfThoughtDataItem(BaseModel):
@@ -25,18 +27,20 @@ class ChatControlData(BaseModel):
     type: str = Field(..., examples=['agent'], description='message(notification)|agent(response)|user(question)')
     name: Optional[str] = Field(None, examples=['Agent'], description='nickname')
     time: Optional[str] = Field(None, examples=['18:20'], description='time of the message')
-    message: Optional[str] = Field(None,
-                                   examples=['Hi, Understand this picture'],
-                                   description='text content of the message')
-    photo: Optional[str] = Field(None,
-                                 examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'],
-                                 description='avatar url')
-    img: Optional[str] = Field(None,
-                               examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'],
-                               description='image content of the message')
-    status: Optional[str] = Field(None,
-                                  examples=['pending'],
-                                  description='status of the message, legal values: pending')
+    message: Optional[str] = Field(
+        None, examples=['Hi, Understand this picture'], description='text content of the message'
+    )
+    photo: Optional[str] = Field(
+        None, examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'], description='avatar url'
+    )
+    img: Optional[str] = Field(
+        None,
+        examples=['https://static.openxlab.org.cn/puyu/demo/000-2x.jpg'],
+        description='image content of the message',
+    )
+    status: Optional[str] = Field(
+        None, examples=['pending'], description='status of the message, legal values: pending'
+    )
     at: Optional[List[str]] = Field(None, examples=[['agent1', 'agent2']], description='who the message send to')
     parent_idx: Optional[int] = Field(None, examples=[2], description='index of the parent message in chatbox')
 

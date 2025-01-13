@@ -27,7 +27,7 @@ class MobileManipulationSuccessMetric(BaseMetric):
 
     def reset(self):
         self.position = None
-        self.distance = 0.
+        self.distance = 0.0
         self.path = []
         # Setup stage
         self.root_path = '/Root'
@@ -98,7 +98,7 @@ class MobileManipulationSuccessMetric(BaseMetric):
             'pl': float(self.distance),
             'success': bool(success),
             'success_list': success_list,
-            'fail_list': fail_list
+            'fail_list': fail_list,
         }
 
     def get_object_info(self, instance_id):
@@ -113,7 +113,8 @@ class MobileManipulationSuccessMetric(BaseMetric):
 
     def get_relationship_ab(self, point_cloud_info_a, point_cloud_info_b):
         spatial_relationship_a2b, spatial_relationship_b2a, dist = get_spatial_relationship(
-            point_cloud_info_a, point_cloud_info_b)
+            point_cloud_info_a, point_cloud_info_b
+        )
         return spatial_relationship_a2b, spatial_relationship_b2a
 
     def get_room_pc(self, point_cloud):
@@ -122,7 +123,6 @@ class MobileManipulationSuccessMetric(BaseMetric):
 
 
 def get_room_info(room_dict, occupancy_map):
-
     def pixel_to_cord(map, p):
         i, j = p
         y = float(map[i, 0])
@@ -188,8 +188,9 @@ def get_spatial_relationship(point_cloud_info_a, point_cloud_info_b):
     point_cloud_a, min_points_a, max_points_a = point_cloud_info_a
     point_cloud_b, min_points_b, max_points_b = point_cloud_info_b
 
-    return infer_spatial_relationship(point_cloud_a, point_cloud_b, min_points_a, max_points_a, min_points_b,
-                                      max_points_b)
+    return infer_spatial_relationship(
+        point_cloud_a, point_cloud_b, min_points_a, max_points_a, min_points_b, max_points_b
+    )
 
 
 def infer_spatial_relationship(point_cloud_a, point_cloud_b, min_points_a, max_points_a, min_points_b, max_points_b):
@@ -212,17 +213,23 @@ def calculate_xy_distance_between_two_point_clouds(point_cloud_a: np.ndarray, po
     bt = bt.reshape(c, 1, h2)
     at = at.repeat(h2, 2)
     bt = bt.repeat(h1, 1)
-    sub = np.sqrt(((at - bt)**2).sum(0))
+    sub = np.sqrt(((at - bt) ** 2).sum(0))
     return sub.min()
 
 
 def get_mesh_via_prim(prim):
-    points_total, faceuv_total, normals_total, faceVertexCounts_total, faceVertexIndices_total, mesh_total = recursive_parse(
-        prim)
+    (
+        points_total,
+        faceuv_total,
+        normals_total,
+        faceVertexCounts_total,
+        faceVertexIndices_total,
+        mesh_total,
+    ) = recursive_parse(prim)
     faces = []
     count = 0
     for n in faceVertexCounts_total:
-        f = [_ for _ in faceVertexIndices_total[count:count + n]]
+        f = [_ for _ in faceVertexIndices_total[count : count + n]]
         faces.append(f)
         count += n
     faces = np.array(faces)
@@ -236,7 +243,6 @@ def get_mesh_via_prim(prim):
 
 
 def recursive_parse(prim):
-
     def to_list(data):
         res = []
         if data is not None:
@@ -329,7 +335,7 @@ def recursive_parse(prim):
 
         faceVertexCounts_total += faceVertexCounts
         faceuv_total += faceuv
-        normals_total += normals[:len(points)]
+        normals_total += normals[: len(points)]
         points_total += points
         mesh_total += mesh_list
 

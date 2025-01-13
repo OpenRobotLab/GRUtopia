@@ -54,10 +54,9 @@ class ActuatorNetLSTM(DCMotor):
         hidden_dim = self.network.lstm.state_dict()['weight_hh_l0'].shape[1]
         # create buffers for storing LSTM inputs
         self.sea_input = torch.zeros(self._num_envs * self.num_joints, 1, 2, device=self._device)
-        self.sea_hidden_state = torch.zeros(num_layers,
-                                            self._num_envs * self.num_joints,
-                                            hidden_dim,
-                                            device=self._device)
+        self.sea_hidden_state = torch.zeros(
+            num_layers, self._num_envs * self.num_joints, hidden_dim, device=self._device
+        )
         self.sea_cell_state = torch.zeros(num_layers, self._num_envs * self.num_joints, hidden_dim, device=self._device)
         # reshape via views (doesn't change the actual memory layout)
         layer_shape_per_env = (num_layers, self._num_envs, self.num_joints, hidden_dim)
@@ -74,8 +73,9 @@ class ActuatorNetLSTM(DCMotor):
             self.sea_hidden_state_per_env[:, env_ids] = 0.0
             self.sea_cell_state_per_env[:, env_ids] = 0.0
 
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         # compute network inputs
         self.sea_input[:, 0, 0] = (control_action.joint_positions - joint_pos).flatten()
         self.sea_input[:, 0, 1] = joint_vel.flatten()
@@ -84,9 +84,9 @@ class ActuatorNetLSTM(DCMotor):
 
         # run network inference
         with torch.inference_mode():
-            torques, (self.sea_hidden_state[:],
-                      self.sea_cell_state[:]) = self.network(self.sea_input,
-                                                             (self.sea_hidden_state, self.sea_cell_state))
+            torques, (self.sea_hidden_state[:], self.sea_cell_state[:]) = self.network(
+                self.sea_input, (self.sea_hidden_state, self.sea_cell_state)
+            )
         self.computed_effort = torques.reshape(self._num_envs, self.num_joints)
 
         # clip the computed effort based on the motor limits
@@ -130,10 +130,9 @@ class ActuatorNetMLP(DCMotor):
 
         # create buffers for MLP history
         history_length = max(self.cfg.input_idx) + 1
-        self._joint_pos_error_history = torch.zeros(self._num_envs,
-                                                    history_length,
-                                                    self.num_joints,
-                                                    device=self._device)
+        self._joint_pos_error_history = torch.zeros(
+            self._num_envs, history_length, self.num_joints, device=self._device
+        )
         self._joint_vel_history = torch.zeros(self._num_envs, history_length, self.num_joints, device=self._device)
 
     """
@@ -145,8 +144,9 @@ class ActuatorNetMLP(DCMotor):
         self._joint_pos_error_history[env_ids] = 0.0
         self._joint_vel_history[env_ids] = 0.0
 
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         # move history queue by 1 and update top of history
         # -- positions
         self._joint_pos_error_history = self._joint_pos_error_history.roll(1, 1)
@@ -159,23 +159,28 @@ class ActuatorNetMLP(DCMotor):
 
         # compute network inputs
         # -- positions
-        pos_input = torch.cat([self._joint_pos_error_history[:, i].unsqueeze(2) for i in self.cfg.input_idx],
-                              dim=2)  # noqa E126
+        pos_input = torch.cat(
+            [self._joint_pos_error_history[:, i].unsqueeze(2) for i in self.cfg.input_idx], dim=2
+        )  # noqa E126
         pos_input = pos_input.view(self._num_envs * self.num_joints, -1)
         # -- velocity
-        vel_input = torch.cat([self._joint_vel_history[:, i].unsqueeze(2) for i in self.cfg.input_idx],
-                              dim=2)  # noqa E126
+        vel_input = torch.cat(
+            [self._joint_vel_history[:, i].unsqueeze(2) for i in self.cfg.input_idx], dim=2
+        )  # noqa E126
         vel_input = vel_input.view(self._num_envs * self.num_joints, -1)
         # -- scale and concatenate inputs
         if self.cfg.input_order == 'pos_vel':
-            network_input = torch.cat([pos_input * self.cfg.pos_scale, vel_input * self.cfg.vel_scale],
-                                      dim=1)  # noqa E126
+            network_input = torch.cat(
+                [pos_input * self.cfg.pos_scale, vel_input * self.cfg.vel_scale], dim=1
+            )  # noqa E126
         elif self.cfg.input_order == 'vel_pos':
-            network_input = torch.cat([vel_input * self.cfg.vel_scale, pos_input * self.cfg.pos_scale],
-                                      dim=1)  # noqa E126
+            network_input = torch.cat(
+                [vel_input * self.cfg.vel_scale, pos_input * self.cfg.pos_scale], dim=1
+            )  # noqa E126
         else:
             raise ValueError(
-                f"Invalid input order for MLP actuator net: {self.cfg.input_order}. Must be 'pos_vel' or 'vel_pos'.")
+                f"Invalid input order for MLP actuator net: {self.cfg.input_order}. Must be 'pos_vel' or 'vel_pos'."
+            )
 
         # run network inference
         torques = self.network(network_input).view(self._num_envs, self.num_joints)

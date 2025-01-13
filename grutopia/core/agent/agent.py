@@ -9,7 +9,10 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 from grutopia.core.util.chat import AgentChat
-from grutopia.core.util.space import get_action_space_by_task, get_observation_space_by_task
+from grutopia.core.util.space import (
+    get_action_space_by_task,
+    get_observation_space_by_task,
+)
 
 
 def start_loop(loop):
@@ -25,8 +28,9 @@ class BaseAgent(ABC):
     loop: Thread | None = None
     agent_step_loop = asyncio.new_event_loop()
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str,
-                 task_runtime: TaskRuntime):
+    def __init__(
+        self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, task_runtime: TaskRuntime
+    ):
         self.task_name: str = task_name
         self.robot_name: str = robot_name + '_' + str(task_runtime.env.env_id)
         self.sync_mode: str = sync_mode
@@ -142,7 +146,7 @@ class BaseAgent(ABC):
         Start agent asyncio event loop in another thread.
         """
         if cls.loop is None:
-            cls.loop = Thread(target=start_loop, args=(cls.agent_step_loop, ))
+            cls.loop = Thread(target=start_loop, args=(cls.agent_step_loop,))
             cls.loop.daemon = True
             cls.loop.start()
 

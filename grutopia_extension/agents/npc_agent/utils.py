@@ -49,7 +49,6 @@ class PythonREPL(Tool):
 
     @contextmanager
     def time_limit(self, seconds):
-
         def signal_handler(signum, frame):
             raise TimeoutError(f'Timed out after {seconds} seconds.')
 
@@ -114,7 +113,6 @@ class ObjectInView(BaseModel):
 
 
 class Env:
-
     def __init__(self, scene_data_path: str):
         with open(scene_data_path) as f:
             self.scene_data = json.load(f)
@@ -122,15 +120,19 @@ class Env:
         for id, obj_info in self.scene_data.items():
             position = np.array(obj_info['position'])
             size = np.array(obj_info['max_points']) - np.array(obj_info['min_points'])
-            nearby_objects = [(nearby_obj_id, spatial_relation[0])
-                              for nearby_obj_id, spatial_relation in obj_info['nearby_objects'].items()]
-            obj = Object(id=id,
-                         category=obj_info['category'],
-                         center=position,
-                         size=size,
-                         caption=obj_info['caption'],
-                         location=obj_info['room'],
-                         nearby_objects=nearby_objects)
+            nearby_objects = [
+                (nearby_obj_id, spatial_relation[0])
+                for nearby_obj_id, spatial_relation in obj_info['nearby_objects'].items()
+            ]
+            obj = Object(
+                id=id,
+                category=obj_info['category'],
+                center=position,
+                size=size,
+                caption=obj_info['caption'],
+                location=obj_info['room'],
+                nearby_objects=nearby_objects,
+            )
             self.objects.append(obj)
         # yapf: disable
         self.shell = PythonREPL(user_ns={

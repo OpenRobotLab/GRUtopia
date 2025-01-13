@@ -9,6 +9,7 @@ class MetaActionData(BaseModel):
     """
     action status in grutopia
     """
+
     controller: str
     data: Any
 
@@ -17,6 +18,7 @@ class ActionData(BaseModel):
     """
     action status in grutopia
     """
+
     robot: str
     controllers: List[MetaActionData]
 
@@ -25,6 +27,7 @@ class _IsaacData(BaseModel):
     """
     isaac status in grutopia
     """
+
     actions: Optional[Dict[str, Dict[str, Any]]] = {}
     obs: Optional[Dict[str, Dict[str, Any]]] = {}
     task_idx_counter: Optional[int] = 0
@@ -65,6 +68,7 @@ class IsaacData:
             }
 
     """
+
     data: _IsaacData = _IsaacData(actions={}, obs={})
 
     def __init__(self) -> None:
@@ -99,8 +103,9 @@ class IsaacData:
             cls.data.obs[task_name][robot_name] = obs_data
 
     @classmethod
-    def set_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str,
-                                                                                                      Any]]) -> None:
+    def set_obs_by_task_name_and_robot_name(
+        cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str, Any]]
+    ) -> None:
         """
         Set isaac observation by task name and robot name
 

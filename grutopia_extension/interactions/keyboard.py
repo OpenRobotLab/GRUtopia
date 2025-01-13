@@ -6,9 +6,8 @@ from grutopia.core.util.interaction import BaseInteraction
 
 
 class KeyboardController:
-
     def __init__(self):
-        self.command = np.array([.0, .0, .0, .0, .0, .0])
+        self.command = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     def read(self):
         """
@@ -21,9 +20,10 @@ class KeyboardController:
 
     def _sub_keyboard_event(self, event, *args, **kwargs):
         """subscribe to keyboard events, map to str"""
-        # yapf: disable
-        if (event.type == carb.input.KeyboardEventType.KEY_PRESS or
-                event.type == carb.input.KeyboardEventType.KEY_REPEAT):
+        if (
+            event.type == carb.input.KeyboardEventType.KEY_PRESS
+            or event.type == carb.input.KeyboardEventType.KEY_REPEAT
+        ):
             if event.input == carb.input.KeyboardInput.W:
                 self.command = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
             if event.input == carb.input.KeyboardInput.S:

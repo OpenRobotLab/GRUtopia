@@ -35,15 +35,15 @@ class DebugMetric(BaseMetric):
         # log.debug(f'====== obs: {robot_obs} =====')
         if 'render' in robot_obs and robot_obs['render']:
             self.path.append(robot_obs['position'].tolist())
-        self.landmarks = robot_obs['camera']['landmarks'] if robot_obs['camera'][
-            'landmarks'] is not None else self.landmarks
+        self.landmarks = (
+            robot_obs['camera']['landmarks'] if robot_obs['camera']['landmarks'] is not None else self.landmarks
+        )
         if task_obs[self.task_runtime.robots[0].name].get('question') is not None:
             self.question = task_obs[self.task_runtime.robots[0].name].get('question')
         if task_obs[self.task_runtime.robots[0].name].get('answer') is not None:
-            self.dialogues.append({
-                'question': self.question,
-                'answer': task_obs[self.task_runtime.robots[0].name].get('answer')
-            })
+            self.dialogues.append(
+                {'question': self.question, 'answer': task_obs[self.task_runtime.robots[0].name].get('answer')}
+            )
 
     def calc(self, task_info: dict):
         """
@@ -63,6 +63,6 @@ class DebugMetric(BaseMetric):
             'path': self.path,
             'dialogue_turn': self.dialogue_turn,
             'dialogue': self.dialogues,
-            'dialogue_landmarks': self.dialogue_landmarks
+            'dialogue_landmarks': self.dialogue_landmarks,
         }
         return debug_metric

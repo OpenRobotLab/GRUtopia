@@ -72,7 +72,7 @@ def get_grabbed_able_xform_paths(root_path: str, prim: Usd.Prim, depth: int = 3)
     if prim is None:
         return paths
     print(f'get_grabbed_able_xform_paths: start to traverse {prim.GetPrimPath()}')
-    relative_prim_path = str(prim.GetPrimPath())[len(root_path):]
+    relative_prim_path = str(prim.GetPrimPath())[len(root_path) :]
     if relative_prim_path.count('/') <= depth:
         for child in prim.GetChildren():
             if child.GetTypeName() == 'Scope':
@@ -102,10 +102,9 @@ def get_world_transform_xform(prim: Usd.Prim) -> typing.Tuple[Gf.Vec3d, Gf.Rotat
     return translation, rotation, scale
 
 
-def nearest_xform_from_position(stage: Usd.Stage,
-                                xform_paths: typing.List[str],
-                                position: np.ndarray,
-                                threshold: float = 0) -> str:
+def nearest_xform_from_position(
+    stage: Usd.Stage, xform_paths: typing.List[str], position: np.ndarray, threshold: float = 0
+) -> str:
     """get prim path of nearest Xform objects from the target position.
 
     Args:

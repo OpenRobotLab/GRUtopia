@@ -1,8 +1,8 @@
-import os
 import json
+import os
 
-from grutopia.core.gym_env import Env
 from grutopia.core.datahub import DataHub
+from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util.agent import create_agent
 from grutopia_extension import import_extensions
@@ -33,17 +33,16 @@ task_name = list(env.active_runtimes.values())[0]
 
 while env.simulation_app.is_running() and not env.finished():
     i += 1
-    
+
     _actions = DataHub.get_actions_by_task_name(task_name)
-    _actions = {
-        _actions['robot']: {a['controller']: a['data']
-                            for a in _actions['controllers']}
-    } if len(_actions) > 0 else {}
+    _actions = (
+        {_actions['robot']: {a['controller']: a['data'] for a in _actions['controllers']}} if len(_actions) > 0 else {}
+    )
     for _robot, _action in _actions.items():
         env_actions = _action
-    
+
     obs, _, _, _, _ = env.step(action=env_actions)
-    
+
     # Send obs
     DataHub.set_obs_data(obs)
 
@@ -60,16 +59,21 @@ while env.simulation_app.is_running() and not env.finished():
             # TODELETE
             metrics_results['normally_end'] = True
             with open(
-                    os.path.join(
-                        metrics_save_path,
-                        task.runtime.scene_asset_path.split('/')[-2] + '_' +
-                        '_'.join(task.runtime.extra['target'].split('/')) + str(task.runtime.extra['episode_idx']) +
-                        '.json'), 'w') as f:
+                os.path.join(
+                    metrics_save_path,
+                    task.runtime.scene_asset_path.split('/')[-2]
+                    + '_'
+                    + '_'.join(task.runtime.extra['target'].split('/'))
+                    + str(task.runtime.extra['episode_idx'])
+                    + '.json',
+                ),
+                'w',
+            ) as f:
                 f.write(json.dumps(metrics_results))
-    
+
     if task_finished:
         env.close()
-            
+
     if i % 1000 == 0:
         print(i)
 

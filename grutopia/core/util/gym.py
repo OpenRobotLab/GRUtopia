@@ -4,7 +4,6 @@ import numpy as np
 
 
 class gym_adapter:
-
     def __init__(self, joint_names_gym: List[str], joint_names_sim: List[str]):
         self.joint_names_gym = joint_names_gym
         self.joint_names_sim = joint_names_sim

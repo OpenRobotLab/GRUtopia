@@ -36,16 +36,19 @@ class RotateController(BaseController):
 
         return delta_z_rot
 
-    def forward(self,
-                start_orientation: np.ndarray,
-                goal_orientation: np.ndarray,
-                rotation_speed: float = 3,
-                threshold: float = 0.02) -> ArticulationAction:
+    def forward(
+        self,
+        start_orientation: np.ndarray,
+        goal_orientation: np.ndarray,
+        rotation_speed: float = 3,
+        threshold: float = 0.02,
+    ) -> ArticulationAction:
         self.goal_orientation = goal_orientation
         self.threshold = threshold
 
-        delta_z_rot = RotateController.get_delta_z_rot(start_orientation=start_orientation,
-                                                       goal_orientation=goal_orientation)
+        delta_z_rot = RotateController.get_delta_z_rot(
+            start_orientation=start_orientation, goal_orientation=goal_orientation
+        )
         if abs(delta_z_rot) < threshold:
             delta_z_rot = 0
 
@@ -67,17 +70,20 @@ class RotateController(BaseController):
         """
         assert len(action) == 1, 'action must contain 1 elements'
         start_orientation = self.robot.get_world_pose()[1]
-        return self.forward(start_orientation=start_orientation,
-                            goal_orientation=action[0],
-                            rotation_speed=self.rotation_speed,
-                            threshold=self.threshold)
+        return self.forward(
+            start_orientation=start_orientation,
+            goal_orientation=action[0],
+            rotation_speed=self.rotation_speed,
+            threshold=self.threshold,
+        )
 
     def get_obs(self) -> Dict[str, Any]:
         if self.goal_orientation is None or self.threshold is None:
             return {}
         start_orientation = self.robot.get_world_pose()[1]
-        delta_z_rot = RotateController.get_delta_z_rot(start_orientation=start_orientation,
-                                                       goal_orientation=self.goal_orientation)
+        delta_z_rot = RotateController.get_delta_z_rot(
+            start_orientation=start_orientation, goal_orientation=self.goal_orientation
+        )
         finished = True if abs(delta_z_rot) < self.threshold else False
         return {
             'finished': finished,

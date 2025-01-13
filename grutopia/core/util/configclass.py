@@ -215,8 +215,10 @@ def _add_annotation_types(cls):
                     # check if var type is not MISSING
                     # we cannot deduce type from MISSING!
                     if value is MISSING:
-                        raise TypeError(f"Missing type annotation for '{key}' in class '{cls.__name__}'."
-                                        ' Please add a type annotation or set a default value.')
+                        raise TypeError(
+                            f"Missing type annotation for '{key}' in class '{cls.__name__}'."
+                            ' Please add a type annotation or set a default value.'
+                        )
                     # add type annotation
                     hints[key] = type(value)
             elif key != value.__name__:
@@ -286,7 +288,8 @@ def _process_mutable_types(cls):
         raise ValueError(
             f"In class '{cls.__name__}', number of annotations ({len(ann)}) does not match number of class members"
             f' ({len(class_members)}). Please check that all class members have type annotations and/or a default'
-            " value. If you don't want to specify a default value, please use the literal `dataclasses.MISSING`.")
+            " value. If you don't want to specify a default value, please use the literal `dataclasses.MISSING`."
+        )
     # iterate over annotations and add field factory for mutable types
     for key in ann:
         # find matching field in class

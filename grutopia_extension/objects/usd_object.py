@@ -11,7 +11,6 @@ from grutopia.core.scene.object import ObjectCommon, ObjectConfig, Scene
 
 @ObjectCommon.register('UsdObject')
 class UsdObject(ObjectCommon):
-
     def __init__(self, config: ObjectConfig):
         super().__init__(config=config)
         self._config = config
@@ -19,36 +18,43 @@ class UsdObject(ObjectCommon):
     def set_up_scene(self, scene: Scene):
         if self._config.collider:
             scene.add(
-                RigidObject(usd_path=self._config.usd_obj_param.usd_path,
-                            prim_path=self._config.prim_path,
-                            name=self._config.name,
-                            position=np.array(self._config.position),
-                            scale=np.array([self._config.scale])))  # noqa: F401,F403
+                RigidObject(
+                    usd_path=self._config.usd_obj_param.usd_path,
+                    prim_path=self._config.prim_path,
+                    name=self._config.name,
+                    position=np.array(self._config.position),
+                    scale=np.array([self._config.scale]),
+                )
+            )  # noqa: F401,F403
         else:
             scene.add(
-                GeometryObject(usd_path=self._config.usd_obj_param.usd_path,
-                               prim_path=self._config.prim_path,
-                               name=self._config.name,
-                               position=np.array(self._config.position),
-                               scale=np.array([self._config.scale])))  # noqa: F401,F403
+                GeometryObject(
+                    usd_path=self._config.usd_obj_param.usd_path,
+                    prim_path=self._config.prim_path,
+                    name=self._config.name,
+                    position=np.array(self._config.position),
+                    scale=np.array([self._config.scale]),
+                )
+            )  # noqa: F401,F403
 
 
 class RigidObject(RigidPrim):
-
-    def __init__(self,
-                 prim_path: str,
-                 usd_path: str,
-                 name: str = 'custom_obj',
-                 position: Optional[np.ndarray] = None,
-                 translation: Optional[np.ndarray] = None,
-                 orientation: Optional[np.ndarray] = None,
-                 scale: Optional[np.ndarray] = None,
-                 visible: Optional[bool] = None,
-                 mass: Optional[float] = None,
-                 density: Optional[float] = None,
-                 linear_velocity: Optional[Sequence[float]] = None,
-                 angular_velocity: Optional[Sequence[float]] = None,
-                 collider: Optional[bool] = True) -> None:
+    def __init__(
+        self,
+        prim_path: str,
+        usd_path: str,
+        name: str = 'custom_obj',
+        position: Optional[np.ndarray] = None,
+        translation: Optional[np.ndarray] = None,
+        orientation: Optional[np.ndarray] = None,
+        scale: Optional[np.ndarray] = None,
+        visible: Optional[bool] = None,
+        mass: Optional[float] = None,
+        density: Optional[float] = None,
+        linear_velocity: Optional[Sequence[float]] = None,
+        angular_velocity: Optional[Sequence[float]] = None,
+        collider: Optional[bool] = True,
+    ) -> None:
         if not is_prim_path_valid(prim_path):
             if mass is None:
                 mass = 1
@@ -72,7 +78,6 @@ class RigidObject(RigidPrim):
 
 
 class GeometryObject(GeometryPrim):
-
     def __init__(
         self,
         prim_path: str,

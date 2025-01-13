@@ -2,7 +2,12 @@ import datetime
 from typing import Any, Dict, List
 
 from grutopia.core.datahub.isaac_data import ActionData, IsaacData
-from grutopia.core.datahub.model_data import ChainOfThoughtDataItem, ChatControlData, LogData, ModelData
+from grutopia.core.datahub.model_data import (
+    ChainOfThoughtDataItem,
+    ChatControlData,
+    LogData,
+    ModelData,
+)
 from grutopia.core.util import log
 
 
@@ -141,8 +146,9 @@ class DataHub:
             return IsaacData.set_obs_data_by_task_name(task_name, obs)
 
     @classmethod
-    def set_obs_by_task_name_and_robot_name(cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str,
-                                                                                                      Any]]) -> None:
+    def set_obs_by_task_name_and_robot_name(
+        cls, task_name: str, robot_name: str, obs: Dict[str, Dict[str, Any]]
+    ) -> None:
         """
         Set observation by task name and robot name
 
@@ -233,14 +239,16 @@ class DataHub:
             ModelData.append_chan_of_thought([ChainOfThoughtDataItem(**i) for i in res_data], task_name)
 
     @classmethod
-    def send_chat_control(cls,
-                          nickname: str,
-                          text: str,
-                          img: str = None,
-                          role: str = 'user',
-                          task_name: str = None,
-                          at: list[str] = None,
-                          parent_idx: int = -1) -> None:
+    def send_chat_control(
+        cls,
+        nickname: str,
+        text: str,
+        img: str = None,
+        role: str = 'user',
+        task_name: str = None,
+        at: list[str] = None,
+        parent_idx: int = -1,
+    ) -> None:
         """Send a new message to the chatbox.
 
         Args:

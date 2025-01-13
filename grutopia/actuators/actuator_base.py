@@ -122,11 +122,13 @@ class ActuatorBase(ABC):
         joint_indices = self.joint_indices
         if joint_indices == slice(None):
             joint_indices = list(range(self.num_joints))
-        return (f'<class {self.__class__.__name__}> object:\n'
-                f'\tNumber of joints      : {self.num_joints}\n'
-                f'\tJoint names expression: {self.cfg.joint_names_expr}\n'
-                f'\tJoint names           : {self.joint_names}\n'
-                f'\tJoint indices         : {joint_indices}\n')
+        return (
+            f'<class {self.__class__.__name__}> object:\n'
+            f'\tNumber of joints      : {self.num_joints}\n'
+            f'\tJoint names expression: {self.cfg.joint_names_expr}\n'
+            f'\tJoint names           : {self.joint_names}\n'
+            f'\tJoint indices         : {joint_indices}\n'
+        )
 
     """
     Properties.
@@ -166,8 +168,9 @@ class ActuatorBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def compute(self, control_action: ArticulationActions, joint_pos: torch.Tensor,
-                joint_vel: torch.Tensor) -> ArticulationActions:
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
         """Process the actuator group actions and compute the articulation actions.
 
         It computes the articulation actions based on the actuator model type
@@ -187,8 +190,9 @@ class ActuatorBase(ABC):
     Helper functions.
     """
 
-    def _parse_joint_parameter(self, cfg_value: float | dict[str, float] | None,
-                               default_value: float | torch.Tensor | None) -> torch.Tensor:
+    def _parse_joint_parameter(
+        self, cfg_value: float | dict[str, float] | None, default_value: float | torch.Tensor | None
+    ) -> torch.Tensor:
         """Parse the joint parameter from the configuration.
 
         Args:

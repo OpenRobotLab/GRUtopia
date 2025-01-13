@@ -58,9 +58,9 @@ class MoveWithKeyboardController(BaseController):
         rotation_speed *= self.rotation_speed_base
         lateral_speed *= self.lateral_speed_base
 
-        return self.sub_controllers[0].forward(forward_speed=forward_speed,
-                                               rotation_speed=rotation_speed,
-                                               lateral_speed=lateral_speed)
+        return self.sub_controllers[0].forward(
+            forward_speed=forward_speed, rotation_speed=rotation_speed, lateral_speed=lateral_speed
+        )
 
     def action_to_control(self, action: List | np.ndarray) -> ArticulationAction:
         """

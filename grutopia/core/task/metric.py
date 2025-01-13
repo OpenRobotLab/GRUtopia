@@ -55,6 +55,7 @@ class BaseMetric(ABC):
 def create_metric(config: MetricUserConfig, task_runtime: TaskRuntime):
     if config.type not in BaseMetric.metrics:
         raise KeyError(
-            f"""The metric {config.type} is not registered, please register it using `@BaseMetric.register`""")
+            f"""The metric {config.type} is not registered, please register it using `@BaseMetric.register`"""
+        )
     metric_cls = BaseMetric.metrics[config.type]
     return metric_cls(config, task_runtime)

@@ -22,8 +22,7 @@ from grutopia.core.util import log
 class Humanoid(IsaacRobot):
 
     actuators_cfg = {
-        'base_legs':
-        DCMotorCfg(
+        'base_legs': DCMotorCfg(
             joint_names_expr=['.*'],
             effort_limit={
                 '.*hip.*': 200,
@@ -33,7 +32,7 @@ class Humanoid(IsaacRobot):
                 '.*shoulder_pitch.*': 40,
                 '.*shoulder_roll.*': 40,
                 '.*shoulder_yaw.*': 18,
-                '.*elbow.*': 18
+                '.*elbow.*': 18,
             },
             saturation_effort=400.0,
             velocity_limit=1000.0,
@@ -43,28 +42,23 @@ class Humanoid(IsaacRobot):
                 '.*ankle.*': 40,
                 'torso_joint': 300,
                 '.*shoulder.*': 100,
-                '.*elbow.*': 100
+                '.*elbow.*': 100,
             },
-            damping={
-                '.*hip.*': 5,
-                '.*knee.*': 6,
-                '.*ankle.*': 2,
-                'torso_joint': 6,
-                '.*shoulder.*': 2,
-                '.*elbow.*': 2
-            },
+            damping={'.*hip.*': 5, '.*knee.*': 6, '.*ankle.*': 2, 'torso_joint': 6, '.*shoulder.*': 2, '.*elbow.*': 2},
             friction=0.0,
             armature=0.0,
         ),
     }
 
-    def __init__(self,
-                 prim_path: str,
-                 usd_path: str,
-                 name: str,
-                 position: np.ndarray = None,
-                 orientation: np.ndarray = None,
-                 scale: np.ndarray = None):
+    def __init__(
+        self,
+        prim_path: str,
+        usd_path: str,
+        name: str,
+        position: np.ndarray = None,
+        orientation: np.ndarray = None,
+        scale: np.ndarray = None,
+    ):
         add_reference_to_stage(prim_path=prim_path, usd_path=os.path.abspath(usd_path))
         super().__init__(prim_path=prim_path, name=name, position=position, orientation=orientation, scale=scale)
         self.actuators: Dict[str, ActuatorBase]
@@ -80,8 +74,8 @@ class Humanoid(IsaacRobot):
             Exception: [description]
         """
         num_leg_joints = 19
-        kps = np.array([0.] * num_leg_joints)
-        kds = np.array([0.] * num_leg_joints)
+        kps = np.array([0.0] * num_leg_joints)
+        kds = np.array([0.0] * num_leg_joints)
 
         if kps is not None:
             kps = self._articulation_view._backend_utils.expand_dims(kps, 0)
@@ -90,9 +84,11 @@ class Humanoid(IsaacRobot):
         self._articulation_view.set_gains(kps=kps, kds=kds, save_to_usd=False)
         # VERY important!!! additional physics parameter
         self._articulation_view.set_solver_position_iteration_counts(
-            self._articulation_view._backend_utils.expand_dims(4, 0))
+            self._articulation_view._backend_utils.expand_dims(4, 0)
+        )
         self._articulation_view.set_solver_velocity_iteration_counts(
-            self._articulation_view._backend_utils.expand_dims(0, 0))
+            self._articulation_view._backend_utils.expand_dims(0, 0)
+        )
         self._articulation_view.set_enabled_self_collisions(self._articulation_view._backend_utils.expand_dims(True, 0))
 
     def _process_actuators_cfg(self):
@@ -119,8 +115,9 @@ class Humanoid(IsaacRobot):
             # log information on actuator groups
             self.actuators[actuator_name] = actuator
 
-    def apply_actuator_model(self, control_action: ArticulationAction, controller_name: str,
-                             joint_set: ArticulationSubset):
+    def apply_actuator_model(
+        self, control_action: ArticulationAction, controller_name: str, joint_set: ArticulationSubset
+    ):
         if joint_set is None or control_action is None:
             return
         name = 'base_legs'
@@ -146,8 +143,9 @@ class Humanoid(IsaacRobot):
         if control_actions.joint_velocities is not None:
             joint_set.set_joint_velocities(control_actions.joint_velocities)
         if control_actions.joint_efforts is not None:
-            self._articulation_view._physics_view.set_dof_actuation_forces(control_actions.joint_efforts,
-                                                                           torch.tensor([0]))
+            self._articulation_view._physics_view.set_dof_actuation_forces(
+                control_actions.joint_efforts, torch.tensor([0])
+            )
 
     def find_joints(self, name_keys, joint_subset=None):
         """Find joints in the articulation based on the name keys.
@@ -171,7 +169,6 @@ class Humanoid(IsaacRobot):
 
 @BaseRobot.register('HumanoidRobot')
 class HumanoidRobot(BaseRobot):
-
     def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
         super().__init__(config, robot_model, scene)
         self._sensor_config = robot_model.sensors
@@ -204,10 +201,12 @@ class HumanoidRobot(BaseRobot):
         self._robot_ik_base = None
 
         self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
-        self._robot_right_ankle = RigidPrim(prim_path=config.prim_path + '/right_ankle_link',
-                                            name=config.name + 'right_ankle')
-        self._robot_left_ankle = RigidPrim(prim_path=config.prim_path + '/left_ankle_link',
-                                           name=config.name + 'left_ankle')
+        self._robot_right_ankle = RigidPrim(
+            prim_path=config.prim_path + '/right_ankle_link', name=config.name + 'right_ankle'
+        )
+        self._robot_left_ankle = RigidPrim(
+            prim_path=config.prim_path + '/left_ankle_link', name=config.name + 'left_ankle'
+        )
 
         self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]
 

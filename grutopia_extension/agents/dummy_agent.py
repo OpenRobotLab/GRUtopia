@@ -13,8 +13,9 @@ class DummyAgent(BaseAgent):
     Dummy Agent that does nothing. And set is_done at the 2nd call.
     """
 
-    def __init__(self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str,
-                 task_runtime: TaskRuntime):
+    def __init__(
+        self, task_name: str, robot_name: str | None, agent_config: Dict, sync_mode: str, task_runtime: TaskRuntime
+    ):
         super().__init__(task_name, robot_name, agent_config, sync_mode, task_runtime)
         self.counter = 0
         log.debug(f'=============== agent_config: {agent_config} ===============')

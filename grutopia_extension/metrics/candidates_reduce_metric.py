@@ -52,12 +52,14 @@ class ECRMetric(BaseMetric):
             with open(task_runtime.extra['azure_api_key_e_path'], 'r', encoding='utf-8') as file:
                 api_key_e = file.read().strip()
 
-            self.llm = AzureOpenAI(api_key=api_key,
-                                   api_version='2024-04-01-preview',
-                                   azure_endpoint='https://gpt-4o-pjm.openai.azure.com/')
-            self.embedding = AzureOpenAI(api_key=api_key_e,
-                                         api_version='2024-02-15-preview',
-                                         azure_endpoint='https://text-embedding-3-large-pjm.openai.azure.com/')
+            self.llm = AzureOpenAI(
+                api_key=api_key, api_version='2024-04-01-preview', azure_endpoint='https://gpt-4o-pjm.openai.azure.com/'
+            )
+            self.embedding = AzureOpenAI(
+                api_key=api_key_e,
+                api_version='2024-02-15-preview',
+                azure_endpoint='https://text-embedding-3-large-pjm.openai.azure.com/',
+            )
         else:
             with open(task_runtime.extra['api_key_path'], 'r', encoding='utf-8') as file:
                 api_key = file.read().strip()
@@ -78,17 +80,21 @@ class ECRMetric(BaseMetric):
 
         self.dialogues = []
         self.question = None
-        self.dialogue_graph = Dialogue_Graph(self.llm, self.embedding, object_caption, spatial_relations,
-                                             captions_embeddings, model_mapping)
+        self.dialogue_graph = Dialogue_Graph(
+            self.llm, self.embedding, object_caption, spatial_relations, captions_embeddings, model_mapping
+        )
 
         all_candidates = [(obj_id, relation) for obj_id, relation in self.dialogue_graph.spatial_relations.items()]
-        all_candidates = self.dialogue_graph.filter_candidates({'cate': self.target.split('/')[0].lower()},
-                                                               all_candidates)
-        all_candidates = self.filter_num(
-            self.target.split('/')[0].lower(), {
-                'question': self.question,
-                'answer': 'Yes.'
-            }, all_candidates) if self.question else all_candidates
+        all_candidates = self.dialogue_graph.filter_candidates(
+            {'cate': self.target.split('/')[0].lower()}, all_candidates
+        )
+        all_candidates = (
+            self.filter_num(
+                self.target.split('/')[0].lower(), {'question': self.question, 'answer': 'Yes.'}, all_candidates
+            )
+            if self.question
+            else all_candidates
+        )
         self.all_candidates = set([i[0] for i in all_candidates])
         self.seen_candidates = set()
         self.seen_candidates_with_time = {}
@@ -107,10 +113,9 @@ class ECRMetric(BaseMetric):
         if task_obs[self.task_runtime.robots[0].name].get('question') is not None:
             self.question = task_obs[self.task_runtime.robots[0].name].get('question')
         if task_obs[self.task_runtime.robots[0].name].get('answer') is not None:
-            self.dialogues.append({
-                'question': self.question,
-                'answer': task_obs[self.task_runtime.robots[0].name].get('answer')
-            })
+            self.dialogues.append(
+                {'question': self.question, 'answer': task_obs[self.task_runtime.robots[0].name].get('answer')}
+            )
             chat_id = len(self.seen_candidates_with_time)
             self.seen_candidates_with_time[chat_id] = self.seen_candidates
 
@@ -124,35 +129,34 @@ class ECRMetric(BaseMetric):
             name_set = self.seen_candidates_with_time[dialogue_idx] - exclude_candidates
             original_candidates = [(obj_id, self.dialogue_graph.spatial_relations[obj_id]) for obj_id in name_set]
             res_candidates = self.filter_num(self.target.split('/')[0].lower(), dialogue, original_candidates)
-            self.candidates_reduced.append({
-                'ori_num': len(original_candidates),
-                'reduced_num': len(original_candidates) - len(res_candidates)
-            })
-            exclude_candidates = exclude_candidates | (set([i[0] for i in original_candidates]) -
-                                                       set([i[0] for i in res_candidates]))
+            self.candidates_reduced.append(
+                {'ori_num': len(original_candidates), 'reduced_num': len(original_candidates) - len(res_candidates)}
+            )
+            exclude_candidates = exclude_candidates | (
+                set([i[0] for i in original_candidates]) - set([i[0] for i in res_candidates])
+            )
         candidates_reduced = np.mean(
-            [float(i['reduced_num']) / float(i['ori_num']) for i in self.candidates_reduced if i['ori_num'] != 0])
+            [float(i['reduced_num']) / float(i['ori_num']) for i in self.candidates_reduced if i['ori_num'] != 0]
+        )
         candidates_reduced = float(candidates_reduced) if len(self.candidates_reduced) > 0 else -1
         log.info('ECRMetric calc() called.')
         ecr_metric = {
             'candidates_reduced': self.candidates_reduced,
             'candidates_reduced_num': candidates_reduced,
-            'left_candidates': res_candidates
+            'left_candidates': res_candidates,
         }
         return {k: v.tolist() if isinstance(v, np.float32) else v for k, v in ecr_metric.items()}
 
     def filter_num(self, category, npc_dialogue, candidates):
         try:
-            filter_num_prompt.format(category=category,
-                                     question=npc_dialogue['question'],
-                                     answer=npc_dialogue['answer'])
+            filter_num_prompt.format(
+                category=category, question=npc_dialogue['question'], answer=npc_dialogue['answer']
+            )
             response = self.llm.chat.completions.create(
                 model='gpt-4o',  # Make sure to use the correct model name
-                messages=[{
-                    'role': 'user',
-                    'content': filter_num_prompt
-                }],
-                max_tokens=100)
+                messages=[{'role': 'user', 'content': filter_num_prompt}],
+                max_tokens=100,
+            )
             result = response.choices[0].message.content if response.choices else None
             print(result)
             if result is None or '-1' in result:
@@ -207,9 +211,15 @@ def calc_similarity(e1: np.ndarray, e2: np.ndarray):
 
 
 class Dialogue_Graph:
-
-    def __init__(self, llm: Union[AzureOpenAI, OpenAI], embedding: Union[AzureOpenAI, OpenAI], attribute_set: dict,
-                 spatial_relations: dict, attr_embedding, model_mapping: dict) -> None:
+    def __init__(
+        self,
+        llm: Union[AzureOpenAI, OpenAI],
+        embedding: Union[AzureOpenAI, OpenAI],
+        attribute_set: dict,
+        spatial_relations: dict,
+        attr_embedding,
+        model_mapping: dict,
+    ) -> None:
         self.llm = llm
         self.embedding = embedding
         self.attribute_set = attribute_set
@@ -578,14 +588,14 @@ class Dialogue_Graph:
 
     def filter_candidates(self, infos, candidates=None):
         '''
-            infos:
-            {
-                "cate": str, optional
-                "room": [(flag, room), ...]optional
-                "relation": [(has_or_not, relation_type, cate), ...]
-                "appearance": [attr1, attr2]
-            }
-            candidates: optional, [obj_id, ]
+        infos:
+        {
+            "cate": str, optional
+            "room": [(flag, room), ...]optional
+            "relation": [(has_or_not, relation_type, cate), ...]
+            "appearance": [attr1, attr2]
+        }
+        candidates: optional, [obj_id, ]
         '''
         res_candidates = set()
 
@@ -626,16 +636,20 @@ class Dialogue_Graph:
                         # if r_info[1][:min_len].lower() == room_item[:min_len].lower():
                         #     may_be_candidate = False
                         #     break
-                        if difflib.get_close_matches(r_info[1].lower(), [room_item.lower()], n=1,
-                                                     cutoff=0.9) or r_info[1].lower() in room_item.lower():
+                        if (
+                            difflib.get_close_matches(r_info[1].lower(), [room_item.lower()], n=1, cutoff=0.9)
+                            or r_info[1].lower() in room_item.lower()
+                        ):
                             may_be_candidate = False
                             break
                     else:
                         # if r_info[1][:min_len].lower() != room_item[:min_len].lower():
                         #     may_be_candidate = False
                         #     break
-                        if difflib.get_close_matches(r_info[1].lower(), [room_item.lower()], n=1,
-                                                     cutoff=0.7) or r_info[1].lower() not in room_item.lower():
+                        if (
+                            difflib.get_close_matches(r_info[1].lower(), [room_item.lower()], n=1, cutoff=0.7)
+                            or r_info[1].lower() not in room_item.lower()
+                        ):
                             may_be_candidate = False
                             break
                 if not may_be_candidate:
@@ -656,13 +670,21 @@ class Dialogue_Graph:
                         for key, (rel_b, dist) in relation_item.items():
                             rel_b_set.add(rel_b)
                             cate_b = key.split('/')[0]
-                            if rel_a == rel_b and (difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.7)
-                                                   or (cate_a == cate_b)):  # noqa: W503
+                            if rel_a == rel_b and (
+                                difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.7)
+                                or (cate_a == cate_b)
+                            ):  # noqa: W503
                                 flag_has = True
                                 break
 
-                            if rel_a == 'near' and dist < 1 and (difflib.get_close_matches(
-                                    cate_a.lower(), [cate_b], n=1, cutoff=0.7) or (cate_a == cate_b)):
+                            if (
+                                rel_a == 'near'
+                                and dist < 1
+                                and (
+                                    difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.7)
+                                    or (cate_a == cate_b)
+                                )
+                            ):
                                 flag_has = True
                                 break
 
@@ -678,13 +700,21 @@ class Dialogue_Graph:
                         for key, (rel_b, dist) in relation_item.items():
                             rel_b_set.add(rel_b)
                             cate_b = key.split('/')[0]
-                            if rel_a == rel_b and (difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.9)
-                                                   or (cate_a == cate_b)):  # noqa: W503
+                            if rel_a == rel_b and (
+                                difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.9)
+                                or (cate_a == cate_b)
+                            ):  # noqa: W503
                                 flag = False
                                 break
 
-                            if rel_a == 'near' and dist < 1 and (difflib.get_close_matches(
-                                    cate_a.lower(), [cate_b], n=1, cutoff=0.9) or (cate_a == cate_b)):
+                            if (
+                                rel_a == 'near'
+                                and dist < 1
+                                and (
+                                    difflib.get_close_matches(cate_a.lower(), [cate_b], n=1, cutoff=0.9)
+                                    or (cate_a == cate_b)
+                                )
+                            ):
                                 flag = False
                                 break
 
@@ -730,7 +760,7 @@ class Dialogue_Graph:
         for i, obj_id in enumerate(candidates):
             relation = self.spatial_relations[obj_id]['nearby_objects']
             close_to = True
-            for obj_id_b in candidates[i + 1:]:
+            for obj_id_b in candidates[i + 1 :]:
                 if obj_id_b not in relation:
                     close_to = False
                     break
@@ -783,17 +813,19 @@ class Dialogue_Graph:
         return self.embedding.embeddings.create(input=[text], model='text-embedding-3-large').data[0].embedding
 
     def _may_be_same(self, app_info: str, app_item: str):
-        language_prompt = ('This is the description for the goal object:' + f'\n{app_info}' +
-                           'This is the description for current object:' + f'\n{app_item}' +
-                           '\nDo you think they could be the same object?' +
-                           '\nYour answer should only be a single yes or no, do not need any explanations.')
+        language_prompt = (
+            'This is the description for the goal object:'
+            + f'\n{app_info}'
+            + 'This is the description for current object:'
+            + f'\n{app_item}'
+            + '\nDo you think they could be the same object?'
+            + '\nYour answer should only be a single yes or no, do not need any explanations.'
+        )
         response = self.llm.chat.completions.create(
             model='gpt-4o',  # Make sure to use the correct model name
-            messages=[{
-                'role': 'user',
-                'content': language_prompt
-            }],
-            max_tokens=100)
+            messages=[{'role': 'user', 'content': language_prompt}],
+            max_tokens=100,
+        )
         result = response.choices[0].message.content if response.choices else None
 
         try:

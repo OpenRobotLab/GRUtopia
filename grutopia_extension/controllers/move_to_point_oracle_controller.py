@@ -31,7 +31,6 @@ class MoveToPointOracleController(BaseController):
         start_orientation,
         goal_orientation,
     ) -> float:
-
         def quat_conjugate(q):
             w, x, y, z = q
             return np.array([w, -x, -y, -z])
@@ -55,13 +54,15 @@ class MoveToPointOracleController(BaseController):
 
         return theta
 
-    def forward(self,
-                start_position: np.ndarray,
-                start_orientation: np.ndarray,
-                goal_position: np.ndarray,
-                forward_speed: float = 1,
-                rotation_speed: float = 8,
-                threshold: float = 0.02) -> ArticulationAction:
+    def forward(
+        self,
+        start_position: np.ndarray,
+        start_orientation: np.ndarray,
+        goal_position: np.ndarray,
+        forward_speed: float = 1,
+        rotation_speed: float = 8,
+        threshold: float = 0.02,
+    ) -> ArticulationAction:
         self.goal_position = goal_position
         self.goal_position[-1] = 0
         self.last_threshold = threshold
@@ -76,7 +77,8 @@ class MoveToPointOracleController(BaseController):
 
         # 2. Get the current z-axis rotation difference between the start and goal directions
         goal_orientation = euler_angles_to_quat(
-            [0, 0, np.arctan2(goal_position[1] - start_position[1], goal_position[0] - start_position[0])])
+            [0, 0, np.arctan2(goal_position[1] - start_position[1], goal_position[0] - start_position[0])]
+        )
         theta = MoveToPointOracleController.get_delta_z_rot(start_orientation, goal_orientation)
         delta_z_rotation = (theta + np.pi) % (2 * np.pi) - np.pi
 
@@ -88,8 +90,9 @@ class MoveToPointOracleController(BaseController):
 
         # Move the object towards the goal by the calculated forward speed
         forward_movement = actual_forward_speed * direction_to_goal
-        new_position = start_position + np.array([forward_movement[0], forward_movement[1], 0
-                                                  ])  # Update position in xy-plane
+        new_position = start_position + np.array(
+            [forward_movement[0], forward_movement[1], 0]
+        )  # Update position in xy-plane
 
         # current_z_angle = quat_to_euler_angles(start_orientation)[2]
         # new_z_angle = current_z_angle + delta_z_rotation
@@ -97,7 +100,7 @@ class MoveToPointOracleController(BaseController):
 
         return {
             'pos': new_position,
-            'rot': [0, 0, np.arctan2(goal_position[1] - start_position[1], goal_position[0] - start_position[0])]
+            'rot': [0, 0, np.arctan2(goal_position[1] - start_position[1], goal_position[0] - start_position[0])],
         }
 
     def action_to_control(self, action: List | np.ndarray) -> ArticulationAction:
@@ -112,12 +115,14 @@ class MoveToPointOracleController(BaseController):
         """
         assert len(action) == 1, 'action must contain 1 elements'
         start_position, start_orientation = self.robot.get_world_pose()
-        return self.forward(start_position=start_position,
-                            start_orientation=start_orientation,
-                            goal_position=np.array(action[0]),
-                            forward_speed=self.forward_speed,
-                            rotation_speed=self.rotation_speed,
-                            threshold=self.threshold * self.robot.get_robot_scale()[0])
+        return self.forward(
+            start_position=start_position,
+            start_orientation=start_orientation,
+            goal_position=np.array(action[0]),
+            forward_speed=self.forward_speed,
+            rotation_speed=self.rotation_speed,
+            threshold=self.threshold * self.robot.get_robot_scale()[0],
+        )
 
     def get_obs(self) -> Dict[str, Any]:
         if self.goal_position is None or self.last_threshold is None:
