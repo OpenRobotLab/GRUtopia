@@ -119,3 +119,17 @@ robots:
     type: "RepCamera"
     prim_path: "torso_link/TPCamera"
 - type: NPC
+
+- type: "FrankaRobot"
+  usd_path: "GRUtopia/assets/robots/franka/franka.usd"
+  controllers:
+  - name: "arm_ik_controller"
+    type: "InverseKinematicsController"
+    robot_description_path: "GRUtopia/assets/robots/franka/rmpflow/robot_descriptor.yaml"
+    robot_urdf_path: "GRUtopia/assets/robots/franka/lula_franka_gen.urdf"
+    end_effector_frame_name: "right_gripper"
+    threshold: 0.01
+  - name: "gripper_controller"
+    type: GripperController
+  - name: "joint_controller"
+    type: JointController

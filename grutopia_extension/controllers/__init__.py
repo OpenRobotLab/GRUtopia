@@ -1,5 +1,7 @@
 from grutopia_extension.controllers import (
+    gripper_controller,
     humanoid_move_by_speed_controller,
+    ik_controller,
     joint_controller,
     move_along_path_points_controller,
     move_to_point_by_speed_controller,

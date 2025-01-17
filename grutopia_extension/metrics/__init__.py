@@ -9,6 +9,7 @@ for module in [
     'grutopia_extension.metrics.reset_time_metric',
     'grutopia_extension.metrics.simple_metric',
     'grutopia_extension.metrics.social_navigation_success_metric',
+    'grutopia_extension.metrics.recording_metric',
 ]:
 
     try:
