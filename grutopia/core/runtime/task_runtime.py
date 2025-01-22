@@ -5,6 +5,7 @@ from pydantic import BaseModel, Extra
 
 from grutopia.core.config import EpisodeConfig, Object, RobotModel, TaskConfig
 from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.task.reward import RewardConfig
 
 
 class Env(BaseModel):
@@ -38,6 +39,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     robots: Optional[List[RobotModel]] = []
     objects: Optional[List[Object]] = []
     metrics: Optional[List[MetricUserConfig]] = []
+    reward_setting: Optional[RewardConfig] = []
 
     # path
     root_path: str

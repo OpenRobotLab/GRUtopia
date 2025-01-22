@@ -4,6 +4,7 @@ from pydantic import BaseModel, Extra
 
 from grutopia.core.config.metric import MetricUserConfig
 from grutopia.core.config.task.episode import EpisodeConfig
+from grutopia.core.config.task.reward import RewardConfig
 
 
 class TaskConfig(BaseModel, extra=Extra.allow):
@@ -47,6 +48,7 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     # inherit
     metrics: Optional[List[MetricUserConfig]] = []
     metrics_save_path: Optional[str] = 'console'
+    reward_setting: Optional[RewardConfig] = None
 
     # path
     scene_root_path: Optional[str] = '/scene'

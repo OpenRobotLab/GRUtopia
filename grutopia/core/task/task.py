@@ -43,6 +43,12 @@ class BaseTask(OmniBaseTask, ABC):
         for metric_config in runtime.metrics:
             self.metrics[metric_config.type] = create_metric(metric_config, self.runtime)
 
+        from grutopia.core.task.reward import BaseReward, create_reward  # noqa
+
+        self.reward: Union[BaseReward, None] = (
+            create_reward(runtime.reward_setting, self) if runtime.reward_setting is not None else None
+        )
+
     def load(self):
         """
 

@@ -91,21 +91,58 @@ class SimulatorRunner:
         self._stage = self._world.stage
         self.reset()
 
-    def step(self, actions: Union[Dict, None] = None, render: bool = True) -> Tuple[Dict, Dict[str, bool]]:
+    def step(
+        self, actions: Union[Dict, None] = None, render: bool = True
+    ) -> Tuple[Dict, Dict[str, bool], Dict[str, float]]:
         """
-        Assemble Actions to Robots of each task, and run Isaac's world step.
-        The method will return termination status of each task, agents are expected to reset terminated task before continuing next step.
+        Step function to advance the simulation environment by one time step.
+
+        This method processes actions for active tasks, steps the simulation world,
+        collects observations, updates metrics, and determines task terminations. It also
+        handles rendering based on specified intervals.
 
         Args:
-            actions (Dict): Action dict. task_name as key.
-            render (bool): render sign.
+            actions (Union[Dict, None], optional): A dictionary mapping task names to
+                another dictionary of robot names and their respective actions. If None,
+                no actions are applied. Defaults to None.
+            render (bool, optional): Flag indicating whether to render the simulation
+                at this step. True triggers rendering if the render interval is met.
+                Defaults to True.
 
         Returns:
-            Tuple[Dict, Dict[str, bool]]: A tuple of two values. The first is a dict of observations.
-            The second is a dict that maps task name to termination status.
+            Tuple[Dict, Dict[str, bool], Dict[str, float]]:
+                - obs (Dict): A dictionary containing observations for each task,
+                  further divided by robot names and their observation data.
+                - terminated_status (Dict[str, bool]): A dictionary mapping task names
+                  to boolean values indicating whether the task has terminated.
+                - reward (Dict[str, float]): A dictionary that would理论上 contain rewards
+                  for each task or robot; however, the actual return and computation of
+                  rewards is not shown in the provided code snippet.
+
+        Raises:
+            Exception: If an error occurs when applying an action to a robot, the
+                exception is logged and re-raised, providing context about the task,
+                robot, and current tasks state.
+
+        Notes:
+            - The `_world.step()` method advances the simulation, optionally rendering
+              the environment based on the `render` flag and the render interval.
+            - `get_obs()` is a method to collect observations from the simulation world,
+              though its implementation details are not shown.
+            - Metrics for each task are updated, and upon task completion, results are
+              saved to a JSON file. This includes a flag 'normally_end' set to True,
+              which seems to indicate normal termination of the task.
+            - The function also manages a mechanism to prevent further action application
+              and metric updates for tasks that have been marked as finished.
+
+        Caution:
+            The snippet contains a `TODO` comment suggesting there's an aspect requiring
+            attention related to "Key optimization interval," which isn't addressed in
+            the docstring or the code shown.
         """
         """ ================ TODO: Key optimization interval ================= """
         terminated_status = {}
+        reward = {}
         obs = {}
 
         for task_name, action_dict in actions.items():
@@ -174,13 +211,17 @@ class SimulatorRunner:
                 for metric in task.metrics.values():
                     metric.update(obs[task.name])
 
-        # update terminated_status
+        # update terminated_status and rewards
         for task_name in self.current_tasks.keys():
             terminated_status[task_name] = False
             if task_name in self.finished_tasks:
                 terminated_status[task_name] = True
+                reward[task_name] = -1
+            else:
+                r = self.current_tasks[task_name].reward
+                reward[task_name] = r.calc() if r is not None else -1
 
-        return obs, terminated_status
+        return obs, terminated_status, reward
 
     def get_obs(self) -> Dict:
         """

@@ -120,7 +120,10 @@ class Env(gym.Env):
         # TODO: 转化，从 ndarray 到 dict
         # TODO: 这里需要action_space和obs_space来实现转换
         _actions = {self._current_task_name: {self._robot_name: action}}
-        origin_obs, terminated_status = self._runner.step(_actions)
+        origin_obs, terminated_status, rewards = self._runner.step(_actions)
+
+        if rewards[self._current_task_name] != -1:
+            reward = rewards[self._current_task_name]
 
         obs = origin_obs[self._current_task_name][self._robot_name]
         terminated = terminated_status[self._current_task_name]
