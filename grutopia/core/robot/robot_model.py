@@ -12,6 +12,9 @@ class SensorModel(BaseModel):
     prim_path: Optional[str] = None
     type: str
 
+    translation: Optional[List[float]] = None
+    orientation: Optional[List[float]] = None  # quaternion orientation in the local frame of the prim
+
     # Fields from params.
     enable: Optional[bool] = True
     size: Optional[Tuple[int, int]] = None  # Camera only

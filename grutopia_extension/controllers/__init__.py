@@ -1,4 +1,5 @@
 from grutopia_extension.controllers import (
+    franka_mocap_remote_controller,
     gripper_controller,
     humanoid_move_by_speed_controller,
     ik_controller,
@@ -8,6 +9,7 @@ from grutopia_extension.controllers import (
     move_to_point_oracle_controller,
     move_with_keyboard_controller,
     recover_controller,
+    rmpflow_controller,
     rotate_controller,
     rotate_oracle,
     web_chat_box_controller,

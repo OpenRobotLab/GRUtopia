@@ -1,0 +1,42 @@
+simulator:
+  physics_dt: 1/120
+  rendering_dt: 1/120
+  rendering_interval: 1
+
+agents:
+- type: DummyAgent
+  robot_name: franka
+  agent_config:
+    test: true
+
+task_config:
+  type: "ManipulationTask"
+  task_name_prefix: "franka_manipulation_mocap_remote"
+  env_num: 1
+  offset_size: 10
+  metrics:
+  - type: RecordingMetric
+    metric_config:
+      robot_name: franka
+      fields: ["joint_action"]
+  metrics_save_path: GRUtopia/franka_manipulation_recording/
+  task_settings:
+    max_step: 10000 # if you need a longer operation time, increase it
+    verbose: False
+    fall_threshold: 0.3
+    max_dialogue: 3
+  episodes:
+  - scene_asset_path: GRUtopia/assets/scenes/manipulation/mocap_remote_example_scene.usd
+    scene_scale: [1., 1., 1.]
+    robots:
+    - name: franka
+      prim_path: "/franka"
+      type: "MocapControlledFrankaRobot"
+      position: [-0.35, .0, 1.05]
+      scale: [ 1, 1, 1 ]
+      controller_params:
+      - name: "franka_mocap_remote_controller"
+    extra:
+      prompt: "Prompt test 1"
+      target: franka_manipulation_mocap_remote
+      episode_idx: 0

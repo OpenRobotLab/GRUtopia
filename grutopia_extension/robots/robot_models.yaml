@@ -133,3 +133,29 @@ robots:
     type: GripperController
   - name: "joint_controller"
     type: JointController
+- type: "MocapControlledFrankaRobot"
+  usd_path: "GRUtopia/assets/robots/franka/mocap_remote_franka.usd"
+  controllers:
+  - name: "rmpflow_controller"
+    type: "RMPFlowController"
+    robot_description_path: "GRUtopia/assets/robots/franka/rmpflow/robot_descriptor.yaml"
+    robot_urdf_path: "GRUtopia/assets/robots/franka/lula_franka_gen.urdf"
+    rmpflow_config_path: "GRUtopia/assets/robots/franka/franka_rmpflow_common.yaml"
+    end_effector_frame_name: "right_gripper"
+  - name: "gripper_controller"
+    type: GripperController
+  - name: "franka_mocap_remote_controller"
+    type: "FrankaMocapRemoteController"
+    scale: [0.25, 0.75, 0.75]
+    target_position: [0.0, 0.0, 1.0]
+    origin_xyz: (0.46,0,0.38)
+    origin_xyz_angle: (0,0,0)
+    sub_controllers:
+      - name: rmpflow_controller
+      - name: gripper_controller
+  sensors:
+    - name: "lh_controlled_camera"
+      type: "MocapControlledCamera"
+      prim_path: "logo_link/lh_controlled_camera"
+      translation: [0.0, 0.0, 5.0]
+      orientation: [0.70710678, 0.0, 0.70710678, 0.0]
