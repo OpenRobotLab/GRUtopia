@@ -8,7 +8,7 @@ from pxr import Usd, UsdGeom
 from grutopia.core.robot.robot import BaseRobot, Scene
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
-from grutopia_extension.config.sensors import RepCameraModel
+from grutopia_extension.config.sensors import RepCameraCfg
 
 
 @BaseSensor.register('RepCamera')
@@ -17,7 +17,7 @@ class RepCamera(BaseSensor):
     wrap of replicator render_product
     """
 
-    def __init__(self, config: RepCameraModel, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: RepCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.size = None
         self.name = name

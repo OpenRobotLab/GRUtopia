@@ -12,7 +12,7 @@ import grutopia.core.util.math as math_utils
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util.rsl_rl import pickle
-from grutopia_extension.config.controllers import HumanoidMoveBySpeedControllerModel
+from grutopia_extension.config.controllers import HumanoidMoveBySpeedControllerCfg
 
 
 class RLPolicy:
@@ -110,7 +110,7 @@ class HumanoidMoveBySpeedController(BaseController):
         'right_elbow_joint',
     ]
 
-    def __init__(self, config: HumanoidMoveBySpeedControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: HumanoidMoveBySpeedControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
         self.applied_joint_positions = None
         self._policy = RLPolicy(path=config.policy_weights_path).get_inference_policy(device='cpu')

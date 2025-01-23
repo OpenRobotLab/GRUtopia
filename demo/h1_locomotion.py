@@ -1,30 +1,29 @@
-from grutopia.core.config import Config, EpisodeConfig, SimConfig, TaskConfig
+from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia_extension import import_extensions
-from grutopia_extension.config.robots.humanoid import (  # humanoid_camera,; humanoid_tp_camera,
+from grutopia_extension.config.robots.humanoid import (
     HumanoidRobot,
+    humanoid_camera,
     humanoid_move_by_speed_controller,
+)
+from grutopia_extension.config.tasks import (
+    SingleInferenceEpisodeCfg,
+    SingleInferenceTaskCfg,
 )
 
 h1_1 = HumanoidRobot(
     controllers=[
         humanoid_move_by_speed_controller,
     ],
-    sensors=[
-        # humanoid_camera.model_copy(
-        #     update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True
-        # )
-    ],
+    sensors=[humanoid_camera.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
 )
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
-    task_config=TaskConfig(
-        type='SingleInferenceTask',
-        task_name_prefix='h1_locomotion',
+    task_config=SingleInferenceTaskCfg(
         episodes=[
-            EpisodeConfig(
+            SingleInferenceEpisodeCfg(
                 scene_asset_path='GRUtopia/assets/scenes/empty.usd',
                 scene_scale=[0.01, 0.01, 0.01],
                 robots=[h1_1],

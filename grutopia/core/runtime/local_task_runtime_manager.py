@@ -23,7 +23,6 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
 
     Attributes:
         env_num (int): Env number.
-        task_name_prefix (str): Task name prefix.
         task_config (TaskConfig): Task config that user input.
         episodes (List[EpisodeConfig]): Rest episodes.
         active_runtimes (str): Activated runtimes, format like => { env_id: TaskRuntime } .
@@ -88,7 +87,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
 
         # Update task_idx
         task_idx = DataHub.gen_task_idx()
-        next_episode_template_dict['name'] = f'{self.task_config.task_name_prefix}_{str(task_idx)}'
+        next_episode_template_dict['name'] = f'{self.task_config.type}_{str(task_idx)}'
         next_episode_template_dict['task_idx'] = task_idx
         next_episode_template_dict['root_path'] = f'/World/env_{str(last_env.env_id)}'
         next_episode_template_dict['env'] = last_env

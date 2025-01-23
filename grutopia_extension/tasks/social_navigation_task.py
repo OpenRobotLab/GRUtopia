@@ -1,35 +1,32 @@
 # import time
 import traceback
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from omni.isaac.core.scenes import Scene
-from pydantic import BaseModel
 
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
+from grutopia_extension.config.tasks.social_navigation_task import (
+    SocialNavigationExtra,
+    TaskSettingCfg,
+)
 
 
-class TaskSettingModel(BaseModel):
-    max_step: int
-
-
-class NavigationMetaModel(BaseModel):
-    question: Optional[str] = None
-    target: str
-    distance: float
-    start_point: list
-    target_point: list
-
-
-@BaseTask.register('SocialBenchmarkTask')
-class SocialBenchmarkTask(BaseTask):
+@BaseTask.register('SocialNavigationTask')
+class SocialNavigationTask(BaseTask):
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
         self.step_counter = 0
-        self.settings = TaskSettingModel(**runtime.task_settings)
-        self.episode_meta = NavigationMetaModel(**runtime.extra)
+        if isinstance(runtime.task_settings, TaskSettingCfg):
+            self.settings = runtime.task_settings
+        else:
+            raise ValueError('task_settings must be a TaskSettingCfg')
+        if isinstance(runtime.extra, SocialNavigationExtra):
+            self.episode_meta = runtime.extra
+        else:
+            raise ValueError('extra must be a SocialNavigationExtra')
         log.info(f'task_settings: max_step       : {self.settings.max_step}.)')
         # Episode
         log.info(f'Episode meta : question         : {self.episode_meta.question}.)')

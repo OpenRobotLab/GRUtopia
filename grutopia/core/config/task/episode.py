@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
@@ -32,7 +32,7 @@ class EpisodeConfig(BaseModel, extra='allow'):
     scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
     robots: Optional[List[RobotModel]] = []
     objects: Optional[List[Object]] = []
-    extra: Optional[Dict[str, Any]] = {}
+    extra: Optional[Any] = None
 
 
 class EpisodeConfigFile(BaseModel, extra='allow'):

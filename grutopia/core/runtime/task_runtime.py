@@ -26,7 +26,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     env: Env
 
     # custom setting
-    task_settings: Optional[Dict] = {}
+    task_settings: Optional[Any] = None
     metrics_save_path: Optional[str] = 'console'
 
     # scene
@@ -49,7 +49,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
 
     # task extra info
     loop: Optional[bool] = False
-    extra: Optional[Dict[str, Any]] = {}
+    extra: Optional[Any] = None
 
 
 def setup_offset_for_assets(
@@ -74,7 +74,6 @@ class BaseTaskRuntimeManager:
 
     Attributes:
         env_num (int): Env number.
-        task_name_prefix (str): Task name prefix.
         task_config (TaskConfig): Task config that user input.
         episodes (List[EpisodeConfig]): Rest episodes.
         active_runtimes (str): Activated runtimes, format like => { env_id: TaskRuntime }.
@@ -90,7 +89,6 @@ class BaseTaskRuntimeManager:
             task_user_config (TaskConfig): Task config read from user input config file.
         """
         self.env_num = task_user_config.env_num
-        self.task_name_prefix = task_user_config.task_name_prefix
         self.task_config: TaskConfig = task_user_config
         self.episodes: List[EpisodeConfig] = task_user_config.episodes
         self.metrics_save_path = task_user_config.metrics_save_path
@@ -105,7 +103,6 @@ class BaseTaskRuntimeManager:
         del task_template['offset_size']
         del task_template['env_num']
         del task_template['episodes']
-        del task_template['task_name_prefix']
         del task_template['metrics_save_path']
         return task_template
 
@@ -157,6 +154,8 @@ def create_task_runtime_manager(task_user_config: TaskConfig):
         manager_type = 'LocalTaskRuntimeManager'
     elif task_user_config.operation_mode == 'distributed':
         manager_type = 'DistributedTaskRuntimeManager'
+    else:
+        raise RuntimeError('Invalid operation_mode.')
 
     inst: BaseTaskRuntimeManager = BaseTaskRuntimeManager.managers[manager_type](task_user_config)
     return inst

@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Extra
 
@@ -34,7 +34,7 @@ class TaskConfig(BaseModel, extra=Extra.allow):
 
         offset_size (Optional[float], default=10.0): Defines an offset size, potentially for spacing in the simulated environment.
 
-        episodes (Union[List[EpisodeConfig], str]): Configures the episodes to be executed. Can be a list of EpisodeConfig instances or a string path.
+        episodes (List[EpisodeConfig]): Configures the episodes to be executed. Should be a list of EpisodeConfig instances.
 
         operation_mode (Literal['local', 'distributed'], default='local'): Specifies the operational mode as either local or distributed computing.
 
@@ -42,7 +42,6 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     """
 
     type: str
-    task_name_prefix: str
     env_num: Optional[int] = 1
 
     # inherit
@@ -56,13 +55,13 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     objects_root_path: Optional[str] = '/objects'
 
     # custom setting
-    task_settings: Optional[Dict] = {}
+    task_settings: Optional[Any] = None
 
     # offset
     offset_size: Optional[float] = 10.0
 
     # episode
-    episodes: Union[List[EpisodeConfig], str]
+    episodes: List[EpisodeConfig]
 
     # Operation_mode is used to specify the execution environment for the task.
     # It accepts one of the following values:

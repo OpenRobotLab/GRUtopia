@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from grutopia.core.config import RobotModel
 from grutopia.core.config.robot import ControllerModel, SensorModel
-from grutopia_extension.config.controllers import HumanoidMoveBySpeedControllerModel
-from grutopia_extension.config.sensors import RepCameraModel
+from grutopia_extension.config.controllers import HumanoidMoveBySpeedControllerCfg
+from grutopia_extension.config.sensors import RepCameraCfg
 
-humanoid_move_by_speed_controller = HumanoidMoveBySpeedControllerModel(
+humanoid_move_by_speed_controller = HumanoidMoveBySpeedControllerCfg(
     name='move_by_speed',
     type='HumanoidMoveBySpeedController',
     policy_weights_path='GRUtopia/assets/policy/weights/h1_loco_model_20000.pt',
@@ -32,11 +32,9 @@ humanoid_move_by_speed_controller = HumanoidMoveBySpeedControllerModel(
     ],
 )
 
-humanoid_camera = RepCameraModel(name='camera', type='RepCamera', prim_path='logo_link/Camera', size=(640, 480))
+humanoid_camera = RepCameraCfg(name='camera', type='RepCamera', prim_path='logo_link/Camera', size=(640, 480))
 
-humanoid_tp_camera = RepCameraModel(
-    name='tp_camera', type='RepCamera', prim_path='torso_link/TPCamera', size=(640, 480)
-)
+humanoid_tp_camera = RepCameraCfg(name='tp_camera', type='RepCamera', prim_path='torso_link/TPCamera', size=(640, 480))
 
 
 class HumanoidRobot(RobotModel):

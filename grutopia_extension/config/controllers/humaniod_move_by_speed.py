@@ -3,7 +3,7 @@ from typing import List, Optional
 from grutopia.core.config.robot import ControllerModel
 
 
-class HumanoidMoveBySpeedControllerModel(ControllerModel):
+class HumanoidMoveBySpeedControllerCfg(ControllerModel):
     """
     Represents a controller model for humanoid movement based on speed.
 
