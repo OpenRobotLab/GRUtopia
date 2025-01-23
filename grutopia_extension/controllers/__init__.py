@@ -1,5 +1,5 @@
 from grutopia_extension.controllers import (
-    franka_mocap_remote_controller,
+    franka_mocap_teleop_controller,
     gripper_controller,
     humanoid_move_by_speed_controller,
     ik_controller,

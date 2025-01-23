@@ -14,8 +14,8 @@ DISPLACEMENT_THRESHOLD = 0.05
 NUM_SPECIFIC_POSE_FRAMES = 12
 
 
-@BaseController.register('FrankaMocapRemoteController')
-class FrankaMocapRemoteController(BaseController):
+@BaseController.register('FrankaMocapTeleopController')
+class FrankaMocapTeleopController(BaseController):
     def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
         super().__init__(config=config, robot=robot, scene=scene)
 

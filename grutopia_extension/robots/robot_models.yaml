@@ -134,7 +134,7 @@ robots:
   - name: "joint_controller"
     type: JointController
 - type: "MocapControlledFrankaRobot"
-  usd_path: "GRUtopia/assets/robots/franka/mocap_remote_franka.usd"
+  usd_path: "GRUtopia/assets/robots/franka/mocap_teleop_franka.usd"
   controllers:
   - name: "rmpflow_controller"
     type: "RMPFlowController"
@@ -144,8 +144,8 @@ robots:
     end_effector_frame_name: "right_gripper"
   - name: "gripper_controller"
     type: GripperController
-  - name: "franka_mocap_remote_controller"
-    type: "FrankaMocapRemoteController"
+  - name: "franka_mocap_teleop_controller"
+    type: "FrankaMocapTeleopController"
     scale: [0.25, 0.75, 0.75]
     target_position: [0.0, 0.0, 1.0]
     origin_xyz: (0.46,0,0.38)

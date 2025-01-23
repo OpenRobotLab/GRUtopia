@@ -1,6 +1,6 @@
-# Hand Gesture-Based Motion Capture (Mocap) Remote Control Franka Tutorial
+# Tutorial on Hand Gesture-Based Motion Capture (Mocap) Teleoperation for Franka
 
-This tutorial will guide you through the process of setting up and controlling the Franka robotic arm using hand gestures. By following this guide, you will be able to complete the `GRUtopia/demo/franka_manipulation_mocap_remote.py` task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
+This tutorial will guide you through the process of setting up and controlling the Franka robotic arm using hand gestures. By following this guide, you will be able to complete the `GRUtopia/demo/franka_manipulation_mocap_teleop.py` task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
 
 ## 1. Implementation Guide
 
@@ -43,10 +43,10 @@ Once the server is running successfully, make a note of the Hamer server URL (e.
 
 ### Step 3: Start the Task in GRUtopia
 
-Now, update the `mocap_url` parameter in `GRUtopia/demo/franka_manipulation_mocap_remote.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
+Now, update the `mocap_url` parameter in `GRUtopia/demo/franka_manipulation_mocap_teleop.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
 
 ```
-python GRUtopia/demo/franka_manipulation_mocap_remote.py
+python GRUtopia/demo/franka_manipulation_mocap_teleop.py
 ```
 
 After the Isaac Sim interface finishes loading, move your right hand in front of the RGB camera (from Step 1), and the Franka arm will follow your hand movements.
