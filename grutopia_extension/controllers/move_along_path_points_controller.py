@@ -5,9 +5,9 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import ControllerModel
 from grutopia.core.util import log
 
 

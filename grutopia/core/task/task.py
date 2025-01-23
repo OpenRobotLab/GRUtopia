@@ -21,7 +21,7 @@ class BaseTask(OmniBaseTask, ABC):
     wrap of omniverse isaac sim's base task
 
     * enable register for auto register task
-    * contains scene/robots/objs.
+    * contains scene/robots/objects.
     """
 
     tasks = {}
@@ -45,7 +45,21 @@ class BaseTask(OmniBaseTask, ABC):
 
     def load(self):
         """
-        Load assets to scene.
+
+        Loads the environment scene and initializes robots and objects.
+
+        This method first checks if a scene asset path is defined in the runtime configuration. If so, it creates a scene using the provided path and specified parameters such as scaling and positioning. The scene is then populated with robots and objects based on the configurations stored within `self.runtime`.
+
+        Raises:
+        - Exceptions may be raised during file operations or USD scene creation, but specific exceptions are not documented here.
+
+        Attributes Modified:
+        - **self.robots**: A collection of initialized robots set up within the scene.
+        - **self.objects**: A dictionary mapping object names to their respective initialized instances within the scene.
+        - **self.loaded**: A boolean flag indicating whether the environment has been successfully loaded, set to `True` upon successful completion of this method.
+
+        Logs:
+        - Information about the initialized robots and objects is logged using the `log.info` method after successful setup.
         """
         if self.runtime.scene_asset_path is not None:
             source, prim_path = create_scene(
@@ -58,7 +72,6 @@ class BaseTask(OmniBaseTask, ABC):
                 scale=self.runtime.scene_scale,
                 translation=[self.runtime.env.offset[idx] + i for idx, i in enumerate(self.runtime.scene_position)],
             )
-
         self.robots = init_robots(self.runtime, self._scene)
         self.objects = {}
         for obj in self.runtime.objects:
@@ -105,10 +118,44 @@ class BaseTask(OmniBaseTask, ABC):
         return obs
 
     def update_metrics(self):
+        """
+
+        Updates all metrics stored within the instance.
+
+        Scans through the dictionary of metrics kept by the current instance,
+        invoking the 'update' method on each one. This facilitates the aggregation
+        or recalculation of metric values as needed.
+
+        Note:
+        This method does not return any value; its purpose is to modify the state
+        of the metric objects internally.
+        """
         for _, metric in self.metrics.items():
             metric.update()
 
     def calculate_metrics(self) -> dict:
+        """
+
+        Calculates and aggregates the results of all metrics registered within the instance.
+
+        This method iterates over the stored metrics, calling their respective `calc` methods to compute
+        the metric values. The computed values are then compiled into a dictionary, where each key corresponds
+        to the metrics' name and each value is the result of the metric calculation.
+
+        Returns:
+            dict: A dictionary containing the calculated results of all metrics, with metric names as keys.
+
+        Note:
+            Ensure that all metrics added to the instance have a `calc` method implemented.
+
+        Example Usage:
+        ```python
+        # Assuming `self.metrics` is populated with metric instances.
+        results = calculate_metrics()
+        print(results)
+        # Output: {'metric1': 0.85, 'metric2': 0.92, 'metric3': 0.78}
+        ```
+        """
         metrics_res = {}
         for name, metric in self.metrics.items():
             metrics_res[name] = metric.calc()

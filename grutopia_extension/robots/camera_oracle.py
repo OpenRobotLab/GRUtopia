@@ -5,32 +5,31 @@ from omni.isaac.core.prims.xform_prim import XFormPrim
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
-from grutopia.core.config.robot import RobotUserConfig as Config
+from grutopia.core.config.robot import RobotModel
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import RobotModel
 from grutopia.core.util import log
 from grutopia_extension.robots.humanoid import Humanoid
 
 
 @BaseRobot.register('CameraRobot')
 class CameraRobot(BaseRobot):
-    def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
-        super().__init__(config, robot_model, scene)
+    def __init__(self, robot_model: RobotModel, scene: Scene):
+        super().__init__(robot_model, scene)
         self._sensor_config = robot_model.sensors
         self._gains = robot_model.gains
-        self._start_position = np.array(config.position) if config.position is not None else None
-        self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
+        self._start_position = np.array(robot_model.position) if robot_model.position is not None else None
+        self._start_orientation = np.array(robot_model.orientation) if robot_model.orientation is not None else None
 
-        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'humanoid {robot_model.name}: position    : ' + str(self._start_position))
+        log.debug(f'humanoid {robot_model.name}: orientation : ' + str(self._start_orientation))
 
         usd_path = robot_model.usd_path
 
-        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
+        log.debug(f'humanoid {robot_model.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'humanoid {robot_model.name}: robot_model.prim_path : ' + str(robot_model.prim_path))
         self.isaac_robot = Humanoid(
-            prim_path=config.prim_path,
-            name=config.name,
+            prim_path=robot_model.prim_path,
+            name=robot_model.name,
             position=self._start_position,
             orientation=self._start_orientation,
             usd_path=usd_path,
@@ -38,7 +37,7 @@ class CameraRobot(BaseRobot):
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         self.size = (512, 512)
-        self.camera_prim_path = self.user_config.prim_path + '/' + self._sensor_config[0].prim_path
+        self.camera_prim_path = self.robot_model.prim_path + '/' + self._sensor_config[0].prim_path
         self.camera_prim = XFormPrim(os.path.dirname(self.camera_prim_path))
 
     def get_ankle_height(self):

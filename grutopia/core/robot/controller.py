@@ -9,12 +9,9 @@ from omni.isaac.core.controllers import BaseController as Base
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import RobotUserConfig
-from grutopia.core.config.robot.params import ControllerParams
-from grutopia.core.robot.robot import BaseRobot
-
 # yapf: disable
-from grutopia.core.robot.robot_model import ControllerModel, RobotModel
+from grutopia.core.config.robot import ControllerModel, RobotModel
+from grutopia.core.robot.robot import BaseRobot
 
 # yapf: enable
 from grutopia.core.util import log
@@ -36,6 +33,7 @@ class BaseController(Base, ABC):
             scene (Scene): scene from isaac sim.
 
         """
+        self.sub_controllers = None
         self.scene = scene
         if config.name is None:
             raise ValueError('must specify controller name.')
@@ -101,7 +99,7 @@ class BaseController(Base, ABC):
         """
         pass
 
-    def get_joint_subset(self) -> ArticulationSubset:
+    def get_joint_subset(self) -> ArticulationSubset | None:
         """Get the joint subset controlled by the controller.
 
         Returns:
@@ -116,33 +114,10 @@ class BaseController(Base, ABC):
         return self.sub_controllers[0].get_joint_subset()
 
 
-def config_inject(user_config: ControllerParams, model: ControllerModel) -> ControllerModel:
-    """Merge controller config from user config and robot model.
-
-    Args:
-        user_config (ControllerParams): user config.
-        model (ControllerModel): controller config from robot model.
-
-    Returns:
-        ControllerModel: merged controller config.
-    """
-    config = model.dict()
-    user = user_config.dict()
-    for k, v in user.items():
-        if v is not None:
-            config[k] = v
-    conf = ControllerModel(**config)
-
-    return conf
-
-
-def create_controllers(
-    config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot, scene: Scene
-) -> Dict[str, BaseController]:
+def create_controllers(robot_model: RobotModel, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:
-        config (RobotUserConfig): user config of the robot.
         robot_model (RobotModel): model of the robot.
         robot (BaseRobot): robot instance.
         scene (Scene): scene from isaac sim.
@@ -151,27 +126,20 @@ def create_controllers(
         Dict[str, BaseController]: dict of controllers with controller name as key.
     """
     controller_map = {}
-    available_controllers = {a.name: a for a in robot_model.controllers}
 
-    if config.controller_params is None:
+    if robot_model.controllers is None:
         return controller_map
-    for controller_param in config.controller_params:
-        controller_name = controller_param.name
-        if controller_name in available_controllers:
-            controller_config = config_inject(controller_param, available_controllers[controller_name])
-            controller_cls = BaseController.controllers[controller_config.type]
-            controller_ins: BaseController = controller_cls(config=controller_config, robot=robot, scene=scene)
-            if controller_config.sub_controllers is not None:
-                inject_sub_controllers(
-                    parent=controller_ins,
-                    configs=controller_config.sub_controllers,
-                    available=available_controllers,
-                    robot=robot,
-                    scene=scene,
-                )
-        else:
-            log.debug(available_controllers)
-            raise KeyError(f'{controller_name} not registered in controllers of {config.type}')
+    for controller_model in robot_model.controllers:
+        controller_name = controller_model.name
+        controller_cls = BaseController.controllers[controller_model.type]
+        controller_ins: BaseController = controller_cls(config=controller_model, robot=robot, scene=scene)
+        if controller_model.sub_controllers is not None:
+            inject_sub_controllers(
+                parent=controller_ins,
+                configs=controller_model.sub_controllers,
+                robot=robot,
+                scene=scene,
+            )
 
         controller_map[controller_name] = controller_ins
         log.debug(f'==================== {controller_name} loaded==========================')
@@ -181,17 +149,15 @@ def create_controllers(
 
 def inject_sub_controllers(
     parent: BaseController,
-    configs: List[ControllerParams],
-    available: Dict[str, ControllerModel],
+    configs: List[ControllerModel],
     robot: BaseRobot,
     scene: Scene,
 ):
-    """Recursively create and inject sub-controlllers into parent controller.
+    """Recursively create and inject sub-controllers into parent controller.
 
     Args:
         parent (BaseController): parent controller instance.
         configs (List[ControllerParams]): user configs of sub-controllers.
-        available (Dict[str, ControllerModel]): available controllers.
         robot (BaseRobot): robot instance.
         scene (Scene): scene from isaac sim.
     """
@@ -199,16 +165,10 @@ def inject_sub_controllers(
         return
     sub_controllers: List[BaseController] = []
     for config in configs:
-        controller_name = config.name
-        if controller_name not in available:
-            raise KeyError(f'{controller_name} not registered in controllers of {robot.robot_model.type}')
-        controller_config = config_inject(config, available[controller_name])
-        controller_cls = BaseController.controllers[controller_config.type]
-        controller_ins = controller_cls(config=controller_config, robot=robot, scene=scene)
-        if controller_config.sub_controllers is not None:
-            inject_sub_controllers(
-                controller_ins, configs=controller_config.sub_controllers, available=available, robot=robot, scene=scene
-            )
+        controller_cls = BaseController.controllers[config.type]
+        controller_ins = controller_cls(config=config, robot=robot, scene=scene)
+        if config.sub_controllers is not None:
+            inject_sub_controllers(controller_ins, configs=config.sub_controllers, robot=robot, scene=scene)
         sub_controllers.append(controller_ins)
 
     parent.sub_controllers = sub_controllers

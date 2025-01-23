@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 
-from grutopia.core.config import EpisodeConfig, Object, RobotUserConfig, TaskConfig
+from grutopia.core.config import EpisodeConfig, Object, RobotModel, TaskConfig
 from grutopia.core.config.metric import MetricUserConfig
 
 
@@ -35,7 +35,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
 
     # inherit
-    robots: Optional[List[RobotUserConfig]] = []
+    robots: Optional[List[RobotModel]] = []
     objects: Optional[List[Object]] = []
     metrics: Optional[List[MetricUserConfig]] = []
 
@@ -50,24 +50,21 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     extra: Optional[Dict[str, Any]] = {}
 
 
-def setup_offset_for_assets(episode_dict):
-    """
-    Set offset for all assets.
-
-    Args:
-        episode_dict (dict): All info for an episode.
-    """
-    env_id = episode_dict['env'].env_id
-    offset = episode_dict['env'].offset
-    for r in episode_dict['robots']:
-        r['name'] = f"{r['name']}_{env_id}"
-        r['prim_path'] = episode_dict['root_path'] + episode_dict['robots_root_path'] + r['prim_path']
-        r['position'] = [offset[idx] + pos for idx, pos in enumerate(r['position'])]
-    if 'objects' in episode_dict and episode_dict['objects'] is not None:
-        for o in episode_dict['objects']:
-            o['name'] = f"{o['name']}_{env_id}"
-            o['prim_path'] = episode_dict['root_path'] + episode_dict['objects_root_path'] + o['prim_path']
-            o['position'] = [offset[idx] + pos for idx, pos in enumerate(o['position'])]
+def setup_offset_for_assets(
+    episode: EpisodeConfig, env: Env, root_path: str, robots_root_path: str, objects_root_path: str
+):
+    """ """
+    env_id = env.env_id
+    offset = env.offset
+    for r in episode.robots:
+        r.name = f'{r.name}_{env_id}'
+        r.prim_path = root_path + robots_root_path + r.prim_path
+        r.position = [offset[idx] + pos for idx, pos in enumerate(r.position)]
+    if 'objects' in episode and episode.objects is not None:
+        for o in episode.objects:
+            o.name = f'{o.name}_{env_id}'
+            o.prim_path = root_path + objects_root_path + o.prim_path
+            o.position = [offset[idx] + pos for idx, pos in enumerate(o.position)]
 
 
 class BaseTaskRuntimeManager:

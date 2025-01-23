@@ -2,7 +2,6 @@ from typing import Any
 
 import gymnasium as gym
 
-import grutopia.core.util.space as space
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import log
 
@@ -20,15 +19,21 @@ class Env(gym.Env):
         self._runtime = simulator_runtime
         self._robot_name = None
         self._current_task_name = None
-        self.action_space = self._get_action_space()
-        self.observation_space = self._get_observation_space()
         self._validate()
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
         self._runner = SimulatorRunner(simulator_runtime=simulator_runtime)
-        log.info(f'==================== {self._robot_name} ======================')
 
+        # ========================= import space ============================
+        import grutopia.core.util.space as space  # noqa E402.
+
+        self._space = space
+        self.action_space = self._get_action_space()
+        self.observation_space = self._get_observation_space()
+        # ===================================================================
+
+        log.info(f'==================== {self._robot_name} ======================')
         return
 
     def _validate(self):
@@ -52,10 +57,11 @@ class Env(gym.Env):
         self._robot_name = f'{robot_name}_{0}'
 
     def _get_action_space(self) -> gym.Space:
-        return space.get_action_space_by_task(self._runtime.config['task_config']['type'])
+        print(self._runtime)
+        return self._space.get_action_space_by_task(self._runtime.config['task_config']['type'])
 
     def _get_observation_space(self) -> gym.Space:
-        return space.get_observation_space_by_task(self._runtime.config['task_config']['type'])
+        return self._space.get_observation_space_by_task(self._runtime.config['task_config']['type'])
 
     def reset(self, *, seed=None, options=None) -> tuple[gym.Space, dict[str, Any]]:
         """Resets the environment to an initial internal state, returning an initial observation and info.
@@ -69,7 +75,6 @@ class Env(gym.Env):
             observation (ObsType): Observation of the initial state.
             info (dictionary):  Contains the key `task_runtime` if there is an unfinished task
         """
-        obs = {}
         info = {}
 
         origin_obs, task_runtime = self.runner.reset(self._current_task_name)
@@ -112,6 +117,8 @@ class Env(gym.Env):
         if self._current_task_name is None:
             return obs, reward, terminated, truncated, info
 
+        # TODO: 转化，从 ndarray 到 dict
+        # TODO: 这里需要action_space和obs_space来实现转换
         _actions = {self._current_task_name: {self._robot_name: action}}
         origin_obs, terminated_status = self._runner.step(_actions)
 
@@ -140,7 +147,7 @@ class Env(gym.Env):
         """
         return self._runner.dt
 
-    def get_observations(self) -> gym.Space:
+    def get_observations(self) -> dict[Any, Any] | Any:
         """
         Get observations from Isaac environment
 

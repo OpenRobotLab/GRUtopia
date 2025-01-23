@@ -38,14 +38,12 @@ class DataHub:
     """
 
     sim_remote = False
-    chat_remote = True
+    chat_remote = False
     remote_address = ''
 
     @classmethod
     def datahub_init(
         cls,
-        sim: str = 'local',
-        chat: str = 'remote',
         remote: str = '127.0.0.1:9000',
     ):
         log.info('============== Datahub init ===============')

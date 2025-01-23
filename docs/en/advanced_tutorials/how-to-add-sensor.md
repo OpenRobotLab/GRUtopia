@@ -21,7 +21,7 @@ from omni.isaac.sensor import Camera as i_Camera
 
 from grutopia.core.config.robot import RobotUserConfig
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.robot_model import SensorModel
+from grutopia.core.config.robot import SensorModel
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
 
@@ -40,8 +40,8 @@ class Camera(BaseSensor):
                  scene: Scene = None):
         super().__init__(robot_user_config, sensor_config, robot, name)
         self.param = None
-        if self.robot_user_config.sensor_params is not None:
-            self.param = [p for p in self.robot_user_config.sensor_params if p.name == self.name][0]
+        if self.robot_user_config.sensors is not None:
+            self.param = [p for p in self.robot_user_config.sensors if p.name == self.name][0]
         self._camera = self.create_camera()
 
     def create_camera(self) -> i_Camera:

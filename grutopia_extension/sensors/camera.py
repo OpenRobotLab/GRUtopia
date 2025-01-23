@@ -2,8 +2,8 @@ from typing import Dict
 
 from omni.isaac.sensor import Camera as i_Camera
 
+from grutopia.core.config.robot import SensorModel
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.robot_model import SensorModel
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
 

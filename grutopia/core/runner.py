@@ -23,7 +23,6 @@ from grutopia.core.util.clear_task import clear_stage_by_prim_path
 class SimulatorRunner:
     def __init__(self, simulator_runtime: SimulatorRuntime):
         self.task_runtime_manager = simulator_runtime.task_runtime_manager
-
         self._simulator_runtime = simulator_runtime
         physics_dt = (
             self._simulator_runtime.simulator.physics_dt

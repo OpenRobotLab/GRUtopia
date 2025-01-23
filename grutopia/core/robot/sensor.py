@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 from functools import wraps
-from typing import Dict
+from typing import Dict, List
 
-from grutopia.core.config.robot import RobotUserConfig
-from grutopia.core.config.robot.params import SensorParams
+from grutopia.core.config.robot import RobotModel, SensorModel
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.robot_model import RobotModel, SensorModel
 from grutopia.core.util import log
 
 
@@ -72,35 +70,10 @@ class BaseSensor(ABC):
         return decorator
 
 
-def config_inject(params: SensorParams, model: SensorModel) -> SensorModel:
-    """Merge sensor config from user config and robot model.
-
-    Args:
-        params (SensorParams): user config.
-        model (SensorModel): sensor config from robot model.
-
-    Returns:
-        SensorModel: merged sensor config.
-    """
-    if params is None:
-        return model
-    config = model.dict()
-    user = params.dict()
-    for k, v in user.items():
-        if v is not None:
-            config[k] = v
-    conf = SensorModel(**config)
-
-    return conf
-
-
-def create_sensors(
-    config: RobotUserConfig, robot_model: RobotModel, robot: BaseRobot, scene: Scene
-) -> Dict[str, BaseSensor]:
+def create_sensors(robot_model: RobotModel, robot: BaseRobot, scene: Scene) -> Dict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:
-        config (RobotUserConfig): user config of the robot.
         robot_model (RobotModel): model of the robot.
         robot (BaseRobot): robot instance.
         scene (Scene): scene from isaac sim.
@@ -110,21 +83,11 @@ def create_sensors(
     """
     sensor_map = {}
     if robot_model.sensors is not None:
-        available_sensors = {a.name: a for a in robot_model.sensors}
-        for sensor_name, sensor in available_sensors.items():
-            if sensor.type not in BaseSensor.sensors:
-                raise KeyError(f'unknown sensor type "{sensor.type}"')
+        sensors: List[SensorModel] = robot_model.sensors
+        for sensor in sensors:
             sensor_cls = BaseSensor.sensors[sensor.type]
-            # Find if user param exists for this sensor.
-            param = None
-            if config.sensor_params is not None:
-                for p in config.sensor_params:
-                    if p.name == sensor_name:
-                        param = p
-                        break
-
-            sensor_ins = sensor_cls(config=config_inject(param, sensor), robot=robot, name=sensor_name, scene=scene)
-            sensor_map[sensor_name] = sensor_ins
-            log.debug(f'==================== {sensor_name} loaded==========================')
+            sensor_ins = sensor_cls(sensor, robot=robot, name=sensor.name, scene=scene)
+            sensor_map[sensor.name] = sensor_ins
+            log.debug(f'==================== {sensor.name} loaded==========================')
 
     return sensor_map

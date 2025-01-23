@@ -13,14 +13,12 @@ from omni.isaac.core.utils.types import ArticulationAction, ArticulationActions
 
 import grutopia.core.util.string as string_utils
 from grutopia.actuators import ActuatorBase, ActuatorBaseCfg, DCMotorCfg
-from grutopia.core.config.robot import RobotUserConfig as Config
+from grutopia.core.config.robot import RobotModel
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import RobotModel
 from grutopia.core.util import log
 
 
 class Humanoid(IsaacRobot):
-
     actuators_cfg = {
         'base_legs': DCMotorCfg(
             joint_names_expr=['.*'],
@@ -169,43 +167,43 @@ class Humanoid(IsaacRobot):
 
 @BaseRobot.register('HumanoidRobot')
 class HumanoidRobot(BaseRobot):
-    def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
-        super().__init__(config, robot_model, scene)
+    def __init__(self, robot_model: RobotModel, scene: Scene):
+        super().__init__(robot_model, scene)
         self._sensor_config = robot_model.sensors
         self._gains = robot_model.gains
-        self._start_position = np.array(config.position) if config.position is not None else None
-        self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
+        self._start_position = np.array(robot_model.position) if robot_model.position is not None else None
+        self._start_orientation = np.array(robot_model.orientation) if robot_model.orientation is not None else None
 
-        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'humanoid {robot_model.name}: position    : ' + str(self._start_position))
+        log.debug(f'humanoid {robot_model.name}: orientation : ' + str(self._start_orientation))
 
         usd_path = robot_model.usd_path
         if usd_path.startswith('/Isaac'):
             usd_path = get_assets_root_path() + usd_path
 
-        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
+        log.debug(f'humanoid {robot_model.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'humanoid {robot_model.name}: config.prim_path : ' + str(robot_model.prim_path))
         self.isaac_robot = Humanoid(
-            prim_path=config.prim_path,
-            name=config.name,
+            prim_path=robot_model.prim_path,
+            name=robot_model.name,
             position=self._start_position,
             orientation=self._start_orientation,
             usd_path=usd_path,
         )
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
-        if config.scale is not None:
-            self._robot_scale = np.array(config.scale)
+        if robot_model.scale is not None:
+            self._robot_scale = np.array(robot_model.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
         self._robot_ik_base = None
 
-        self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
+        self._robot_base = RigidPrim(prim_path=robot_model.prim_path + '/pelvis', name=robot_model.name + '_base')
         self._robot_right_ankle = RigidPrim(
-            prim_path=config.prim_path + '/right_ankle_link', name=config.name + 'right_ankle'
+            prim_path=robot_model.prim_path + '/right_ankle_link', name=robot_model.name + 'right_ankle'
         )
         self._robot_left_ankle = RigidPrim(
-            prim_path=config.prim_path + '/left_ankle_link', name=config.name + 'left_ankle'
+            prim_path=robot_model.prim_path + '/left_ankle_link', name=robot_model.name + 'left_ankle'
         )
 
         self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]

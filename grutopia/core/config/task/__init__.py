@@ -8,7 +8,36 @@ from grutopia.core.config.task.episode import EpisodeConfig
 
 class TaskConfig(BaseModel, extra=Extra.allow):
     """
-    Task config that user input.
+    A configuration model for defining tasks, including their environment settings, paths, metrics, and execution modes.
+
+    This class extends `BaseModel` from the Pydantic library and allows additional fields not explicitly defined.
+    It centralizes the configuration parameters necessary to set up and control how tasks are executed within a simulation
+    or other computational environment.
+
+    Attributes:
+        task_name_prefix (str): A prefix to be used when naming tasks, enhancing identification and organization.
+
+        env_num (Optional[int], default=1): Specifies the number of environments to be instantiated for parallel execution.
+
+        metrics (Optional[List[MetricUserConfig]], default=[]): Configuration details for metrics to track during task execution.
+
+        metrics_save_path (Optional[str], default='console'): Determines where metric results are saved; defaults to console output.
+
+        scene_root_path (Optional[str], default='/scene'): Root directory path for scene configurations.
+
+        robots_root_path (Optional[str], default='/robots'): Root directory path for robot configurations.
+
+        objects_root_path (Optional[str], default='/objects'): Root directory path for object configurations.
+
+        task_settings (Optional[Dict], default={}): Custom settings specific to the task, allowing flexibility for unique requirements.
+
+        offset_size (Optional[float], default=10.0): Defines an offset size, potentially for spacing in the simulated environment.
+
+        episodes (Union[List[EpisodeConfig], str]): Configures the episodes to be executed. Can be a list of EpisodeConfig instances or a string path.
+
+        operation_mode (Literal['local', 'distributed'], default='local'): Specifies the operational mode as either local or distributed computing.
+
+        loop (Optional[bool], default=False): When True, the first episode will repeat indefinitely instead of moving to the next episode.
     """
 
     type: str

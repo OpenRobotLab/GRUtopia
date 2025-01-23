@@ -33,7 +33,7 @@ task_name = list(env.active_runtimes.values())[0]
 
 while env.simulation_app.is_running() and not env.finished():
     i += 1
-
+    env_actions = {}
     _actions = DataHub.get_actions_by_task_name(task_name)
     _actions = (
         {_actions['robot']: {a['controller']: a['data'] for a in _actions['controllers']}} if len(_actions) > 0 else {}

@@ -2,12 +2,7 @@ from typing import Dict, List, Optional
 
 import yaml
 
-from grutopia.core.config import (
-    AgentConfig,
-    EpisodeConfigFile,
-    SimConfig,
-    ValidatedConfig,
-)
+from grutopia.core.config import AgentConfig, Config, EpisodeConfigFile, SimConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.distributed_task_runtime_manager import (
     DistributedTaskRuntimeManager,
@@ -24,7 +19,14 @@ from grutopia.core.util import log
 class SimulatorRuntime:
     """SimulatorRuntime"""
 
-    def __init__(self, config_path: str, headless: bool = True, webrtc: bool = False, native: bool = False):
+    def __init__(
+        self,
+        config_path: str = None,
+        headless: bool = True,
+        webrtc: bool = False,
+        native: bool = False,
+        config_class: Config = None,
+    ):
         """
 
         Args:
@@ -36,7 +38,12 @@ class SimulatorRuntime:
         self.simulator: Optional[SimConfig] = None
         self.task_runtime_manager: Optional[BaseTaskRuntimeManager] = None
         self.agents: Optional[List[AgentConfig]] = []
-        self.init(self.get_config_from_file())
+        if self.config_file_path:
+            self.init(config_dict=self.get_config_from_file())
+        elif config_class:
+            self.init(config_class=config_class)
+        else:
+            raise RuntimeError('No valid config is set.')
 
         # Init Isaac Sim
         from isaacsim import SimulationApp  # noqa
@@ -87,8 +94,12 @@ class SimulatorRuntime:
         self.config = self.read_yaml_file(self.config_file_path)
         return self.config
 
-    def init(self, config_dict: Dict) -> None:
-        config = ValidatedConfig(**config_dict)
+    def init(self, config_dict: Dict = None, config_class: Config = None) -> None:
+        if config_dict:
+            config = Config(**config_dict)
+        else:
+            config = config_class
+            self.config = config_class.model_dump()
 
         # Load Episodes file if episodes in task_config is instance of str.
         if isinstance(config.task_config.episodes, str):
@@ -96,11 +107,7 @@ class SimulatorRuntime:
             config.task_config.episodes = EpisodeConfigFile(**episodes_dict).episodes
 
         # Init Datahub
-        DataHub.datahub_init(
-            sim=str(config.datahub_config.sim),
-            chat=str(config.datahub_config.chat),
-            remote=config.datahub_config.remote,
-        )
+        DataHub.datahub_init()
 
         _trm = create_task_runtime_manager(config.task_config)
         self.simulator = config.simulator

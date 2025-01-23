@@ -34,7 +34,7 @@ from omni.isaac.core.scenes import Scene
 
 from grutopia.core.config.robot import RobotUserConfig as Config
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import RobotModel
+from grutopia.core.config.robot import RobotModel
 from grutopia.core.util import log
 
 

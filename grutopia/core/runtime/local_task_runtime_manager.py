@@ -73,16 +73,14 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         if last_env is None and self._current_env_id >= self.env_num:
             raise ValueError('Too many sub envs have been created.')
 
-        next_episode = self._pop_next_episode()
+        next_episode: EpisodeConfig = self._pop_next_episode()
         if next_episode is None:
             if last_env is not None:
                 del self.active_runtimes[str(last_env.env_id)]
             self.all_allocated = True
             return None
 
-        assets = next_episode.model_dump()
-        next_episode_dict = deepcopy(self.runtime_template)
-        next_episode_dict.update(**assets)
+        next_episode_template_dict = deepcopy(self.runtime_template)
 
         # create last_env if not exist
         if last_env is None:
@@ -90,13 +88,24 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
 
         # Update task_idx
         task_idx = DataHub.gen_task_idx()
-        next_episode_dict['name'] = f'{self.task_config.task_name_prefix}_{str(task_idx)}'
-        next_episode_dict['task_idx'] = task_idx
-        next_episode_dict['root_path'] = f'/World/env_{str(last_env.env_id)}'
-        next_episode_dict['env'] = last_env
+        next_episode_template_dict['name'] = f'{self.task_config.task_name_prefix}_{str(task_idx)}'
+        next_episode_template_dict['task_idx'] = task_idx
+        next_episode_template_dict['root_path'] = f'/World/env_{str(last_env.env_id)}'
+        next_episode_template_dict['env'] = last_env
 
-        setup_offset_for_assets(next_episode_dict)
-        task_runtime = TaskRuntime(**next_episode_dict)
+        task_runtime = TaskRuntime(**next_episode_template_dict)
+
+        setup_offset_for_assets(
+            next_episode,
+            last_env,
+            next_episode_template_dict['root_path'],
+            next_episode_template_dict['robots_root_path'],
+            next_episode_template_dict['objects_root_path'],
+        )
+
+        for k, v in next_episode.__dict__.items():
+            task_runtime.__dict__.update({k: v})
+
         if str(last_env.env_id) in self.active_runtimes:
             del self.active_runtimes[str(last_env.env_id)]
         self.active_runtimes[str(last_env.env_id)] = task_runtime

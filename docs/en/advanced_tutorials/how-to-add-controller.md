@@ -20,7 +20,7 @@ from omni.isaac.core.utils.types import ArticulationAction
 from grutopia.core.datahub.model_data import LogData, ModelData
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import ControllerModel
+from grutopia.core.config.robot import ControllerModel
 
 
 @BaseController.register('ChatboxController')

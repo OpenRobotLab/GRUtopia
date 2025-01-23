@@ -1,28 +1,12 @@
-from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel
 
 from grutopia.core.config.agent import AgentConfig
-from grutopia.core.config.robot import RobotUserConfig
+from grutopia.core.config.robot import RobotModel
 from grutopia.core.config.scene import Object, Scene
 from grutopia.core.config.task import TaskConfig
 from grutopia.core.config.task.episode import EpisodeConfig, EpisodeConfigFile
-
-
-class DataHubMode(str, Enum):
-    local = 'local'
-    remote = 'remote'
-
-
-class DataHubConfig(BaseModel):
-    """
-    DataHub config
-    """
-
-    sim: Optional[DataHubMode] = DataHubMode.local
-    chat: Optional[DataHubMode] = DataHubMode.remote
-    remote: str = '127.0.0.1:9000'
 
 
 class SimConfig(BaseModel):
@@ -44,12 +28,11 @@ class DistributionConfig(BaseModel):
     worker_num: Optional[int] = 1
 
 
-class ValidatedConfig(BaseModel):
+class Config(BaseModel):
     """
     Config validator for input file (yaml -> dict).
     """
 
-    datahub_config: Optional[DataHubConfig] = DataHubConfig()
     simulator: Optional[SimConfig] = SimConfig()
     task_config: TaskConfig
     agents: Optional[List[AgentConfig]] = []

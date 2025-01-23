@@ -6,8 +6,7 @@ from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config import RobotUserConfig
-from grutopia.core.robot.robot_model import RobotModel, RobotModels
+from grutopia.core.config.robot import RobotModel
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 
@@ -17,10 +16,9 @@ class BaseRobot:
 
     robots = {}
 
-    def __init__(self, config: RobotUserConfig, robot_model: RobotModel, scene: Scene):
-        self.name = config.name
+    def __init__(self, robot_model: RobotModel, scene: Scene):
+        self.name = robot_model.name
         self.robot_model = robot_model
-        self.user_config = config
         self.isaac_robot: IsaacRobot | None = None
         self.controllers = {}
         self.sensors = {}
@@ -31,7 +29,6 @@ class BaseRobot:
         Args:
             scene (Scene): scene to set up.
         """
-        config = self.user_config
         robot_model = self.robot_model
         if self.isaac_robot:
             scene.add(self.isaac_robot)
@@ -41,8 +38,8 @@ class BaseRobot:
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 
-        self.controllers: Dict[str, BaseController] = create_controllers(config, robot_model, self, scene)
-        self.sensors: Dict[str, BaseSensor] = create_sensors(config, robot_model, self, scene)
+        self.controllers: Dict[str, BaseController] = create_controllers(robot_model, self, scene)
+        self.sensors: Dict[str, BaseSensor] = create_sensors(robot_model, self, scene)
 
     def post_reset(self):
         """Set up things that happen after the world resets."""
@@ -129,12 +126,11 @@ class BaseRobot:
         return decorator
 
 
-def create_robots(runtime: TaskRuntime, robot_models: RobotModels, scene: Scene) -> Dict[str, BaseRobot]:
+def create_robots(runtime: TaskRuntime, scene: Scene) -> Dict[str, BaseRobot]:
     """Create robot instances in runtime.
 
     Args:
         runtime (TaskRuntime): task runtime.
-        robot_models (RobotModels): robot models.
         scene (Scene): isaac scene.
 
     Returns:
@@ -145,14 +141,7 @@ def create_robots(runtime: TaskRuntime, robot_models: RobotModels, scene: Scene)
         if robot.type not in BaseRobot.robots:
             raise KeyError(f'unknown robot type "{robot.type}"')
         robot_cls = BaseRobot.robots[robot.type]
-        robot_models = robot_models.robots
-        r_model = None
-        for model in robot_models:
-            if model.type == robot.type:
-                r_model = model
-        if r_model is None:
-            raise KeyError(f'robot model of "{robot.type}" is not found')
-        robot_ins = robot_cls(robot, r_model, scene)
+        robot_ins: BaseRobot = robot_cls(robot, scene)
         robot_map[robot.name] = robot_ins
         robot_ins.set_up_to_scene(scene)
         log.debug(f'===== {robot.name} loaded =====')

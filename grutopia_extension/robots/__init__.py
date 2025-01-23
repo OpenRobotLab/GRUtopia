@@ -1,7 +1,5 @@
-from grutopia_extension.robots import (
+from grutopia_extension.robots import (  # franka,; mocap_controlled_franka,
     camera_oracle,
-    franka,
     humanoid,
-    mocap_controlled_franka,
     npc,
 )
