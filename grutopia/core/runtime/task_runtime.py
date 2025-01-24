@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 
-from grutopia.core.config import EpisodeConfig, Object, RobotModel, TaskConfig
+from grutopia.core.config import EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
 from grutopia.core.config.metric import MetricUserConfig
 from grutopia.core.config.task.reward import RewardConfig
 
@@ -36,8 +36,8 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
 
     # inherit
-    robots: Optional[List[RobotModel]] = []
-    objects: Optional[List[Object]] = []
+    robots: Optional[List[RobotCfg]] = []
+    objects: Optional[List[ObjectCfg]] = []
     metrics: Optional[List[MetricUserConfig]] = []
     reward_setting: Optional[RewardConfig] = []
 
@@ -53,7 +53,7 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
 
 
 def setup_offset_for_assets(
-    episode: EpisodeConfig, env: Env, root_path: str, robots_root_path: str, objects_root_path: str
+    episode: EpisodeCfg, env: Env, root_path: str, robots_root_path: str, objects_root_path: str
 ):
     """ """
     env_id = env.env_id
@@ -83,14 +83,14 @@ class BaseTaskRuntimeManager:
 
     managers = {}
 
-    def __init__(self, task_user_config: TaskConfig = None):
+    def __init__(self, task_user_config: TaskCfg = None):
         """
         Args:
             task_user_config (TaskConfig): Task config read from user input config file.
         """
         self.env_num = task_user_config.env_num
-        self.task_config: TaskConfig = task_user_config
-        self.episodes: List[EpisodeConfig] = task_user_config.episodes
+        self.task_config: TaskCfg = task_user_config
+        self.episodes: List[EpisodeCfg] = task_user_config.episodes
         self.metrics_save_path = task_user_config.metrics_save_path
         self.active_runtimes: Dict[str, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
@@ -149,7 +149,7 @@ class BaseTaskRuntimeManager:
         return decorator
 
 
-def create_task_runtime_manager(task_user_config: TaskConfig):
+def create_task_runtime_manager(task_user_config: TaskCfg):
     if task_user_config.operation_mode == 'local':
         manager_type = 'LocalTaskRuntimeManager'
     elif task_user_config.operation_mode == 'distributed':

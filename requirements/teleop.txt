@@ -1,0 +1,6 @@
+dex_retargeting==0.1.1
+lcm==1.5.0
+meshcat==0.3.2
+nlopt==2.7.1
+pin-pink==3.0.0
+trimesh==4.5.1

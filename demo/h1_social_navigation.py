@@ -1,37 +1,37 @@
 import json
 import os
 
-from grutopia.core.config import AgentConfig, Config, SimConfig
+from grutopia.core.config import AgentCfg, Config, SimConfig
 from grutopia.core.config.agent import AgentModeEnum
 from grutopia.core.datahub import DataHub
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util.agent import create_agent
 from grutopia_extension import import_extensions
-from grutopia_extension.config.metrics import (
+from grutopia_extension.configs.metrics import (
     DebugMetricCfg,
     ECRMetricCfg,
     ResetTimeMetricCfg,
     SocialNavigationSuccessMetricCfg,
     SocialNavigationSuccessMetricConfig,
 )
-from grutopia_extension.config.robots.humanoid import (
-    HumanoidRobot,
-    humanoid_camera,
-    humanoid_move_by_speed_controller,
+from grutopia_extension.configs.robots.humanoid import (
+    HumanoidRobotCfg,
+    humanoid_camera_cfg,
+    move_by_speed_cfg,
 )
-from grutopia_extension.config.tasks import (
+from grutopia_extension.configs.tasks import (
     SocialNavigationEpisodeCfg,
     SocialNavigationTaskCfg,
     SocialNavigationTaskSetting,
 )
 
 # AgentConfig
-h1_1 = HumanoidRobot(
+h1_1 = HumanoidRobotCfg(
     controllers=[
-        humanoid_move_by_speed_controller,
+        move_by_speed_cfg,
     ],
-    sensors=[humanoid_camera.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
+    sensors=[humanoid_camera_cfg.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
 )
 
 config = Config(
@@ -55,13 +55,13 @@ config = Config(
         ],
     ),
     agents=[
-        AgentConfig(
+        AgentCfg(
             type='SocialNavigationAgent',
             robot_name='h1',
             sync_mode=AgentModeEnum.sync_mode,
             agent_config={'test': True},
         ),
-        AgentConfig(
+        AgentCfg(
             type='NPCAgent',
             robot_name='npc',
             sync_mode=AgentModeEnum.sync_mode,

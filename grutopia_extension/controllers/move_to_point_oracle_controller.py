@@ -5,16 +5,16 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia_extension.configs.controllers import MoveToPointBySpeedControllerCfg
 
 
 @BaseController.register('MoveToPointOracleController')
 class MoveToPointOracleController(BaseController):
     """Controller for moving to a target point by utilizing a move-by-speed controller as sub-controller."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: MoveToPointBySpeedControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self.last_threshold = None
         self._user_config = None
         self.goal_position: np.ndarray | None = None

@@ -5,16 +5,16 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import quat_to_euler_angles
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia_extension.configs.controllers import MoveToPointBySpeedControllerCfg
 
 
 @BaseController.register('MoveToPointBySpeedController')
 class MoveToPointBySpeedController(BaseController):
     """Controller for moving to a target point by utilizing a move-by-speed controller as sub-controller."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: MoveToPointBySpeedControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self.last_threshold = None
         self._user_config = None
         self.goal_position: np.ndarray | None = None
@@ -89,7 +89,12 @@ class MoveToPointBySpeedController(BaseController):
             forward_speed *= (dist_from_goal / (threshold * 2)) ** 3
 
         forward_speed *= (1 - (abs(angle_to_goal) * 2 / np.pi)) ** 3
-        rotation_speed *= angle_to_goal
+
+        # Never rotate faster than rotation_speed.
+        if abs(angle_to_goal) < 1:
+            rotation_speed *= angle_to_goal
+        else:
+            rotation_speed *= np.sign(angle_to_goal)
         # Call sub controller
         return self.sub_controllers[0].forward(
             forward_speed=forward_speed,

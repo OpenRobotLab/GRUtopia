@@ -2,11 +2,11 @@ from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
-from grutopia.core.config.robot import RobotModel
-from grutopia.core.config.scene import Object
+from grutopia.core.config.robot import RobotCfg
+from grutopia.core.config.scene import ObjectCfg as Object
 
 
-class EpisodeConfig(BaseModel, extra='allow'):
+class EpisodeCfg(BaseModel, extra='allow'):
     """
     Represents the configuration details for an episode in a simulation or robotics application.
 
@@ -30,7 +30,7 @@ class EpisodeConfig(BaseModel, extra='allow'):
     scene_scale: Optional[List[float]] = [1.0, 1.0, 1.0]
     scene_position: Optional[List[float]] = [0, 0, 0]
     scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
-    robots: Optional[List[RobotModel]] = []
+    robots: Optional[List[RobotCfg]] = []
     objects: Optional[List[Object]] = []
     extra: Optional[Any] = None
 
@@ -40,4 +40,4 @@ class EpisodeConfigFile(BaseModel, extra='allow'):
     Episode config file model.
     """
 
-    episodes: List[EpisodeConfig]
+    episodes: List[EpisodeCfg]

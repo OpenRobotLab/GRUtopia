@@ -1,12 +1,13 @@
 import numpy as np
 from omni.isaac.core.objects.cuboid import VisualCuboid
 
-from grutopia.core.scene.object import ObjectCommon, ObjectConfig, Scene
+from grutopia.core.scene.object import ObjectCommon, Scene
+from grutopia_extension.configs.objects import VisualCubeCfg
 
 
 @ObjectCommon.register('VisualCube')
 class VisualCube(ObjectCommon):
-    def __init__(self, config: ObjectConfig):
+    def __init__(self, config: VisualCubeCfg):
         super().__init__(config=config)
         self._config = config
 

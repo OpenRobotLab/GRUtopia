@@ -4,7 +4,7 @@ from functools import wraps
 from threading import Thread
 from typing import Any, Dict, Optional
 
-from grutopia.core.config.agent import AgentConfig
+from grutopia.core.config.agent import AgentCfg
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
@@ -170,7 +170,7 @@ class BaseAgent(ABC):
         return decorator
 
 
-def create_agent(config: AgentConfig, task_name: str, task_runtime: TaskRuntime):
+def create_agent(config: AgentCfg, task_name: str, task_runtime: TaskRuntime):
     agent_inst: BaseAgent = BaseAgent.agents[config.type](
         task_name=task_name,
         robot_name=config.robot_name,

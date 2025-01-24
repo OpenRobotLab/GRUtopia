@@ -5,24 +5,22 @@ from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.scenes import Scene
 from omni.isaac.franka import Franka
 
-from grutopia.core.config.robot import RobotUserConfig as Config
-from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import RobotModel
+from grutopia.core.robot.robot import BaseRobot, RobotCfg
 from grutopia.core.util import log
 
 
 @BaseRobot.register('FrankaRobot')
 class FrankaRobot(BaseRobot):
-    def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
-        super().__init__(config, robot_model, scene)
-        self._sensor_config = robot_model.sensors
+    def __init__(self, config: RobotCfg, scene: Scene):
+        super().__init__(config, scene)
+        self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
         log.debug(f'franka {config.name}: position    : ' + str(self._start_position))
         log.debug(f'franka {config.name}: orientation : ' + str(self._start_orientation))
 
-        usd_path = robot_model.usd_path
+        usd_path = config.usd_path
 
         log.debug(f'franka {config.name}: usd_path         : ' + str(usd_path))
         log.debug(f'franka {config.name}: config.prim_path : ' + str(config.prim_path))
@@ -43,6 +41,8 @@ class FrankaRobot(BaseRobot):
             prim_path=config.prim_path + '/panda_link0',
             name=f'{config.name}_base_link',
         )
+
+        self._rigid_bodies = [self._robot_ik_base]
 
         self.last_action = []
 

@@ -1,10 +1,53 @@
+from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia_extension import import_extensions
+from grutopia_extension.configs.metrics import RecordingMetricCfg
+from grutopia_extension.configs.robots.franka import (
+    FrankaRobotCfg,
+    arm_ik_cfg,
+    gripper_cfg,
+)
+from grutopia_extension.configs.tasks import (
+    ManipulationEpisodeCfg,
+    ManipulationExtra,
+    ManipulationTaskCfg,
+    ManipulationTaskSetting,
+)
 
-file_path = './GRUtopia/demo/configs/franka_manipulation.yaml'
+franka = FrankaRobotCfg(
+    position=[0, 0, 0],
+    controllers=[
+        arm_ik_cfg,
+        gripper_cfg,
+    ],
+)
 
-sim_runtime = SimulatorRuntime(config_path=file_path, headless=False, webrtc=False, native=True)
+config = Config(
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
+    task_config=ManipulationTaskCfg(
+        metrics=[
+            RecordingMetricCfg(
+                robot_name='franka',
+                fields=['joint_action'],
+            )
+        ],
+        episodes=[
+            ManipulationEpisodeCfg(
+                scene_asset_path='GRUtopia/assets/scenes/empty.usd',
+                robots=[franka],
+                extra=ManipulationExtra(
+                    prompt='Prompt test 1',
+                    target='franka_manipulation',
+                    episode_idx=0,
+                ),
+            ),
+        ],
+        task_settings=ManipulationTaskSetting(max_step=2000),
+    ),
+)
+
+sim_runtime = SimulatorRuntime(config_class=config, headless=False, webrtc=False, native=True)
 
 import_extensions()
 import numpy as np
@@ -15,10 +58,10 @@ obs, _ = env.reset()
 print(f'========INIT OBS{obs}=============')
 
 actions = [
-    {'arm_ik_controller': [np.array([0.4, 0, 0.45]), euler_angles_to_quat((0.0, 0.0, 0.0))]},
-    {'gripper_controller': ['open']},
-    {'arm_ik_controller': [np.array([0.4, 0.4, 0.1]), euler_angles_to_quat((np.pi / 2, np.pi / 2, np.pi / 2))]},
-    {'gripper_controller': ['close']},
+    {arm_ik_cfg.name: [np.array([0.4, 0, 0.45]), euler_angles_to_quat((0.0, 0.0, 0.0))]},
+    {gripper_cfg.name: ['open']},
+    {arm_ik_cfg.name: [np.array([0.4, 0.4, 0.1]), euler_angles_to_quat((np.pi / 2, np.pi / 2, np.pi / 2))]},
+    {gripper_cfg.name: ['close']},
 ]
 
 i = 0

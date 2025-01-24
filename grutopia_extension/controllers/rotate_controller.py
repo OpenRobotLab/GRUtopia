@@ -5,16 +5,16 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import quat_to_euler_angles
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia_extension.configs.controllers import RotateControllerCfg
 
 
 @BaseController.register('RotateController')
 class RotateController(BaseController):
     """Controller for turning to a certain orientation by utilizing a move-by-speed controller as sub-controller."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: RotateControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self._user_config = None
         self.goal_orientation: np.ndarray = None
         self.threshold: float = None
@@ -52,10 +52,11 @@ class RotateController(BaseController):
         if abs(delta_z_rot) < threshold:
             delta_z_rot = 0
 
-        rotation_speed *= delta_z_rot
-        if abs(delta_z_rot) > 1.0:
-            # Ensure speed is never greater than rotation_speed.
-            rotation_speed /= abs(delta_z_rot)
+        # Never rotate faster than rotation_speed.
+        if abs(delta_z_rot) < 1.0:
+            rotation_speed *= delta_z_rot
+        else:
+            rotation_speed *= np.sign(delta_z_rot)
 
         return self.sub_controllers[0].forward(
             forward_speed=0.0,
@@ -66,7 +67,7 @@ class RotateController(BaseController):
         """
         Args:
             action (List | np.ndarray): n-element 1d array containing:
-              0. goal_orientation (float)
+              0. goal_orientation in quat (np.ndarray)
         """
         assert len(action) == 1, 'action must contain 1 elements'
         start_orientation = self.robot.get_world_pose()[1]

@@ -4,21 +4,19 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
+from grutopia_extension.configs.controllers import RecoverControllerCfg
 
 
 @BaseController.register('RecoverController')
 class RecoverController(BaseController):
     """Controller for recovering from pose failure."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: RecoverControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
-        if config.recover_height is None:
-            raise ValueError('Recover controller requires a recover_height parameter')
         self.recover_height = config.recover_height
         self.target_position = None
         self.num_joints = None

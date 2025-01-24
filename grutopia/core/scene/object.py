@@ -2,7 +2,7 @@ from functools import wraps
 
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config import Object as ObjectConfig
+from grutopia.core.config import ObjectCfg as ObjectConfig
 
 
 class ObjectCommon:

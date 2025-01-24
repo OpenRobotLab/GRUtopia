@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from functools import wraps
 from typing import Dict, List
 
-from grutopia.core.config.robot import RobotModel, SensorModel
+from grutopia.core.config.robot import RobotCfg, SensorModel
 from grutopia.core.robot.robot import BaseRobot, Scene
 from grutopia.core.util import log
 
@@ -70,7 +70,7 @@ class BaseSensor(ABC):
         return decorator
 
 
-def create_sensors(robot_model: RobotModel, robot: BaseRobot, scene: Scene) -> Dict[str, BaseSensor]:
+def create_sensors(robot_model: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:

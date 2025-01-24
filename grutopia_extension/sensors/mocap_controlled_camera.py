@@ -7,9 +7,9 @@ from omni.isaac.sensor import Camera as i_Camera
 from scipy.spatial.transform import Rotation as R
 
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.robot_model import SensorModel
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
+from grutopia_extension.configs.sensors import MocapControlledCameraCfg
 
 DISPLACEMENT_THRESHOLD = 0.05
 NUM_SPECIFIC_POSE_FRAMES = 60
@@ -21,7 +21,7 @@ class MocapControlledCamera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(self, config: SensorModel, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.name = name
         self._camera = self.create_camera()

@@ -6,7 +6,7 @@ from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config.robot import RobotModel
+from grutopia.core.config.robot import RobotCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
 
@@ -16,7 +16,7 @@ class BaseRobot:
 
     robots = {}
 
-    def __init__(self, robot_model: RobotModel, scene: Scene):
+    def __init__(self, robot_model: RobotCfg, scene: Scene):
         self.name = robot_model.name
         self.robot_model = robot_model
         self.isaac_robot: IsaacRobot | None = None

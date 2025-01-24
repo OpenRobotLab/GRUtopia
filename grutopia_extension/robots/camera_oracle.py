@@ -5,7 +5,7 @@ from omni.isaac.core.prims.xform_prim import XFormPrim
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
-from grutopia.core.config.robot import RobotModel
+from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
 from grutopia_extension.robots.humanoid import Humanoid
@@ -13,7 +13,7 @@ from grutopia_extension.robots.humanoid import Humanoid
 
 @BaseRobot.register('CameraRobot')
 class CameraRobot(BaseRobot):
-    def __init__(self, robot_model: RobotModel, scene: Scene):
+    def __init__(self, robot_model: RobotCfg, scene: Scene):
         super().__init__(robot_model, scene)
         self._sensor_config = robot_model.sensors
         self._gains = robot_model.gains

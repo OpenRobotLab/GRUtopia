@@ -2,14 +2,14 @@ from typing import Dict
 
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.config.robot import RobotModel
+from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
 
 
 @BaseRobot.register('NPC')
 class NPC(BaseRobot):
-    def __init__(self, robot_model: RobotModel, scene: Scene):
+    def __init__(self, robot_model: RobotCfg, scene: Scene):
         super().__init__(robot_model, scene)
         self.name_of_robots_in_scene = []
         if robot_model.prim_path is not None:

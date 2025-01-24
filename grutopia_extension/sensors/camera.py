@@ -33,7 +33,7 @@ class Camera(BaseSensor):
         if self.config.size is not None:
             size = self.config.size
 
-        prim_path = self._robot.user_config.prim_path + '/' + self.config.prim_path
+        prim_path = self._robot.robot_model.prim_path + '/' + self.config.prim_path
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
         log.debug(f'size            : {size}')

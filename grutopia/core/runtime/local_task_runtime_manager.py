@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 import numpy as np
 
-from grutopia.core.config import EpisodeConfig, TaskConfig
+from grutopia.core.config import EpisodeCfg, TaskCfg
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import (
     BaseTaskRuntimeManager,
@@ -29,7 +29,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         offset_size (float): Offset size.
     """
 
-    def __init__(self, task_user_config: TaskConfig = None):
+    def __init__(self, task_user_config: TaskCfg = None):
         """
         Args:
             task_user_config (TaskConfig): Task config read from user input config file.
@@ -39,7 +39,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         self._column_length = int(np.sqrt(self.env_num))
         self._loop = False
 
-    def _pop_next_episode(self) -> Union[EpisodeConfig, None]:
+    def _pop_next_episode(self) -> Union[EpisodeCfg, None]:
         """
         Pop next episode from episodes' list.
 
@@ -72,7 +72,8 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         if last_env is None and self._current_env_id >= self.env_num:
             raise ValueError('Too many sub envs have been created.')
 
-        next_episode: EpisodeConfig = self._pop_next_episode()
+        next_episode: EpisodeCfg = self._pop_next_episode()
+        print(f'next episode is {next_episode}')
         if next_episode is None:
             if last_env is not None:
                 del self.active_runtimes[str(last_env.env_id)]

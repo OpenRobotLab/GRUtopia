@@ -8,7 +8,7 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
-from grutopia_extension.config.tasks.social_navigation_task import (
+from grutopia_extension.configs.tasks.social_navigation_task import (
     SocialNavigationExtra,
     TaskSettingCfg,
 )

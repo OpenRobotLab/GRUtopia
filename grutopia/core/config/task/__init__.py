@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Literal, Optional, Union
 from pydantic import BaseModel, Extra
 
 from grutopia.core.config.metric import MetricUserConfig
-from grutopia.core.config.task.episode import EpisodeConfig
+from grutopia.core.config.task.episode import EpisodeCfg
 from grutopia.core.config.task.reward import RewardConfig
 
 
-class TaskConfig(BaseModel, extra=Extra.allow):
+class TaskCfg(BaseModel, extra=Extra.allow):
     """
     A configuration model for defining tasks, including their environment settings, paths, metrics, and execution modes.
 
@@ -61,7 +61,7 @@ class TaskConfig(BaseModel, extra=Extra.allow):
     offset_size: Optional[float] = 10.0
 
     # episode
-    episodes: List[EpisodeConfig]
+    episodes: List[EpisodeCfg]
 
     # Operation_mode is used to specify the execution environment for the task.
     # It accepts one of the following values:

@@ -8,7 +8,7 @@ from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import ControllerModel
+from grutopia_extension.configs.controllers import FrankaMocapTeleopControllerCfg
 
 DISPLACEMENT_THRESHOLD = 0.05
 NUM_SPECIFIC_POSE_FRAMES = 12
@@ -16,15 +16,15 @@ NUM_SPECIFIC_POSE_FRAMES = 12
 
 @BaseController.register('FrankaMocapTeleopController')
 class FrankaMocapTeleopController(BaseController):
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: FrankaMocapTeleopControllerCfg, robot: BaseRobot, scene: Scene):
         super().__init__(config=config, robot=robot, scene=scene)
 
-        eef_init_angel = eval(config.origin_xyz_angle) if hasattr(config, 'origin_xyz_angle') else (0, 0, 0)
+        eef_init_angel = config.origin_xyz_angle if config.origin_xyz_angle is not None else (0, 0, 0)
         self.eef_init_orientation = euler_angles_to_quat(eef_init_angel)
         self.f_rot_matrix_left = np.array([[0, 0, -1], [1, 0, 0], [0, -1, 0]])
         self.f_rot_matrix_right = np.array([[0, 0, -1], [-1, 0, 0], [0, 1, 0]])
 
-        self.eef_init_position = eval(config.origin_xyz) if hasattr(config, 'origin_xyz') else (0, 0, 0)
+        self.eef_init_position = config.origin_xyz if config.origin_xyz is not None else (0, 0, 0)
         self.rh_init_position = None
 
         self.scale = config.scale

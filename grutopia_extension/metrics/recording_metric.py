@@ -1,13 +1,6 @@
-from pydantic import BaseModel
-
-from grutopia.core.config.metric import MetricUserConfig
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
-
-
-class RecordingMetricParam(BaseModel):
-    robot_name: str
-    fields: list = None  # fields that need to be recorded.
+from grutopia_extension.configs.metrics.recording_metric import RecordingMetricCfg
 
 
 @BaseMetric.register('RecordingMetric')
@@ -16,9 +9,9 @@ class RecordingMetric(BaseMetric):
     Record any controllers output or joint actions during playing or teleoperating
     """
 
-    def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
+    def __init__(self, config: RecordingMetricCfg, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
-        self.param = RecordingMetricParam(**config.metric_config)
+        self.param = config
         _robot_name = self.param.robot_name
         self.robot_name = (
             _robot_name + '_' + str(self.task_runtime.env.env_id)

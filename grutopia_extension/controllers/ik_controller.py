@@ -16,14 +16,14 @@ from omni.isaac.motion_generation import (
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import ControllerModel
+from grutopia_extension.configs.controllers import InverseKinematicsControllerCfg
 
 # yapf: enable
 
 
 @BaseController.register('InverseKinematicsController')
 class InverseKinematicsController(BaseController):
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: InverseKinematicsControllerCfg, robot: BaseRobot, scene: Scene):
         super().__init__(config=config, robot=robot, scene=scene)
         self._kinematics_solver = KinematicsSolver(
             robot_articulation=robot.isaac_robot,

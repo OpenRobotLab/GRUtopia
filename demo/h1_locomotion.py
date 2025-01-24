@@ -2,21 +2,25 @@ from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia_extension import import_extensions
-from grutopia_extension.config.robots.humanoid import (
-    HumanoidRobot,
-    humanoid_camera,
-    humanoid_move_by_speed_controller,
+from grutopia_extension.configs.robots.humanoid import (
+    HumanoidRobotCfg,
+    humanoid_camera_cfg,
+    move_along_path_cfg,
+    move_by_speed_cfg,
+    rotate_cfg,
 )
-from grutopia_extension.config.tasks import (
+from grutopia_extension.configs.tasks import (
     SingleInferenceEpisodeCfg,
     SingleInferenceTaskCfg,
 )
 
-h1_1 = HumanoidRobot(
+h1_1 = HumanoidRobotCfg(
     controllers=[
-        humanoid_move_by_speed_controller,
+        move_by_speed_cfg,
+        move_along_path_cfg,
+        rotate_cfg,
     ],
-    sensors=[humanoid_camera.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
+    sensors=[humanoid_camera_cfg.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
 )
 
 config = Config(
@@ -43,17 +47,10 @@ env = Env(sim_runtime)
 obs, _ = env.reset()
 # print(f'========INIT OBS{obs}=============')
 
-import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat
-
 path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
 i = 0
 
-# move_action = {'move_along_path': [path]}
-move_action = {humanoid_move_by_speed_controller.name: [1.0, 0, 0]}
-rotate_action = {'rotate': [euler_angles_to_quat(np.array([0, 0, np.pi]))]}
-recover_action = {'recover': []}
-keyboard_action = {'mh1_locomotion.pyove_with_keyboard': []}
+move_action = {move_along_path_cfg.name: [path]}
 
 while env.simulation_app.is_running():
     i += 1
@@ -61,12 +58,6 @@ while env.simulation_app.is_running():
     obs, _, terminated, _, _ = env.step(action=env_action)
     if i % 500 == 0:
         print(i)
-        print(obs)
-
-    if (i - 100) % 2000 == 0:  # recover for 100 steps
-        env_action = keyboard_action
-
-    if 1 % 3000 == 0:
-        env.reset()
+        # print(obs)
 
 env.simulation_app.close()

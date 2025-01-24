@@ -12,7 +12,7 @@ import grutopia.core.util.math as math_utils
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util.rsl_rl import pickle
-from grutopia_extension.config.controllers import HumanoidMoveBySpeedControllerCfg
+from grutopia_extension.configs.controllers import HumanoidMoveBySpeedControllerCfg
 
 
 class RLPolicy:

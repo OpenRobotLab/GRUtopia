@@ -45,7 +45,7 @@ class ControllerModel(BaseModel, extra='allow'):
     name: str
     type: str
     sub_controllers: Optional[List['ControllerModel']] = None
-    reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
+    # reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
 
     # joint_names: Optional[List[str]] = None
     # robot_description_path: Optional[str] = None
@@ -69,7 +69,7 @@ class ControllerModel(BaseModel, extra='allow'):
     # model_path: Optional[str] = None  # for planning policy, weight path of model
 
 
-class RobotModel(BaseModel):
+class RobotCfg(BaseModel):
     """
     Represents a robot model configuration with customizable attributes and optional components like controllers and sensors.
 
@@ -106,7 +106,6 @@ class RobotModel(BaseModel):
     orientation: Optional[List[float]] = None
     scale: Optional[List[float]] = None
 
-    type: str
     controllers: Optional[List[ControllerModel]] = None
     sensors: Optional[List[SensorModel]] = None
     gains: Optional[List[float]] = None

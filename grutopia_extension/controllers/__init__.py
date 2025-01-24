@@ -1,4 +1,10 @@
-from grutopia_extension.controllers import (  # franka_mocap_teleop_controller,; gripper_controller,; ik_controller,; rmpflow_controller,
+from grutopia_extension.controllers import (
+    aliengo_move_by_speed_controller,
+    franka_mocap_teleop_controller,
+    g1_move_by_speed_controller,
+    gr1_move_by_speed_controller,
+    gr1_teleop_controller,
+    gripper_controller,
     humanoid_move_by_speed_controller,
     joint_controller,
     move_along_path_points_controller,

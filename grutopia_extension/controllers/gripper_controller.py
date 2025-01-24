@@ -6,12 +6,12 @@ from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.robot.robot_model import ControllerModel
+from grutopia_extension.configs.controllers import GripperControllerCfg
 
 
 @BaseController.register('GripperController')
 class GripperController(BaseController):
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: GripperControllerCfg, robot: BaseRobot, scene: Scene):
         self._gripper = robot.isaac_robot.gripper  # for franka is OK
 
         super().__init__(config, robot, scene)

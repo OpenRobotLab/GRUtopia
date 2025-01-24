@@ -1,53 +1,20 @@
 import os
-from typing import Dict, List
+from typing import List
 
 import numpy as np
-import torch
 from omni.isaac.core.articulations import ArticulationSubset
 from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.stage import add_reference_to_stage
-from omni.isaac.core.utils.types import ArticulationAction, ArticulationActions
 
-import grutopia.core.util.string as string_utils
-from grutopia.actuators import ActuatorBase, ActuatorBaseCfg, DCMotorCfg
-from grutopia.core.config.robot import RobotModel
+from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
 
 
 class Humanoid(IsaacRobot):
-    actuators_cfg = {
-        'base_legs': DCMotorCfg(
-            joint_names_expr=['.*'],
-            effort_limit={
-                '.*hip.*': 200,
-                '.*knee.*': 300,
-                '.*ankle.*': 40,
-                'torso_joint': 200,
-                '.*shoulder_pitch.*': 40,
-                '.*shoulder_roll.*': 40,
-                '.*shoulder_yaw.*': 18,
-                '.*elbow.*': 18,
-            },
-            saturation_effort=400.0,
-            velocity_limit=1000.0,
-            stiffness={
-                '.*hip.*': 200,
-                '.*knee.*': 300,
-                '.*ankle.*': 40,
-                'torso_joint': 300,
-                '.*shoulder.*': 100,
-                '.*elbow.*': 100,
-            },
-            damping={'.*hip.*': 5, '.*knee.*': 6, '.*ankle.*': 2, 'torso_joint': 6, '.*shoulder.*': 2, '.*elbow.*': 2},
-            friction=0.0,
-            armature=0.0,
-        ),
-    }
-
     def __init__(
         self,
         prim_path: str,
@@ -59,7 +26,6 @@ class Humanoid(IsaacRobot):
     ):
         add_reference_to_stage(prim_path=prim_path, usd_path=os.path.abspath(usd_path))
         super().__init__(prim_path=prim_path, name=name, position=position, orientation=orientation, scale=scale)
-        self.actuators: Dict[str, ActuatorBase]
 
     def set_gains(self, gains):
         """[summary]
@@ -75,99 +41,68 @@ class Humanoid(IsaacRobot):
         kps = np.array([0.0] * num_leg_joints)
         kds = np.array([0.0] * num_leg_joints)
 
-        if kps is not None:
-            kps = self._articulation_view._backend_utils.expand_dims(kps, 0)
-        if kds is not None:
-            kds = self._articulation_view._backend_utils.expand_dims(kds, 0)
-        self._articulation_view.set_gains(kps=kps, kds=kds, save_to_usd=False)
+        joint_names = np.array(
+            [
+                'left_hip_yaw_joint',
+                'right_hip_yaw_joint',
+                'torso_joint',
+                'left_hip_roll_joint',
+                'right_hip_roll_joint',
+                'left_shoulder_pitch_joint',
+                'right_shoulder_pitch_joint',
+                'left_hip_pitch_joint',
+                'right_hip_pitch_joint',
+                'left_shoulder_roll_joint',
+                'right_shoulder_roll_joint',
+                'left_knee_joint',
+                'right_knee_joint',
+                'left_shoulder_yaw_joint',
+                'right_shoulder_yaw_joint',
+                'left_ankle_joint',
+                'right_ankle_joint',
+                'left_elbow_joint',
+                'right_elbow_joint',
+            ]
+        )
+
+        joint_subset = ArticulationSubset(self, joint_names)
+
+        kps = np.array(
+            [
+                200.0,
+                200.0,
+                300.0,
+                200.0,
+                200.0,
+                100.0,
+                100.0,
+                200.0,
+                200.0,
+                100.0,
+                100.0,
+                300.0,
+                300.0,
+                100.0,
+                100.0,
+                40.0,
+                40.0,
+                100.0,
+                100.0,
+            ]
+        )
+        kds = np.array([5.0, 5.0, 6.0, 5.0, 5.0, 2.0, 2.0, 5.0, 5.0, 2.0, 2.0, 6.0, 6.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
+
+        kps = self._articulation_view._backend_utils.expand_dims(kps, 0)
+        kds = self._articulation_view._backend_utils.expand_dims(kds, 0)
+        self._articulation_view.set_gains(kps=kps, kds=kds, save_to_usd=False, joint_indices=joint_subset.joint_indices)
         # VERY important!!! additional physics parameter
-        self._articulation_view.set_solver_position_iteration_counts(
-            self._articulation_view._backend_utils.expand_dims(4, 0)
-        )
-        self._articulation_view.set_solver_velocity_iteration_counts(
-            self._articulation_view._backend_utils.expand_dims(0, 0)
-        )
-        self._articulation_view.set_enabled_self_collisions(self._articulation_view._backend_utils.expand_dims(True, 0))
-
-    def _process_actuators_cfg(self):
-        self.actuators = dict.fromkeys(Humanoid.actuators_cfg.keys())
-        for actuator_name, actuator_cfg in Humanoid.actuators_cfg.items():
-            # type annotation for type checkersc
-            actuator_cfg: ActuatorBaseCfg
-            # create actuator group
-            joint_ids, joint_names = self.find_joints(actuator_cfg.joint_names_expr)
-            stiffness, damping = self._articulation_view.get_gains()
-            actuator: ActuatorBase = actuator_cfg.class_type(
-                cfg=actuator_cfg,
-                joint_names=joint_names,
-                joint_ids=joint_ids,
-                num_envs=1,
-                device='cpu',
-                stiffness=self._articulation_view.get_gains()[0][0],
-                damping=self._articulation_view.get_gains()[1][0],
-                armature=torch.tensor(self._articulation_view.get_armatures()),
-                friction=torch.tensor(self._articulation_view.get_friction_coefficients()),
-                effort_limit=torch.tensor(self._articulation_view._physics_view.get_dof_max_forces()),
-                velocity_limit=torch.tensor(self._articulation_view._physics_view.get_dof_max_velocities()),
-            )
-            # log information on actuator groups
-            self.actuators[actuator_name] = actuator
-
-    def apply_actuator_model(
-        self, control_action: ArticulationAction, controller_name: str, joint_set: ArticulationSubset
-    ):
-        if joint_set is None or control_action is None:
-            return
-        name = 'base_legs'
-        actuator = self.actuators[name]
-
-        control_joint_pos = torch.tensor(control_action.joint_positions, dtype=torch.float32)
-        control_actions = ArticulationActions(
-            joint_positions=control_joint_pos,
-            joint_velocities=torch.zeros_like(control_joint_pos),
-            joint_efforts=torch.zeros_like(control_joint_pos),
-            joint_indices=actuator.joint_indices,
-        )
-
-        joint_pos = torch.tensor(self.get_joint_positions(), dtype=torch.float32)
-        joint_vel = torch.tensor(self.get_joint_velocities(), dtype=torch.float32)
-        control_actions = actuator.compute(
-            control_actions,
-            joint_pos=joint_pos,
-            joint_vel=joint_vel,
-        )
-        if control_actions.joint_positions is not None:
-            joint_set.set_joint_positions(control_actions.joint_positions)
-        if control_actions.joint_velocities is not None:
-            joint_set.set_joint_velocities(control_actions.joint_velocities)
-        if control_actions.joint_efforts is not None:
-            self._articulation_view._physics_view.set_dof_actuation_forces(
-                control_actions.joint_efforts, torch.tensor([0])
-            )
-
-    def find_joints(self, name_keys, joint_subset=None):
-        """Find joints in the articulation based on the name keys.
-
-        Please see the :func:`omni.isaac.orbit.utils.string.resolve_matching_names` function for more information
-        on the name matching.
-
-        Args:
-            name_keys: A regular expression or a list of regular expressions to match the joint names.
-            joint_subset: A subset of joints to search for. Defaults to None, which means all joints
-                in the articulation are searched.
-
-        Returns:
-            A tuple of lists containing the joint indices and names.
-        """
-        if joint_subset is None:
-            joint_subset = self._articulation_view.dof_names
-        # find joints
-        return string_utils.resolve_matching_names(name_keys, joint_subset)
+        self.set_solver_position_iteration_count(4)
+        self.set_solver_velocity_iteration_count(0)
 
 
 @BaseRobot.register('HumanoidRobot')
 class HumanoidRobot(BaseRobot):
-    def __init__(self, robot_model: RobotModel, scene: Scene):
+    def __init__(self, robot_model: RobotCfg, scene: Scene):
         super().__init__(robot_model, scene)
         self._sensor_config = robot_model.sensors
         self._gains = robot_model.gains
@@ -190,6 +125,7 @@ class HumanoidRobot(BaseRobot):
             orientation=self._start_orientation,
             usd_path=usd_path,
         )
+        self.isaac_robot.set_enabled_self_collisions(True)
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         if robot_model.scale is not None:
@@ -213,9 +149,7 @@ class HumanoidRobot(BaseRobot):
 
     def post_reset(self):
         super().post_reset()
-        self.isaac_robot._process_actuators_cfg()
-        if self._gains is not None:
-            self.isaac_robot.set_gains(self._gains)
+        self.isaac_robot.set_gains(self._gains)
 
     def get_ankle_height(self):
         return np.min([self._robot_right_ankle.get_world_pose()[0][2], self._robot_left_ankle.get_world_pose()[0][2]])
@@ -239,11 +173,11 @@ class HumanoidRobot(BaseRobot):
         """
         for controller_name, controller_action in action.items():
             if controller_name not in self.controllers:
-                log.warn(f'unknown controller {controller_name} in action')
+                log.warning(f'unknown controller {controller_name} in action')
                 continue
             controller = self.controllers[controller_name]
             control = controller.action_to_control(controller_action)
-            self.isaac_robot.apply_actuator_model(control, controller_name, controller.get_joint_subset())
+            self.isaac_robot.apply_action(control)
 
     def get_obs(self):
         position, orientation = self._robot_base.get_world_pose()

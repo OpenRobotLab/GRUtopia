@@ -1,6 +1,10 @@
 [tool.black]
 line-length = 120
 skip-string-normalization = true
+force-exclude = '''
+lcmtypes
+'''
 
 [tool.isort]
 profile = "black"
+skip_glob = '**/lcmtypes/**'

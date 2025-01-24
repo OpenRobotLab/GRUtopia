@@ -9,7 +9,7 @@ class AgentModeEnum(str, Enum):
     async_mode = 'async'
 
 
-class AgentConfig(BaseModel):
+class AgentCfg(BaseModel):
     """
     Class representing the configuration for an agent, including its type, robot association, synchronization mode, and additional settings.
 

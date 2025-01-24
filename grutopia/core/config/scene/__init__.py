@@ -23,7 +23,7 @@ class Scene(BaseModel):
     path: Optional[str] = None
 
 
-class Object(BaseModel):
+class ObjectCfg(BaseModel):
     """
     Represents a customizable object within a scene, with support for physics and different object types.
 
@@ -53,18 +53,7 @@ class Object(BaseModel):
     name: str
     prim_path: str
     position: Optional[List[float]] = [0.0, 0.0, 0.0]
+    orientation: Optional[List[float]] = [1.0, 0.0, 0.0, 0.0]
     scale: Optional[List[float]] = [1.0, 1.0, 1.0]
 
-    # physics
-    mass: Optional[float] = None
-    density: Optional[float] = None
-    collider: Optional[bool] = True
-
-    # Set type in ["UsdObj", "DynamicCube"]
-    # If not, raise error
     type: str
-
-    # params for each type of
-    usd_obj_param: Optional[UsdObj] = None
-    color: Optional[List[float]] = None
-    dynamic_cube_param: Optional[DynamicCube] = None

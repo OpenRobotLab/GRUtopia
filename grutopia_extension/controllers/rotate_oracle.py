@@ -5,16 +5,16 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import quat_to_euler_angles
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia_extension.configs.controllers import RotateControllerCfg
 
 
 @BaseController.register('RotateOracleController')
 class RotateOracleController(BaseController):
     """Controller for turning to a certain orientation by utilizing a move-by-speed controller as sub-controller."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: RotateControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self._user_config = None
         self.goal_orientation: np.ndarray = None
         self.threshold: float = None

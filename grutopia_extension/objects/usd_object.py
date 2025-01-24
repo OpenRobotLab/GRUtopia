@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Sequence
 
 import numpy as np
@@ -6,12 +7,13 @@ from omni.isaac.core.utils.prims import is_prim_path_valid
 from omni.isaac.core.utils.stage import add_reference_to_stage
 from omni.physx.scripts import utils
 
-from grutopia.core.scene.object import ObjectCommon, ObjectConfig, Scene
+from grutopia.core.scene.object import ObjectCommon, Scene
+from grutopia_extension.configs.objects import UsdObjCfg
 
 
 @ObjectCommon.register('UsdObject')
 class UsdObject(ObjectCommon):
-    def __init__(self, config: ObjectConfig):
+    def __init__(self, config: UsdObjCfg):
         super().__init__(config=config)
         self._config = config
 
@@ -19,23 +21,25 @@ class UsdObject(ObjectCommon):
         if self._config.collider:
             scene.add(
                 RigidObject(
-                    usd_path=self._config.usd_obj_param.usd_path,
+                    usd_path=self._config.usd_path,
                     prim_path=self._config.prim_path,
                     name=self._config.name,
-                    position=np.array(self._config.position),
-                    scale=np.array([self._config.scale]),
+                    position=self._config.position,
+                    orientation=self._config.orientation,
+                    scale=self._config.scale,
                 )
-            )  # noqa: F401,F403
+            )
         else:
             scene.add(
                 GeometryObject(
-                    usd_path=self._config.usd_obj_param.usd_path,
+                    usd_path=self._config.usd_path,
                     prim_path=self._config.prim_path,
                     name=self._config.name,
-                    position=np.array(self._config.position),
-                    scale=np.array([self._config.scale]),
+                    position=self._config.position,
+                    orientation=self._config.orientation,
+                    scale=self._config.scale,
                 )
-            )  # noqa: F401,F403
+            )
 
 
 class RigidObject(RigidPrim):
@@ -58,7 +62,7 @@ class RigidObject(RigidPrim):
         if not is_prim_path_valid(prim_path):
             if mass is None:
                 mass = 1
-        prim = add_reference_to_stage(usd_path, prim_path)
+        prim = add_reference_to_stage(os.path.abspath(usd_path), prim_path)
         if collider:
             utils.setCollider(prim, approximationShape=None)
         RigidPrim.__init__(

@@ -2,11 +2,11 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from grutopia.core.config.agent import AgentConfig
-from grutopia.core.config.robot import RobotModel
-from grutopia.core.config.scene import Object, Scene
-from grutopia.core.config.task import TaskConfig
-from grutopia.core.config.task.episode import EpisodeConfig, EpisodeConfigFile
+from grutopia.core.config.agent import AgentCfg
+from grutopia.core.config.robot import RobotCfg
+from grutopia.core.config.scene import ObjectCfg, Scene
+from grutopia.core.config.task import TaskCfg
+from grutopia.core.config.task.episode import EpisodeCfg, EpisodeConfigFile
 
 
 class SimConfig(BaseModel):
@@ -34,5 +34,5 @@ class Config(BaseModel):
     """
 
     simulator: Optional[SimConfig] = SimConfig()
-    task_config: TaskConfig
-    agents: Optional[List[AgentConfig]] = []
+    task_config: TaskCfg
+    agents: Optional[List[AgentCfg]] = []

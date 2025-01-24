@@ -39,7 +39,6 @@ class BaseTask(OmniBaseTask, ABC):
         self.steps = 0
         self.work = True
         self.loaded = False
-
         for metric_config in runtime.metrics:
             self.metrics[metric_config.type] = create_metric(metric_config, self.runtime)
 

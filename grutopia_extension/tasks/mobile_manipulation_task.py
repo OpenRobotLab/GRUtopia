@@ -8,7 +8,7 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
-from grutopia_extension.config.tasks.mobile_manipulation_task import (
+from grutopia_extension.configs.tasks.mobile_manipulation_task import (
     MobileManipulationExtra,
     TaskSettingCfg,
 )

@@ -10,7 +10,7 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 # yapf: disable
-from grutopia.core.config.robot import ControllerModel, RobotModel
+from grutopia.core.config.robot import ControllerModel, RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 
 # yapf: enable
@@ -61,10 +61,7 @@ class BaseController(Base, ABC):
         Returns:
             Dict[str, Any]: observation key and value.
         """
-        obs = {}
-        for key, obs_ins in self._obs.items():
-            obs[key] = obs_ins.get_obs()
-        return obs
+        return {}
 
     @classmethod
     def register(cls, name: str):
@@ -114,7 +111,7 @@ class BaseController(Base, ABC):
         return self.sub_controllers[0].get_joint_subset()
 
 
-def create_controllers(robot_model: RobotModel, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
+def create_controllers(robot_model: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:

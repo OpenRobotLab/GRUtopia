@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 import yaml
 
-from grutopia.core.config import AgentConfig, Config, EpisodeConfigFile, SimConfig
+from grutopia.core.config import AgentCfg, Config, EpisodeConfigFile, SimConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.distributed_task_runtime_manager import (
     DistributedTaskRuntimeManager,
@@ -37,7 +37,7 @@ class SimulatorRuntime:
         self.config = None
         self.simulator: Optional[SimConfig] = None
         self.task_runtime_manager: Optional[BaseTaskRuntimeManager] = None
-        self.agents: Optional[List[AgentConfig]] = []
+        self.agents: Optional[List[AgentCfg]] = []
         if self.config_file_path:
             self.init(config_dict=self.get_config_from_file())
         elif config_class:

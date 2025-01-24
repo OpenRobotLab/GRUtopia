@@ -5,16 +5,16 @@ from omni.isaac.core.articulations import ArticulationSubset
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia_extension.configs.controllers import JointControllerCfg
 
 
 @BaseController.register('JointController')
 class JointController(BaseController):
     """Controller for direct joint control."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: JointControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
         self.joint_subset = None
