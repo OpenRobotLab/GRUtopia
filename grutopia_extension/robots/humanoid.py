@@ -6,7 +6,6 @@ from omni.isaac.core.articulations import ArticulationSubset
 from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
-from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.stage import add_reference_to_stage
 
 from grutopia.core.config.robot import RobotCfg
@@ -27,20 +26,10 @@ class Humanoid(IsaacRobot):
         add_reference_to_stage(prim_path=prim_path, usd_path=os.path.abspath(usd_path))
         super().__init__(prim_path=prim_path, name=name, position=position, orientation=orientation, scale=scale)
 
-    def set_gains(self, gains):
-        """[summary]
-
-        Args:
-            kps (Optional[np.ndarray], optional): [description]. Defaults to None.
-            kds (Optional[np.ndarray], optional): [description]. Defaults to None.
-
-        Raises:
-            Exception: [description]
+    def set_gains(self):
         """
-        num_leg_joints = 19
-        kps = np.array([0.0] * num_leg_joints)
-        kds = np.array([0.0] * num_leg_joints)
-
+        Set default stiffness (kps) and damping (kds) for joints.
+        """
         joint_names = np.array(
             [
                 'left_hip_yaw_joint',
@@ -102,25 +91,22 @@ class Humanoid(IsaacRobot):
 
 @BaseRobot.register('HumanoidRobot')
 class HumanoidRobot(BaseRobot):
-    def __init__(self, robot_model: RobotCfg, scene: Scene):
-        super().__init__(robot_model, scene)
-        self._sensor_config = robot_model.sensors
-        self._gains = robot_model.gains
-        self._start_position = np.array(robot_model.position) if robot_model.position is not None else None
-        self._start_orientation = np.array(robot_model.orientation) if robot_model.orientation is not None else None
+    def __init__(self, config: RobotCfg, scene: Scene):
+        super().__init__(config, scene)
+        self._sensor_config = config.sensors
+        self._start_position = np.array(config.position) if config.position is not None else None
+        self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
-        log.debug(f'humanoid {robot_model.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {robot_model.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
+        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
 
-        usd_path = robot_model.usd_path
-        if usd_path.startswith('/Isaac'):
-            usd_path = get_assets_root_path() + usd_path
+        usd_path = config.usd_path
 
-        log.debug(f'humanoid {robot_model.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {robot_model.name}: config.prim_path : ' + str(robot_model.prim_path))
+        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
         self.isaac_robot = Humanoid(
-            prim_path=robot_model.prim_path,
-            name=robot_model.name,
+            prim_path=config.prim_path,
+            name=config.name,
             position=self._start_position,
             orientation=self._start_orientation,
             usd_path=usd_path,
@@ -128,18 +114,16 @@ class HumanoidRobot(BaseRobot):
         self.isaac_robot.set_enabled_self_collisions(True)
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
-        if robot_model.scale is not None:
-            self._robot_scale = np.array(robot_model.scale)
+        if config.scale is not None:
+            self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-        self._robot_ik_base = None
-
-        self._robot_base = RigidPrim(prim_path=robot_model.prim_path + '/pelvis', name=robot_model.name + '_base')
+        self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
         self._robot_right_ankle = RigidPrim(
-            prim_path=robot_model.prim_path + '/right_ankle_link', name=robot_model.name + 'right_ankle'
+            prim_path=config.prim_path + '/right_ankle_link', name=config.name + 'right_ankle'
         )
         self._robot_left_ankle = RigidPrim(
-            prim_path=robot_model.prim_path + '/left_ankle_link', name=robot_model.name + 'left_ankle'
+            prim_path=config.prim_path + '/left_ankle_link', name=config.name + 'left_ankle'
         )
 
         self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]
@@ -149,7 +133,7 @@ class HumanoidRobot(BaseRobot):
 
     def post_reset(self):
         super().post_reset()
-        self.isaac_robot.set_gains(self._gains)
+        self.isaac_robot.set_gains()
 
     def get_ankle_height(self):
         return np.min([self._robot_right_ankle.get_world_pose()[0][2], self._robot_left_ankle.get_world_pose()[0][2]])
@@ -159,9 +143,6 @@ class HumanoidRobot(BaseRobot):
 
     def get_robot_base(self) -> RigidPrim:
         return self._robot_base
-
-    def get_robot_ik_base(self):
-        return self._robot_ik_base
 
     def get_world_pose(self):
         return self._robot_base.get_world_pose()
@@ -186,11 +167,13 @@ class HumanoidRobot(BaseRobot):
         obs = {
             'position': position,
             'orientation': orientation,
+            'controllers': {},
+            'sensors': {},
         }
 
         # common
         for c_obs_name, controller_obs in self.controllers.items():
-            obs[c_obs_name] = controller_obs.get_obs()
+            obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
-            obs[sensor_name] = sensor_obs.get_data()
+            obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs

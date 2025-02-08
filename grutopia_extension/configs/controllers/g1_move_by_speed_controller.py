@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class G1MoveBySpeedControllerCfg(ControllerModel):
+class G1MoveBySpeedControllerCfg(ControllerCfg):
     type: Optional[str] = 'G1MoveBySpeedController'
     joint_names: List[str]
     policy_weights_path: str

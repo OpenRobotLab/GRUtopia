@@ -4,7 +4,7 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 from grutopia.core.datahub import DataHub
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
@@ -14,7 +14,7 @@ from grutopia.core.robot.robot import BaseRobot
 class WebChatboxController(BaseController):
     """Controller for interacting with webui chatbox."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene, npc: bool = False) -> None:
+    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: Scene, npc: bool = False) -> None:
         """Initialize the controller.
 
         Args:

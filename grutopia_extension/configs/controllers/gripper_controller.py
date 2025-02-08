@@ -1,7 +1,7 @@
 from typing import Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class GripperControllerCfg(ControllerModel):
+class GripperControllerCfg(ControllerCfg):
     type: Optional[str] = 'GripperController'

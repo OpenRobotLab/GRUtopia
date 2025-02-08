@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 from pydantic import BaseModel
 
@@ -15,9 +15,9 @@ class EpisodeCfg(BaseModel, extra='allow'):
 
     Attributes:
         scene_asset_path (Optional[str]): The file path to the scene asset. Defaults to None.
-        scene_scale (Optional[List[float]]): Scaling factors applied to the scene along the x, y, and z axes. Defaults to [1.0, 1.0, 1.0].
-        scene_position (Optional[List[float]]): The position of the scene's origin in world coordinates. Defaults to [0, 0, 0].
-        scene_orientation (Optional[List[float]]): The quaternion representing the scene's orientation. Defaults to [1.0, 0, 0, 0].
+        scene_scale (Optional[Tuple[float, float, float]]): Scaling factors applied to the scene along the x, y, and z axes. Defaults to (1.0, 1.0, 1.0).
+        scene_position (Optional[Tuple[float, float, float]]): The position of the scene's origin in world coordinates. Defaults to (0, 0, 0).
+        scene_orientation (Optional[Tuple[float, float, float, float]]): The quaternion representing the scene's orientation. Defaults to (1.0, 0, 0, 0).
         robots (Optional[List[RobotModel]]): A list of configurations for robots participating in the episode. Defaults to an empty list.
         objects (Optional[List[Object]]): A list of objects present in the scene. Defaults to an empty list.
         extra (Optional[Dict[str, Any]]): Additional configuration options not covered by the predefined attributes. Defaults to an empty dictionary.
@@ -27,9 +27,9 @@ class EpisodeCfg(BaseModel, extra='allow'):
     """
 
     scene_asset_path: Optional[str] = None
-    scene_scale: Optional[List[float]] = [1.0, 1.0, 1.0]
-    scene_position: Optional[List[float]] = [0, 0, 0]
-    scene_orientation: Optional[List[float]] = [1.0, 0, 0, 0]
+    scene_scale: Optional[Tuple[float, float, float]] = (1.0, 1.0, 1.0)
+    scene_position: Optional[Tuple[float, float, float]] = (0, 0, 0)
+    scene_orientation: Optional[Tuple[float, float, float, float]] = (1.0, 0, 0, 0)
     robots: Optional[List[RobotCfg]] = []
     objects: Optional[List[Object]] = []
     extra: Optional[Any] = None

@@ -164,14 +164,14 @@ camera_left_cfg = CameraCfg(
     name='camera_left',
     type='Camera',
     prim_path='head_yaw_link/CameraLeft',
-    size=(1280, 720),
+    resolution=(1280, 720),
 )
 
 camera_right_cfg = CameraCfg(
     name='camera_right',
     type='Camera',
     prim_path='head_yaw_link/CameraRight',
-    size=(1280, 720),
+    resolution=(1280, 720),
 )
 
 

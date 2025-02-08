@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from pydantic import BaseModel
 
 
-class SensorModel(BaseModel):
+class SensorCfg(BaseModel):
     """
     Represents a model for sensors, encapsulating their attributes and providing a structured approach to handling sensor data within a base model framework.
 
@@ -20,7 +20,7 @@ class SensorModel(BaseModel):
     type: str
 
 
-class ControllerModel(BaseModel, extra='allow'):
+class ControllerCfg(BaseModel, extra='allow'):
     """
     A specialized model representing controllers within a system, inheriting from BaseModel with an extended configuration to allow additional keys.
 
@@ -44,7 +44,7 @@ class ControllerModel(BaseModel, extra='allow'):
 
     name: str
     type: str
-    sub_controllers: Optional[List['ControllerModel']] = None
+    sub_controllers: Optional[List['ControllerCfg']] = None
     # reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
 
     # joint_names: Optional[List[str]] = None
@@ -71,27 +71,26 @@ class ControllerModel(BaseModel, extra='allow'):
 
 class RobotCfg(BaseModel):
     """
-    Represents a robot model configuration with customizable attributes and optional components like controllers and sensors.
+    Represents a robot configuration with customizable attributes and optional components like controllers and sensors.
 
-    This RobotModel class is designed to store metadata and common configurations for robotic models. It inherits from BaseModel,
+    This RobotCfg class is designed to store metadata and common configurations for robotic models. It inherits from BaseModel,
     providing a structured way to define a robot's properties within a simulation or robotic application context. The model includes
     details about the robot's USD (Universal Scene Description) path, initial position, orientation, and other settings crucial for
     simulation initialization and control.
 
     Attributes:
-        name (str): The name identifier for the robot model.
+        name (str): The name identifier for the robot.
         type (str): The type or category of the robot.
         prim_path (str): The USD prim path where the robot is located or should be instantiated within a scene.
         create_robot (bool, optional): Flag indicating whether to create the robot instance during simulation setup. Defaults to True.
         usd_path (Optional[str], optional): The file path to the USD containing the robot definition. If None, a default path is used.
 
-        position (Optional[List[float]], optional): Initial position of the robot in 3D space [x, y, z]. Defaults to [0.0, 0.0, 0.0].
-        orientation (Optional[List[float]], optional): Initial orientation of the robot as Euler angles or quaternion. Defaults to None.
-        scale (Optional[List[float]], optional): Scaling factor for the robot model in XYZ dimensions. Defaults to None.
+        position (Optional[List[float]], optional): Initial position of the robot in world frame. Defaults to (0.0, 0.0, 0.0).
+        orientation (Optional[List[float]], optional): Initial orientation of the robot in quaternion. Defaults to None.
+        scale (Optional[List[float]], optional): Scaling factor for the robot. Defaults to None.
 
-        controllers (Optional[List[ControllerModel]], optional): List of controller configurations attached to the robot. Defaults to None.
-        sensors (Optional[List[SensorModel]], optional): List of sensor configurations integrated into the robot. Defaults to None.
-        gains (Optional[List[float]], optional): Control gains associated with the robot's actuators or controllers. Defaults to None.
+        controllers (Optional[List[ControllerCfg]], optional): List of controller configurations attached to the robot. Defaults to None.
+        sensors (Optional[List[SensorCfg]], optional): List of sensor configurations attached to the robot. Defaults to None.
     """
 
     # meta info
@@ -102,10 +101,9 @@ class RobotCfg(BaseModel):
     usd_path: Optional[str] = None  # If Optional, use default usd_path
 
     # common config
-    position: Optional[List[float]] = [0.0, 0.0, 0.0]
-    orientation: Optional[List[float]] = None
-    scale: Optional[List[float]] = None
+    position: Optional[Tuple[float, float, float]] = (0.0, 0.0, 0.0)
+    orientation: Optional[Tuple[float, float, float, float]] = None
+    scale: Optional[Tuple[float, float, float]] = None
 
-    controllers: Optional[List[ControllerModel]] = None
-    sensors: Optional[List[SensorModel]] = None
-    gains: Optional[List[float]] = None
+    controllers: Optional[List[ControllerCfg]] = None
+    sensors: Optional[List[SensorCfg]] = None

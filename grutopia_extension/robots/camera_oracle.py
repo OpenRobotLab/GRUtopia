@@ -13,23 +13,22 @@ from grutopia_extension.robots.humanoid import Humanoid
 
 @BaseRobot.register('CameraRobot')
 class CameraRobot(BaseRobot):
-    def __init__(self, robot_model: RobotCfg, scene: Scene):
-        super().__init__(robot_model, scene)
-        self._sensor_config = robot_model.sensors
-        self._gains = robot_model.gains
-        self._start_position = np.array(robot_model.position) if robot_model.position is not None else None
-        self._start_orientation = np.array(robot_model.orientation) if robot_model.orientation is not None else None
+    def __init__(self, config: RobotCfg, scene: Scene):
+        super().__init__(config, scene)
+        self._sensor_config = config.sensors
+        self._start_position = np.array(config.position) if config.position is not None else None
+        self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
-        log.debug(f'humanoid {robot_model.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {robot_model.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
+        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
 
-        usd_path = robot_model.usd_path
+        usd_path = config.usd_path
 
-        log.debug(f'humanoid {robot_model.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {robot_model.name}: robot_model.prim_path : ' + str(robot_model.prim_path))
+        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
         self.isaac_robot = Humanoid(
-            prim_path=robot_model.prim_path,
-            name=robot_model.name,
+            prim_path=config.prim_path,
+            name=config.name,
             position=self._start_position,
             orientation=self._start_orientation,
             usd_path=usd_path,
@@ -37,7 +36,7 @@ class CameraRobot(BaseRobot):
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         self.size = (512, 512)
-        self.camera_prim_path = self.robot_model.prim_path + '/' + self._sensor_config[0].prim_path
+        self.camera_prim_path = self.config.prim_path + '/' + self._sensor_config[0].prim_path
         self.camera_prim = XFormPrim(os.path.dirname(self.camera_prim_path))
 
     def get_ankle_height(self):
@@ -87,11 +86,13 @@ class CameraRobot(BaseRobot):
         obs = {
             'position': position,
             'orientation': orientation,
+            'controllers': {},
+            'sensors': {},
         }
 
         # common
         for c_obs_name, controller_obs in self.controllers.items():
-            obs[c_obs_name] = controller_obs.get_obs()
+            obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
-            obs[sensor_name] = sensor_obs.get_data()
+            obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs

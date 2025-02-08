@@ -1,9 +1,9 @@
 from typing import Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class RMPFlowControllerCfg(ControllerModel):
+class RMPFlowControllerCfg(ControllerCfg):
     type: Optional[str] = 'RMPFlowController'
     robot_description_path: str
     robot_urdf_path: str

@@ -1,9 +1,9 @@
 from typing import Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class RecoverControllerCfg(ControllerModel):
+class RecoverControllerCfg(ControllerCfg):
 
     type: Optional[str] = 'RecoverController'
     recover_height: float

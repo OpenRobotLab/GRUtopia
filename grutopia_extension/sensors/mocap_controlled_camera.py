@@ -24,6 +24,7 @@ class MocapControlledCamera(BaseSensor):
     def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.name = name
+        self.config = config
         self._camera = self.create_camera()
 
         self.camera_mover = CameraMover([0, 0, 0])
@@ -37,15 +38,15 @@ class MocapControlledCamera(BaseSensor):
             i_Camera: The initialized camera object.
         """
         # Initialize the params for the camera
-        size = self.config.size if self.config.size else (320, 240)
+        resolution = self.config.resolution if self.config.resolution else (320, 240)
         translation = self.config.translation if self.config.translation else None
         orientation = self.config.orientation if self.config.translation else None
 
-        prim_path = self._robot.user_config.prim_path + '/' + self.config.prim_path
+        prim_path = self._robot.config.prim_path + '/' + self.config.prim_path
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
-        log.debug(f'size            : {size}')
-        return i_Camera(prim_path=prim_path, resolution=size, translation=translation, orientation=orientation)
+        log.debug(f'resolution      : {resolution}')
+        return i_Camera(prim_path=prim_path, resolution=resolution, translation=translation, orientation=orientation)
 
     def init(self) -> None:
         """

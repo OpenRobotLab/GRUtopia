@@ -1,9 +1,9 @@
 from typing import Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class MoveAlongPathPointsControllerCfg(ControllerModel):
+class MoveAlongPathPointsControllerCfg(ControllerCfg):
 
     type: Optional[str] = 'MoveAlongPathPointsController'
     forward_speed: Optional[float] = None

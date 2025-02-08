@@ -20,7 +20,9 @@ h1_1 = HumanoidRobotCfg(
         move_along_path_cfg,
         rotate_cfg,
     ],
-    sensors=[humanoid_camera_cfg.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
+    sensors=[
+        humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (320, 240), 'enable': True}, deep=True)
+    ],
 )
 
 config = Config(
@@ -29,7 +31,7 @@ config = Config(
         episodes=[
             SingleInferenceEpisodeCfg(
                 scene_asset_path='GRUtopia/assets/scenes/empty.usd',
-                scene_scale=[0.01, 0.01, 0.01],
+                scene_scale=(0.01, 0.01, 0.01),
                 robots=[h1_1],
             ),
         ],

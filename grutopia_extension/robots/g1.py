@@ -4,7 +4,6 @@ import numpy as np
 from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
-from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.stage import add_reference_to_stage
 
 import grutopia.core.util.gym as gymutil
@@ -86,15 +85,9 @@ class G1(IsaacRobot):
         ]
         self.gym_adapter = gymutil.gym_adapter(joint_names_gym, joint_names_sim)
 
-    def set_gains(self, gains):
-        """[summary]
-
-        Args:
-            kps (Optional[np.ndarray], optional): [description]. Defaults to None.
-            kds (Optional[np.ndarray], optional): [description]. Defaults to None.
-
-        Raises:
-            Exception: [description]
+    def set_gains(self):
+        """
+        Set default stiffness (kps) and damping (kds) for joints.
         """
         self.get_articulation_controller().set_effort_modes('force')
         self.get_articulation_controller().switch_control_mode('effort')
@@ -167,21 +160,11 @@ class G1(IsaacRobot):
             )
         )
 
-        # kps = np.zeros(num_joints)
-        # kds= np.zeros(num_joints)
-
         if kps is not None:
             kps = self._articulation_view._backend_utils.expand_dims(kps, 0)
         if kds is not None:
             kds = self._articulation_view._backend_utils.expand_dims(kds, 0)
         self._articulation_view.set_gains(kps=kps, kds=kds, save_to_usd=False)
-        # self.get_articulation_controller().switch_control_mode('effort')
-        # VERY important!!! additional physics parameter
-        # self._articulation_view.set_solver_position_iteration_counts(
-        #     self._articulation_view._backend_utils.expand_dims(4, 0))
-        # self._articulation_view.set_solver_velocity_iteration_counts(
-        #     self._articulation_view._backend_utils.expand_dims(0, 0))
-        # self._articulation_view.set_enabled_self_collisions(self._articulation_view._backend_utils.expand_dims(True, 0))
 
 
 @BaseRobot.register('G1Robot')
@@ -189,7 +172,6 @@ class G1Robot(BaseRobot):
     def __init__(self, config: RobotCfg, scene: Scene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
-        self._gains = config.gains
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
@@ -197,8 +179,6 @@ class G1Robot(BaseRobot):
         log.debug(f'G1 {config.name}: orientation : ' + str(self._start_orientation))
 
         usd_path = config.usd_path
-        if usd_path.startswith('/Isaac'):
-            usd_path = get_assets_root_path() + usd_path
 
         log.debug(f'G1 {config.name}: usd_path         : ' + str(usd_path))
         log.debug(f'G1 {config.name}: config.prim_path : ' + str(config.prim_path))
@@ -215,31 +195,20 @@ class G1Robot(BaseRobot):
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-        self._robot_ik_base = None
-
         self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
-        # self._imu_in_pelvis = RigidPrim(prim_path=config.prim_path + '/imu_in_pelvis', name=config.name + '_imu_in_pelvis')
-        # self._imu_in_torso = RigidPrim(prim_path=config.prim_path + '/imu_in_torso', name=config.name + '_imu_in_torso')
         self._imu_in_torso = RigidPrim(prim_path=config.prim_path + '/imu_link', name=config.name + '_imu_in_torso')
 
         self._rigid_bodies = [self._robot_base, self._imu_in_torso]
 
     def post_reset(self):
         super().post_reset()
-        print(f'g1 joint_names: {self.isaac_robot.dof_names}, num: {len(self.isaac_robot.dof_names)}')
-        self.isaac_robot.set_gains(self._gains)
-
-    def get_ankle_height(self):
-        return np.min([self._robot_right_ankle.get_world_pose()[0][2], self._robot_left_ankle.get_world_pose()[0][2]])
+        self.isaac_robot.set_gains()
 
     def get_robot_scale(self):
         return self._robot_scale
 
     def get_robot_base(self) -> RigidPrim:
         return self._robot_base
-
-    def get_robot_ik_base(self):
-        return self._robot_ik_base
 
     def get_world_pose(self):
         return self._robot_base.get_world_pose()
@@ -266,6 +235,8 @@ class G1Robot(BaseRobot):
             'orientation': orientation,
             'joint_positions': self.isaac_robot.get_joint_positions(),
             'joint_velocities': self.isaac_robot.get_joint_velocities(),
+            'controllers': {},
+            'sensors': {},
         }
 
         # common

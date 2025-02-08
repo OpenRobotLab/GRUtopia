@@ -90,6 +90,8 @@ class FrankaRobot(BaseRobot):
             'position': position,
             'orientation': orientation,
             'joint_action': self.get_last_action(),
+            'controllers': {},
+            'sensors': {},
         }
 
         eef_world_pose = self.isaac_robot.end_effector.get_world_pose()
@@ -98,7 +100,7 @@ class FrankaRobot(BaseRobot):
 
         # common
         for c_obs_name, controller_obs in self.controllers.items():
-            obs[c_obs_name] = controller_obs.get_obs()
+            obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
-            obs[sensor_name] = sensor_obs.get_data()
+            obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs

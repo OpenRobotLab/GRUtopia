@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional, Tuple
 
 from pydantic import BaseModel
 
@@ -32,28 +32,17 @@ class ObjectCfg(BaseModel):
     Attributes:
         name (str): The unique identifier for the object.
         prim_path (str): The path indicating the object's position within the scene hierarchy.
-        position (List[float], optional): The 3D coordinates of the object's position. Defaults to [0.0, 0.0, 0.0].
-        scale (List[float], optional): Scaling factors along each axis. Defaults to [1.0, 1.0, 1.0].
-        mass (float, optional): Mass of the object for physics simulation. Defaults to None.
-        density (float, optional): Density of the object, used in conjunction with volume to calculate mass if mass is not provided. Defaults to None.
-        collider (bool, optional): Determines if the object should participate in collision detection. Defaults to True.
-        type (str): Specifies the type of the object, restricting to "UsdObj" or "DynamicCube". Mandatory and must be set correctly.
-        usd_obj_param (UsdObj, optional): Parameters specific to "UsdObj" type objects. Defaults to None.
-        color (List[float], optional): Color information for objects where applicable. Defaults to None.
-        dynamic_cube_param (DynamicCube, optional): Parameters for "DynamicCube" type objects. Defaults to None.
-
-    Raises:
-        ValueError: If the 'type' attribute is set to a value other than "UsdObj" or "DynamicCube".
-
-    Note:
-        Ensure that the 'type' attribute is correctly set to either "UsdObj" or "DynamicCube" to avoid exceptions. The associated parameters (`usd_obj_param` and `dynamic_cube_param`) should be provided as needed based on the chosen object type.
+        position (Tuple[float, float, float], optional): The 3D coordinates of the object's position. Defaults to (0.0, 0.0, 0.0).
+        orientation (Tuple[float, float, float, float], optional): The quaternion representation of the object's orientation. Defaults to (1.0, 0.0, 0.0, 0.0).
+        scale (Tuple[float, float, float], optional): Scaling factors along each axis. Defaults to (1.0, 1.0, 1.0).
+        type (str): Specifies the type of the object.
     """
 
     # common
     name: str
     prim_path: str
-    position: Optional[List[float]] = [0.0, 0.0, 0.0]
-    orientation: Optional[List[float]] = [1.0, 0.0, 0.0, 0.0]
-    scale: Optional[List[float]] = [1.0, 1.0, 1.0]
+    position: Optional[Tuple[float, float, float]] = (0.0, 0.0, 0.0)
+    orientation: Optional[Tuple[float, float, float, float]] = (1.0, 0.0, 0.0, 0.0)
+    scale: Optional[Tuple[float, float, float]] = (1.0, 1.0, 1.0)
 
     type: str

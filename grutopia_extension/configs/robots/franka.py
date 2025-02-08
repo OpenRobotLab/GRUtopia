@@ -1,7 +1,6 @@
-from typing import List, Optional
+from typing import Optional
 
 from grutopia.core.config import RobotCfg
-from grutopia.core.config.robot import ControllerModel, SensorModel
 from grutopia_extension.configs.controllers import (
     GripperControllerCfg,
     InverseKinematicsControllerCfg,
@@ -27,11 +26,3 @@ class FrankaRobotCfg(RobotCfg):
     prim_path: Optional[str] = '/World/franka'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/franka/franka.usd'
-
-    # common config
-    position: Optional[List[float]] = None
-    orientation: Optional[List[float]] = None
-    scale: Optional[List[float]] = None
-
-    controllers: Optional[List[ControllerModel]] = ()
-    sensors: Optional[List[SensorModel]] = ()

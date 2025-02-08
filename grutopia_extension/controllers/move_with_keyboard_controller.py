@@ -4,7 +4,7 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util.interaction import BaseInteraction
@@ -23,7 +23,7 @@ class MoveWithKeyboardController(BaseController):
         E: turn right
     """
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self.config = config
         self.forward_speed_base = config.forward_speed
         self.rotation_speed_base = config.rotation_speed

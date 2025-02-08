@@ -25,8 +25,8 @@ if is_in_container():
 table_cfg = UsdObjCfg(
     name='table',
     prim_path='/World/table',
-    scale=[0.001, 0.001, 0.001],
-    position=[0.0, 0.0, 0.374],
+    scale=(0.001, 0.001, 0.001),
+    position=(0.0, 0.0, 0.374),
     usd_path='GRUtopia/assets/objects/table/white_big/instance.usda',
 )
 
@@ -34,23 +34,23 @@ cube_cfgs = [
     DynamicCubeCfg(
         name='target_cube_0',
         prim_path='/World/target_cube_0',
-        position=[-0.28, 0, 0.8],
-        scale=[0.2, 0.2, 0.05],
-        color=[0.0, 0.5, 0.0],
+        position=(-0.28, 0, 0.8),
+        scale=(0.2, 0.2, 0.05),
+        color=(0.0, 0.5, 0.0),
     ),
     DynamicCubeCfg(
         name='target_cube_1',
         prim_path='/World/target_cube_1',
-        position=[-0.24, -0.2, 0.8],
-        scale=[0.05, 0.15, 0.08],
-        color=[0.5, 0.0, 0.0],
+        position=(-0.24, -0.2, 0.8),
+        scale=(0.05, 0.15, 0.08),
+        color=(0.5, 0.0, 0.0),
     ),
     DynamicCubeCfg(
         name='target_cube_2',
         prim_path='/World/target_cube_2',
-        position=[-0.24, 0.2, 0.8],
-        scale=[0.05, 0.15, 0.08],
-        color=[0.0, 0.0, 0.5],
+        position=(-0.24, 0.2, 0.8),
+        scale=(0.05, 0.15, 0.08),
+        color=(0.0, 0.0, 0.5),
     ),
 ]
 
@@ -62,7 +62,7 @@ config = Config(
                 scene_asset_path='GRUtopia/assets/scenes/empty.usd',
                 robots=[
                     GR1RobotCfg(
-                        position=[-0.68, 0.0, 0.82],
+                        position=(-0.68, 0.0, 0.82),
                         controllers=[teleop_cfg],
                         sensors=[camera_left_cfg, camera_right_cfg],
                     )
@@ -135,8 +135,8 @@ while env.simulation_app.is_running():
 
     obs, _, terminated, _, _ = env.step(action=actions)
 
-    image_left: np.ndarray = obs['camera_left']['rgba']
-    image_right: np.ndarray = obs['camera_right']['rgba']
+    image_left: np.ndarray = obs['sensors']['camera_left']['rgba']
+    image_right: np.ndarray = obs['sensors']['camera_right']['rgba']
 
     if image_left.shape[0] == 0:
         continue

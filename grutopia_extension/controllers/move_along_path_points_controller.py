@@ -5,7 +5,7 @@ import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
@@ -15,7 +15,7 @@ from grutopia.core.util import log
 class MoveAlongPathPointsController(BaseController):
     """Controller for moving alone a set of path points by utilizing a move-to-point controller as sub-controller."""
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         self._user_config = None
         self.path_points: List[np.ndarray | List] = []
         self.path_point_idx = 0

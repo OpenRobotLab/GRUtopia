@@ -1,9 +1,9 @@
 from typing import Optional, Tuple
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class FrankaMocapTeleopControllerCfg(ControllerModel):
+class FrankaMocapTeleopControllerCfg(ControllerCfg):
     type: Optional[str] = 'FrankaMocapTeleopController'
     scale: Tuple[float, float, float]
     target_position: Tuple[float, float, float]

@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import numpy as np
 from omni.isaac.core.prims import RigidPrim
@@ -16,9 +16,9 @@ class BaseRobot:
 
     robots = {}
 
-    def __init__(self, robot_model: RobotCfg, scene: Scene):
-        self.name = robot_model.name
-        self.robot_model = robot_model
+    def __init__(self, config: RobotCfg, scene: Scene):
+        self.name = config.name
+        self.config = config
         self.isaac_robot: IsaacRobot | None = None
         self.controllers = {}
         self.sensors = {}
@@ -29,7 +29,7 @@ class BaseRobot:
         Args:
             scene (Scene): scene to set up.
         """
-        robot_model = self.robot_model
+        robot_cfg = self.config
         if self.isaac_robot:
             scene.add(self.isaac_robot)
             log.debug('self.isaac_robot: ' + str(self.isaac_robot))
@@ -38,8 +38,8 @@ class BaseRobot:
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 
-        self.controllers: Dict[str, BaseController] = create_controllers(robot_model, self, scene)
-        self.sensors: Dict[str, BaseSensor] = create_sensors(robot_model, self, scene)
+        self.controllers: Dict[str, BaseController] = create_controllers(robot_cfg, self, scene)
+        self.sensors: Dict[str, BaseSensor] = create_sensors(robot_cfg, self, scene)
 
     def post_reset(self):
         """Set up things that happen after the world resets."""
@@ -61,14 +61,6 @@ class BaseRobot:
 
         Raises:
             NotImplementedError: _description_
-        """
-        raise NotImplementedError()
-
-    def get_robot_ik_base(self) -> RigidPrim:
-        """Get base link of ik controlled parts.
-
-        Returns:
-            RigidPrim: rigid prim of ik base link.
         """
         raise NotImplementedError()
 
@@ -99,9 +91,6 @@ class BaseRobot:
 
     def get_controllers(self):
         return self.controllers
-
-    def get_world_pose(self) -> Tuple[np.ndarray, np.ndarray]:
-        return self.isaac_robot.get_world_pose()
 
     def get_rigid_bodies(self) -> List[RigidPrim]:
         return []

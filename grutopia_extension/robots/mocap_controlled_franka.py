@@ -45,6 +45,8 @@ class MocapControlledFrankaRobot(BaseRobot):
             name=f'{config.name}_base_link',
         )
 
+        self._rigid_bodies = [self._robot_ik_base]
+
         self.last_action = []
 
     def get_robot_scale(self):
@@ -100,6 +102,8 @@ class MocapControlledFrankaRobot(BaseRobot):
             'position': position,
             'orientation': orientation,
             'joint_action': self.get_last_action(),
+            'controllers': {},
+            'sensors': {},
         }
 
         eef_world_pose = self.isaac_robot.end_effector.get_world_pose()
@@ -108,7 +112,7 @@ class MocapControlledFrankaRobot(BaseRobot):
 
         # common
         for c_obs_name, controller_obs in self.controllers.items():
-            obs[c_obs_name] = controller_obs.get_obs()
+            obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
-            obs[sensor_name] = sensor_obs.get_data()
+            obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs

@@ -25,15 +25,9 @@ class Aliengo(IsaacRobot):
         add_reference_to_stage(prim_path=prim_path, usd_path=os.path.abspath(usd_path))
         super().__init__(prim_path=prim_path, name=name, position=position, orientation=orientation, scale=scale)
 
-    def set_gains(self, gains):
-        """[summary]
-
-        Args:
-            kps (Optional[np.ndarray], optional): [description]. Defaults to None.
-            kds (Optional[np.ndarray], optional): [description]. Defaults to None.
-
-        Raises:
-            Exception: [description]
+    def set_gains(self):
+        """
+        Set default stiffness (kps) and damping (kds) for joints.
         """
         num_leg_joints = 12
         kps = np.array([40.0] * num_leg_joints)
@@ -54,7 +48,6 @@ class Aliengo(IsaacRobot):
             'RR_calf_joint',
         ]
         joint_subset = ArticulationSubset(self, joint_names)
-        print(f'joint indices: {joint_subset.joint_indices}')
 
         if kps is not None:
             kps = self._articulation_view._backend_utils.expand_dims(kps, 0)
@@ -77,7 +70,6 @@ class AliengoRobot(BaseRobot):
     def __init__(self, config: RobotCfg, scene: Scene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
-        self._gains = config.gains
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
@@ -101,24 +93,19 @@ class AliengoRobot(BaseRobot):
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-        self._robot_ik_base = None
-
         self._robot_base = RigidPrim(prim_path=config.prim_path + '/base', name=config.name + '_base')
 
         self._rigid_bodies = [self._robot_base]
 
     def post_reset(self):
         super().post_reset()
-        self.isaac_robot.set_gains(self._gains)
+        self.isaac_robot.set_gains()
 
     def get_robot_scale(self):
         return self._robot_scale
 
     def get_robot_base(self) -> RigidPrim:
         return self._robot_base
-
-    def get_robot_ik_base(self):
-        return self._robot_ik_base
 
     def get_world_pose(self):
         return self._robot_base.get_world_pose()
@@ -143,11 +130,13 @@ class AliengoRobot(BaseRobot):
         obs = {
             'position': position,
             'orientation': orientation,
+            'controllers': {},
+            'sensors': {},
         }
 
         # common
         for c_obs_name, controller_obs in self.controllers.items():
-            obs[c_obs_name] = controller_obs.get_obs()
+            obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
-            obs[sensor_name] = sensor_obs.get_data()
+            obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs

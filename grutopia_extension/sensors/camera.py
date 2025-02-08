@@ -2,10 +2,10 @@ from typing import Dict
 
 from omni.isaac.sensor import Camera as i_Camera
 
-from grutopia.core.config.robot import SensorModel
 from grutopia.core.robot.robot import BaseRobot, Scene
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
+from grutopia_extension.configs.sensors import CameraCfg
 
 
 @BaseSensor.register('Camera')
@@ -14,9 +14,10 @@ class Camera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(self, config: SensorModel, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: CameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.name = name
+        self.config = config
         self._camera = self.create_camera()
 
     def create_camera(self) -> i_Camera:
@@ -28,16 +29,16 @@ class Camera(BaseSensor):
             i_Camera: The initialized camera object.
         """
         # Initialize the default resolution for the camera
-        size = (320, 240)
-        # Use the configured camera size if provided.
-        if self.config.size is not None:
-            size = self.config.size
+        resolution = (320, 240)
+        # Use the configured camera resolution if provided.
+        if self.config.resolution is not None:
+            resolution = self.config.resolution
 
-        prim_path = self._robot.robot_model.prim_path + '/' + self.config.prim_path
+        prim_path = self._robot.config.prim_path + '/' + self.config.prim_path
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
-        log.debug(f'size            : {size}')
-        return i_Camera(prim_path=prim_path, resolution=size)
+        log.debug(f'resolution      : {resolution}')
+        return i_Camera(prim_path=prim_path, resolution=resolution)
 
     def init(self) -> None:
         """

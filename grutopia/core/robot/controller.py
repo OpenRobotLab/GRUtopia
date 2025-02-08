@@ -10,7 +10,7 @@ from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 # yapf: disable
-from grutopia.core.config.robot import ControllerModel, RobotCfg
+from grutopia.core.config.robot import ControllerCfg, RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 
 # yapf: enable
@@ -24,11 +24,11 @@ class BaseController(Base, ABC):
 
     controllers = {}
 
-    def __init__(self, config: ControllerModel, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: Scene):
         """Initialize the controller.
 
         Args:
-            config (ControllerModel): merged config (from user config and robot model) of the controller.
+            config (ControllerCfg): controller configuration.
             robot (BaseRobot): robot owning the controller.
             scene (Scene): scene from isaac sim.
 
@@ -111,11 +111,11 @@ class BaseController(Base, ABC):
         return self.sub_controllers[0].get_joint_subset()
 
 
-def create_controllers(robot_model: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
+def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:
-        robot_model (RobotModel): model of the robot.
+        robot_cfg (RobotCfg): config of the robot.
         robot (BaseRobot): robot instance.
         scene (Scene): scene from isaac sim.
 
@@ -124,16 +124,16 @@ def create_controllers(robot_model: RobotCfg, robot: BaseRobot, scene: Scene) ->
     """
     controller_map = {}
 
-    if robot_model.controllers is None:
+    if robot_cfg.controllers is None:
         return controller_map
-    for controller_model in robot_model.controllers:
-        controller_name = controller_model.name
-        controller_cls = BaseController.controllers[controller_model.type]
-        controller_ins: BaseController = controller_cls(config=controller_model, robot=robot, scene=scene)
-        if controller_model.sub_controllers is not None:
+    for controller_cfg in robot_cfg.controllers:
+        controller_name = controller_cfg.name
+        controller_cls = BaseController.controllers[controller_cfg.type]
+        controller_ins: BaseController = controller_cls(config=controller_cfg, robot=robot, scene=scene)
+        if controller_cfg.sub_controllers is not None:
             inject_sub_controllers(
                 parent=controller_ins,
-                configs=controller_model.sub_controllers,
+                configs=controller_cfg.sub_controllers,
                 robot=robot,
                 scene=scene,
             )
@@ -146,7 +146,7 @@ def create_controllers(robot_model: RobotCfg, robot: BaseRobot, scene: Scene) ->
 
 def inject_sub_controllers(
     parent: BaseController,
-    configs: List[ControllerModel],
+    configs: List[ControllerCfg],
     robot: BaseRobot,
     scene: Scene,
 ):

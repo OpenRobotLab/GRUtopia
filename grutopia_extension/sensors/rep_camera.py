@@ -19,7 +19,7 @@ class RepCamera(BaseSensor):
 
     def __init__(self, config: RepCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
-        self.size = None
+        self.resolution = None
         self.name = name
         self.config = config
         self.camera_prim_path = self.create_camera()
@@ -33,7 +33,7 @@ class RepCamera(BaseSensor):
         TODO Add `camera frame config` into GRUtopia config file.
         """
         if self.rp is None:
-            self.rp = rep.create.render_product(self.camera_prim_path, self.size)
+            self.rp = rep.create.render_product(self.camera_prim_path, self.resolution)
 
     def create_camera(self) -> str:
         """Create an isaac-sim camera object.
@@ -43,16 +43,16 @@ class RepCamera(BaseSensor):
         Returns:
             i_Camera: The initialized camera object.
         """
-        # Initialize the default resolution for the camera
-        self.size = (64, 64)
-        # Use the configured camera size if provided.
-        if self.config.size is not None:
-            self.size = self.config.size
+        # Initialize the default resolution for the camera.
+        self.resolution = (64, 64)
+        # Use the configured camera resolution if provided.
+        if self.config.resolution is not None:
+            self.resolution = self.config.resolution
 
-        prim_path = self._robot.robot_model.prim_path + '/' + self.config.prim_path
+        prim_path = self._robot.config.prim_path + '/' + self.config.prim_path
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
-        log.debug(f'size            : {self.size}')
+        log.debug(f'resolution      : {self.resolution}')
         return prim_path
 
     def sensor_init(self) -> None:
@@ -311,7 +311,7 @@ class RepCamera(BaseSensor):
             semantic_label = idToLabels[id]['class']
             bbox_area = bbox[row_idx][1]
             # occlusion = bbox[row_idx][2]
-            # if bbox_area >= 0.02 * self.size[0] * self.size[1] or occlusion > 0.7:
+            # if bbox_area >= 0.02 * self.resolution[0] * self.resolution[1] or occlusion > 0.7:
             label_to_bbox_area.append((semantic_label, bbox_area))
         if not label_to_bbox_area:
             return []

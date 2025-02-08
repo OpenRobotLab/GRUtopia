@@ -1,9 +1,9 @@
 from typing import Optional
 
-from grutopia.core.config.robot import ControllerModel
+from grutopia.core.config.robot import ControllerCfg
 
 
-class InverseKinematicsControllerCfg(ControllerModel):
+class InverseKinematicsControllerCfg(ControllerCfg):
     type: Optional[str] = 'InverseKinematicsController'
     robot_description_path: str
     robot_urdf_path: str
