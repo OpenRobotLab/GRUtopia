@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Dict, Optional, Tuple, Union
 
 from omni.isaac.core import World
@@ -45,8 +44,13 @@ class SimulatorRunner:
         self.metrics_config = None
         self.metrics_results = {}
         self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
-        if not os.path.exists(self.metrics_save_path) and self.metrics_save_path != 'console':
-            os.makedirs(self.metrics_save_path)
+        if self.metrics_save_path != 'console':
+            try:
+                with open(self.metrics_save_path, 'rw'):
+                    pass
+            except Exception as e:
+                log.error(f'Can not create result file at {self.metrics_save_path}.')
+                raise e
 
         self._world: World = World(
             physics_dt=self.dt,
@@ -195,13 +199,7 @@ class SimulatorRunner:
                 if self.metrics_save_path == 'console':
                     print(json.dumps(self.metrics_results, indent=4))
                 else:
-                    with open(
-                        os.path.join(
-                            self.metrics_save_path,
-                            task.runtime.name + '.json',
-                        ),
-                        'w',
-                    ) as f:
+                    with open(self.metrics_save_path, 'w') as f:
                         f.write(json.dumps(self.metrics_results))
                 exit()
 
