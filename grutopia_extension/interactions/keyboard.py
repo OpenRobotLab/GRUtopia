@@ -8,10 +8,11 @@ from grutopia.core.util.interaction import BaseInteraction
 class KeyboardController:
     def __init__(self):
         self.command = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self.subscribe()
 
-    def read(self):
+    def subscribe(self):
         """
-        Subscribe to keyboard events
+        subscribe to keyboard events
         """
         # subscribe to keyboard events
         app_window = omni.appwindow.get_default_app_window()  # noqa
@@ -24,25 +25,26 @@ class KeyboardController:
             event.type == carb.input.KeyboardEventType.KEY_PRESS
             or event.type == carb.input.KeyboardEventType.KEY_REPEAT
         ):
-            if event.input == carb.input.KeyboardInput.W:
+            if event.input == carb.input.KeyboardInput.I:
                 self.command = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-            if event.input == carb.input.KeyboardInput.S:
+            if event.input == carb.input.KeyboardInput.K:
                 self.command = np.array([0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
-            if event.input == carb.input.KeyboardInput.A:
+            if event.input == carb.input.KeyboardInput.J:
                 self.command = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
-            if event.input == carb.input.KeyboardInput.D:
+            if event.input == carb.input.KeyboardInput.L:
                 self.command = np.array([0.0, 0.0, 0.0, 1.0, 0.0, 0.0])
-            if event.input == carb.input.KeyboardInput.Q:
+            if event.input == carb.input.KeyboardInput.U:
                 self.command = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0])
-            if event.input == carb.input.KeyboardInput.E:
+            if event.input == carb.input.KeyboardInput.O:
                 self.command = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 1.0])
         if event.type == carb.input.KeyboardEventType.KEY_RELEASE:
             self.command = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        return True
 
 
 @BaseInteraction.register('Keyboard')
 class KeyboardInteraction(BaseInteraction):
-    """Get keyboard input event(w, s, a, d)"""
+    """Get keyboard input event(i, k, j, l, u, o)"""
 
     def __init__(self):
         super().__init__()
@@ -53,7 +55,6 @@ class KeyboardInteraction(BaseInteraction):
         """
         Read input of Keyboard.
         Returns:
-            np.ndarray, len == 6.
+            np.ndarray, len == 6, representing (i, k, j, l, u, o) key pressed or not.
         """
-        self.controller.read()
         return self.controller.command
