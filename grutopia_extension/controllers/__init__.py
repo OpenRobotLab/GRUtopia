@@ -12,6 +12,7 @@ from grutopia_extension.controllers import (
     move_to_point_by_speed_controller,
     move_to_point_oracle_controller,
     recover_controller,
+    rmpflow_controller,
     rotate_controller,
     rotate_oracle,
     web_chat_box_controller,

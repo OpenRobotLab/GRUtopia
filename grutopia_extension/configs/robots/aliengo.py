@@ -11,7 +11,7 @@ from grutopia_extension.configs.sensors import CameraCfg
 
 move_by_speed_cfg = AliengoMoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/policy/weights/aliengo_loco_model_4000.pt',
+    policy_weights_path='GRUtopia/assets/robots/aliengo/policy/move_by_speed/aliengo_loco_model_4000.pt',
     joint_names=[
         'FL_hip_joint',
         'FR_hip_joint',

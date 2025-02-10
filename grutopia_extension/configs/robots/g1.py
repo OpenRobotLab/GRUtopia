@@ -10,7 +10,7 @@ from grutopia_extension.configs.controllers import (
 
 move_by_speed_cfg = G1MoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/policy/weights/g1_15000.onnx',
+    policy_weights_path='GRUtopia/assets/robots/g1/policy/move_by_speed/g1_15000.onnx',
     joint_names=[
         'left_hip_pitch_joint',
         'right_hip_pitch_joint',

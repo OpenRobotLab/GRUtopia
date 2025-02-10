@@ -14,7 +14,7 @@ from grutopia_extension.configs.sensors import CameraCfg
 
 move_by_speed_cfg = GR1MoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/policy/weights/gr1_policy.onnx',
+    policy_weights_path='GRUtopia/assets/robots/gr1/policy/move_by_speed/gr1_policy.onnx',
     joint_names=[
         'left_hip_roll_joint',
         'left_hip_yaw_joint',
@@ -181,4 +181,4 @@ class GR1RobotCfg(RobotCfg):
     type: Optional[str] = 'GR1Robot'
     prim_path: Optional[str] = '/World/gr1'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/GR1T2_fourier_hand/urdf/robot/robot_free_record.usd'
+    usd_path: Optional[str] = 'GRUtopia/assets/robots/gr1/gr1.usd'
