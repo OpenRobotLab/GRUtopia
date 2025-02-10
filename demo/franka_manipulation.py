@@ -47,7 +47,7 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=False, webrtc=False, native=True)
+sim_runtime = SimulatorRuntime(config_class=config, headless=True, webrtc=False, native=True)
 
 import_extensions()
 import numpy as np

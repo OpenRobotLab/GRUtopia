@@ -192,18 +192,17 @@ class SimulatorRunner:
                 self.metrics_results[task.name] = task.calculate_metrics()
                 # TO DELETE
                 self.metrics_results[task.name]['normally_end'] = True
-                with open(
-                    os.path.join(
-                        self.metrics_save_path,
-                        task.runtime.scene_asset_path.split('/')[-2]
-                        + '_'
-                        + '_'.join(task.runtime.extra['target'].split('/'))
-                        + str(task.runtime.extra['episode_idx'])
-                        + '.json',
-                    ),
-                    'w',
-                ) as f:
-                    f.write(json.dumps(self.metrics_results))
+                if self.metrics_save_path == 'console':
+                    print(json.dumps(self.metrics_results, indent=4))
+                else:
+                    with open(
+                        os.path.join(
+                            self.metrics_save_path,
+                            task.runtime.name + '.json',
+                        ),
+                        'w',
+                    ) as f:
+                        f.write(json.dumps(self.metrics_results))
                 exit()
 
             # finished tasks will no longer update metrics

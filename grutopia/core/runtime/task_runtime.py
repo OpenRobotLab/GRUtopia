@@ -99,7 +99,10 @@ class BaseTaskRuntimeManager:
         self.loop = task_user_config.loop
 
     def gen_runtime_template(self):
-        task_template = self.task_config.model_dump()
+        task_template = {}
+        #  Dump only the first level of the model. model_dump will dump recursively and lose type information.
+        for k in self.task_config.model_dump():
+            task_template[k] = getattr(self.task_config, k)
         del task_template['offset_size']
         del task_template['env_num']
         del task_template['episodes']
