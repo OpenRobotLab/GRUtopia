@@ -1,7 +1,7 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
-from grutopia.core.util.container import is_in_container
+from grutopia.core.util import has_display
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.g1 import G1RobotCfg, move_by_speed_cfg
 from grutopia_extension.configs.tasks import (
@@ -10,11 +10,9 @@ from grutopia_extension.configs.tasks import (
 )
 
 headless = False
-webrtc = False
 
-if is_in_container():
+if not has_display():
     headless = True
-    webrtc = True
 
 
 config = Config(
@@ -34,7 +32,7 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=headless, webrtc=webrtc)
+sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
 
 import_extensions()
 # import custom extensions here.

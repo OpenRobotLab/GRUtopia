@@ -38,7 +38,7 @@ joint_controller = JointControllerCfg(
 
 move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/policy/weights/h1_loco_model_20000.pt',
+    policy_weights_path='GRUtopia/assets/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
     joint_names=[
         'left_hip_yaw_joint',
         'right_hip_yaw_joint',

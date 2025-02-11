@@ -1,6 +1,7 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.util import has_display
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.humanoid import (
     HumanoidRobotCfg,
@@ -14,7 +15,12 @@ from grutopia_extension.configs.tasks import (
     SingleInferenceTaskCfg,
 )
 
+headless = False
+if not has_display():
+    headless = True
+
 h1_1 = HumanoidRobotCfg(
+    position=(0.0, 0.0, 1.05),
     controllers=[
         move_by_speed_cfg,
         move_along_path_cfg,
@@ -40,7 +46,7 @@ config = Config(
 
 print(config.model_dump_json(indent=4))
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=True, webrtc=False, native=True)
+sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
 
 import_extensions()
 # import custom extensions here.
