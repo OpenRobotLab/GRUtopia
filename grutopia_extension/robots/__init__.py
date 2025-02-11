@@ -5,6 +5,7 @@ from grutopia_extension.robots import (
     g1,
     gr1,
     humanoid,
+    humanoid_with_hand,
     mocap_controlled_franka,
     npc,
 )

@@ -30,7 +30,6 @@ class ControllerCfg(BaseModel, extra='allow'):
         name (str): The unique identifier for the controller.
         type (str): Specifies the controller's type or category, determining its behavior and functionality.
         sub_controllers (Optional[List[ControllerModel]], optional): A list of nested 'ControllerModel' instances, enabling hierarchical controller structures. Defaults to None.
-        reference (Optional[str], optional): Defines the coordinate reference frame for the controller's operation (e.g., 'world', 'robot', 'arm_base'). Defaults to 'world' if not specified, with a primary application in inverse kinematics (IK) contexts.
 
     Usage:
         Instantiate a `ControllerModel` to define a controller configuration. Optionally, nest other `ControllerModel` instances within the `sub_controllers` attribute to model complex controller hierarchies.
@@ -39,7 +38,6 @@ class ControllerCfg(BaseModel, extra='allow'):
         - `name`: Always a string.
         - `type`: String defining controller type.
         - `sub_controllers`: A list of `ControllerModel` instances or None.
-        - `reference`: A string specifying the reference frame, defaulting to 'world'.
     """
 
     name: str
