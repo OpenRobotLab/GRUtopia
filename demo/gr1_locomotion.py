@@ -11,7 +11,7 @@ from grutopia_extension.configs.tasks import (
 
 headless = False
 
-if has_display():
+if not has_display():
     headless = True
 
 
