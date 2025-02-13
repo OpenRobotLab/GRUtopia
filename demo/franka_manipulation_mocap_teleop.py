@@ -5,6 +5,7 @@ from grutopia_extension import import_extensions
 from grutopia_extension.configs.metrics import RecordingMetricCfg
 from grutopia_extension.configs.robots.mocap_controlled_franka import (
     MocapControlledFrankaRobotCfg,
+    lh_controlled_camera_cfg,
     teleop_cfg,
 )
 from grutopia_extension.configs.tasks import (
@@ -19,6 +20,7 @@ franka = MocapControlledFrankaRobotCfg(
     controllers=[
         teleop_cfg,
     ],
+    sensors=[lh_controlled_camera_cfg],
 )
 
 config = Config(
