@@ -20,17 +20,19 @@ Welcome to GRUtopia's documentation!
 
    get_started/installation.md
    get_started/wander-with-keyboard.md
-   get_started/webui.md
+   get_started/how-to-use-grscenes.md
+   get_started/teleoperating-with-mocap.md
+   get_started/teleoperating-with-visionpro.md
+   get_started/benchmark.md
 
 .. toctree::
    :maxdepth: 1
    :caption: Tutorials
 
-
-   tutorials/how-to-use-npc.md
-   tutorials/how-to-use-robot.md
    tutorials/how-to-use-controller.md
    tutorials/how-to-use-sensor.md
+   tutorials/how-to-use-robot.md
+   tutorials/how-to-use-task.md
 
 .. toctree::
    :maxdepth: 1
@@ -40,6 +42,7 @@ Welcome to GRUtopia's documentation!
    advanced_tutorials/how-to-add-robot.md
    advanced_tutorials/how-to-add-controller.md
    advanced_tutorials/how-to-add-sensor.md
+   advanced_tutorials/how-to-add-task.md
 
 .. toctree::
    :maxdepth: 1
@@ -47,7 +50,6 @@ Welcome to GRUtopia's documentation!
 
 
    grutopia.core.env <api/env>
-   grutopia.core.datahub <api/datahub>
    grutopia.core.register <api/register>
    grutopia.core.robot <api/robot>
    grutopia.core.scene <api/scene>

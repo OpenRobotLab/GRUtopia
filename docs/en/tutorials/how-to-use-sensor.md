@@ -1,40 +1,41 @@
-# How to use sensor
+# How to Use Sensor
 
-> This tutorial will show you how to use an existed sensors of robot
+> This tutorial will show you how to use existing sensors.
 
+## Supported Sensors
 
-
-## Which sensors are our robots supported
-
-In `grutopia/core/robot/robot_model.py`, We know `Sensors` is under `RobotModel`.
-
-![img.png](../_static/image/robot_model_class.png)
-
-Check `grutopia_extension/robots/robot_models.yaml`. We find
-
-```yaml
-robots:
-  - type: "HumanoidRobot"
-    ...
-    sensors:
-      - name: "camera"  # <- this is sensor name
-        prim_path: "relative/prim/path/to/camera"
-        type: "Camera"
-```
-
-## How to use a sensor
-
-When we run `demo/h1_locomotion.py`, observation from sensors can be got from `obs` (obs = env.step(actions=env_actions))
-
-Use them in isaac simulation_app's step loops.
+In `grutopia_extension/config/sensors/__init__.py`, we can observe all available sensors:
 
 ```Python
-while env.simulation_app.is_running():
+class CameraCfg(SensorModel):
+   ...
+
+
+class RepCameraCfg(SensorModel):
     ...
-    obs = env.step(actions)
-    task_name = env.active_runtimes.values()[0].name
-    robot_name = env.active_runtimes.values()[0].robots.values()[0].name
-    photo = obs[task_name][robot_name]['camera']['rgba']  # here get `camera` data
+
+
+class MocapControlledCameraCfg(SensorModel):
+    ...
+```
+
+## How to Use a Sensor
+
+In the main loop of the script, we can obtain observations collected from a sensor. In the example below, we retrieve the RGBA data from the camera.
+```Python
+...
+path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
+move_action = {move_along_path_cfg.name: [path]}
+
+while env.simulation_app.is_running():
+    env_action = move_action
+    obs, _, _, _, _ = env.step(actions=env_actions)
+    rgba = obs["camera"]["rgba"]
     ...
 env.simulation_app.close()
 ```
+
+We can see that `step()` method returns obs as a dictionary, and the data collected by the corresponding sensor can be retrieved by accessing the values in the dictionary.
+
+
+It is important to specify the sensors in the robot before use. Please refer to the [how to use robot](./how-to-use-robot.md) for more detailed information.

@@ -4,7 +4,7 @@ grutopia.core.env
 env
 ---
 
-.. autoclass:: grutopia.core.env.BaseEnv
+.. autoclass:: grutopia.core.gym_env.Env
    :members:
 
 runner

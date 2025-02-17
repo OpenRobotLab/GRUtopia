@@ -1,36 +1,31 @@
-# How to use controller
+# How to Use Controller
 
-> This tutorial will show you how to use an existed controller for a robot
+> This tutorial will show you how to use existing controllers for robots.
 
-## What is `Controller`
+## What Is Controller
 
-Controllers usually control joints of robot. Also, They're the entries of robot actions. To make robot move, rab, or
-even speak, chat online, we use controllers.
+Controllers typically manage the joints of a robot and serve as the entries to robot actions. We utilize controllers to make a robot move and run.
 
-## Which controllers are our robots supported
+## Supported Controllers
 
-Check `grutopia_extension/robots/robot_models.yaml`,
+The directory `grutopia_extension/config/controllers/` contains a list of all supported controllers:
 
-![img.png](../_static/image/robot_model_controller.png)
+![img.png](../_static/image/config_controller_list.png)
 
-This is all controller robot `HumanoidRobot` can use.
+## How to Use a Controller
 
-## How to use a controller
-
-Use them in isaac simulation_app's step loops.
-
-for example:
+We can utilize a controller in the main loop of the script, as shown below:
 
 ```Python
+...
+path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
+move_action = {move_along_path_cfg.name: [path]}
+
 while env.simulation_app.is_running():
-    actions = [{
-        h1: {
-            "move_to_point": np.array([.0, .0, .0]),
-        },
-    }]
-    obs = env.step(actions=env_actions)
+    env_action = move_action
+    obs, _, _, _, _ = env.step(actions=env_actions)
     ...
 env.simulation_app.close()
 ```
 
-for more usage, please read source code~
+It is important to specify the controllers in the robot before use. Please refer to the [how to use robot](./how-to-use-robot.md) for more detailed information.

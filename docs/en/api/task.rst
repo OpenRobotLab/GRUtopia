@@ -7,10 +7,14 @@ task
 .. automodule:: grutopia.core.task.task
    :members:
 
+metric
+----
 
-..
-    metric
-    ------
+.. automodule:: grutopia.core.task.metric
+   :members:
 
-    .. automodule:: grutopia.core.task.metric
-       :members:
+reward
+----
+
+.. automodule:: grutopia.core.task.reward
+   :members:

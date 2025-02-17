@@ -16,15 +16,15 @@ Two ways of installation are provided:
 
 See more: [Differences Between Workstation And Docker](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_faq.html#isaac-sim-setup-differences).
 
-Windows support is in our roadmap, welcome to contribute!
+Windows support is in our roadmap. Contributions are welcome!
 
 ## Install from source (Linux)
 
-Make sure you have [Isaac Sim 2023.1.1](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) installed.
+Make sure you have [Isaac Sim 4.1.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) installed. Please use version 4.1.0 instead of any other versions, such as 4.0.0 or 4.2.0, to avoid potential issues and ensure optimal performance.
 
 [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) is required to install from source.
 
-1. Navigate to Isaac Sim root path (default path in Ubuntu is `$HOME/.local/share/ov/pkg/isaac_sim-2023.1.1`) and clone the repository.
+1. Navigate to Isaac Sim root path (default path in Ubuntu is `$HOME/.local/share/ov/pkg/isaac_sim-4.1.0`) and clone the repository.
 
    ```bash
    $ cd PATH/TO/ISAAC_SIM/ROOT
@@ -104,17 +104,17 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
 1. Pull the Isaac Sim image (`docker login` is required, please refer to [NGC Documents](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/isaac-sim)).
 
    ```bash
-   $ docker pull nvcr.io/nvidia/isaac-sim:2023.1.1
+   $ docker pull nvcr.io/nvidia/isaac-sim:4.1.0
    ```
-1. Build docker image.
+2. Build docker image, replacing <your tag> with your desired tag:
 
    ```bash
    $ cd PATH/TO/GRUTOPIA/ROOT
 
-   $ docker build -t grutopia:0.0.1 .
+   $ docker build -t grutopia:<your tag> .
    ```
 
-1. Start docker container.
+3. Start docker container, replacing <your tag> with the above tag:
 
    ```bash
    $ cd PATH/TO/GRUTOPIA/ROOT
@@ -135,10 +135,10 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
      -v ${CACHE_ROOT}/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
      -v ${CACHE_ROOT}/isaac-sim/data:/root/.local/share/ov/data:rw \
      -v ${CACHE_ROOT}/isaac-sim/documents:/root/Documents:rw \
-     grutopia:0.0.1
+     grutopia:<your tag>
    ```
 
-1. Verify the Installation.
+4. Verify the Installation.
 
    Run inside container:
 

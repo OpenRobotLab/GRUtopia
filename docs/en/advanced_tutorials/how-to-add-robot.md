@@ -1,12 +1,12 @@
-# How to add custom robot
+# How to Add Custom Robot
 
-> This tutorial will show you how to add a robot
+> This tutorial will show you how to add a robot. If you wish to use this robot in practice, you need to:
+> - Learn [how to add a custom controller](./how-to-add-controller.md) to control the robot you’ve built.
+> - Learn [how to add a custom sensor](./how-to-add-sensor.md) to collect data.
 
-## 1. Add isaac sim robot
+## 1. Inherit from `omni.isaac.core.robots.robot`
 
-> Assuming you already have an usd file of a robot, and it has drivable joints.
-
-Create a file in `grutopia_extension/robots`, named `demo_robot.py`. Inherit the robot class from isaac.
+Create a file in `grutopia_extension/robots`, named `demo_robot.py`, in which inherits the robot class `omni.isaac.core.robots.robot`.
 
 ```Python
 from omni.isaac.core.robots.robot import Robot as IsaacRobot
@@ -27,7 +27,15 @@ class DemoRobot(IsaacRobot):
         # Set robot-specific parameters/attributes here
 ```
 
-## 2. Wrap with `grutopia.core.robot.robot`
+The above class has the following functions:
+
+- It will load the robot files from the usd_path into the prim_path location in the stage using the `add_reference_to_stage` method.
+- It will initialize the robot's parameters using the `IsaacRobot` class, including prim_path, name, configuration settings, scale, and more.
+- The commented section can be replaced with any additional parameters required to define the robot's characteristics.
+
+## 2. Wrap `Isaac-based robot` with `grutopia.core.robot.BaseRobot`
+
+After creating an Isaac-based robot, we need to wrap this robot using the GRUtopia robot class `BaseRobot`. This allows the robot to connect to our platform, which includes automatic registration, flow control, and other essential functionalities.
 
 ```Python
 from omni.isaac.core.scenes import Scene
@@ -39,7 +47,7 @@ from grutopia.core.util import log
 
 
 # Register this robot to grutopia.core
-@BaseRobot.register('DemoRobot')
+@BaseRobot.register('DemoRobotWrapper')
 class DemoRobotWrapper(BaseRobot):
 
     def __init__(self, config: Config, robot_model: RobotModel, scene: Scene):
@@ -49,17 +57,10 @@ class DemoRobotWrapper(BaseRobot):
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
-        log.debug(f'demo_robot {config.name}: position    : ' + str(self._start_position))
-        log.debug(f'demo_robot {config.name}: orientation : ' + str(self._start_orientation))
-
         usd_path = robot_model.usd_path
         if usd_path.startswith('/Isaac'):
             usd_path = get_assets_root_path() + usd_path
 
-        log.debug(f'demo_robot {config.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'demo_robot {config.name}: config.prim_path : ' + str(config.prim_path))
-
-        # Wrap the robot class here.
         self.isaac_robot = DemoRobot(
             prim_path=config.prim_path,
             name=config.name,
@@ -109,25 +110,31 @@ class DemoRobotWrapper(BaseRobot):
             obs[sensor_name] = sensor_obs.get_data()
         return obs
 ```
+Please note:
+- This class will automatically register with GRUtopia under the name DemoRobotWrapper (see line 10).
+- As shown in the code, the primary responsibilities of this class are:
+  1. Setting up the robot's parameters
+  2. Defining the robot's actions
+  3. Specifying the format of the output observations and their data sources.
+- Additionally, it can define many other methods to implement advanced functionalities. Further details can be found in `grutopia.core.robot.robot`.
 
-* And there are many other functions in `grutopia.core.robot.robot`, FYI.
+## 3. Create Robot's Configuration
 
-## 3. Register at `robot_models`
+Create a configuration file for your custom robot in the directory `grutopia_extension/config/robots/`. This config file should include supported controllers, sensors, parameters, and more.
 
-Add you robot model at `grutopia_extension/robots/robot_models.yaml`
+The following only provides a brief demonstration, please refer to `grutopia_extension/config/robots/humanoid.py` for a complete robot configuration.
 
-```yaml
-- type: "DemoRobotWrapper"
-  usd_path: "..."
-  controllers:
-  - name: "..."
-    type: "..."
+```Python
+dummy_move = DummyMoveControllerCfg(
+    ...
+)
+
+camera = DepthCameraCfg(
+    ...
+)
+
+class DemoRobotCfg(RobotCfg):
+    # meta info
+   ...
+
 ```
-
-## 4. Add controllers and sensors
-
-See  [how to add controller](./how-to-add-controller.md) and [how to add sensor](./how-to-add-sensor.md)
-
-## 5. Write a demo
-
-See [how to add controller](./how-to-add-controller.md) and [how to add sensor](./how-to-add-sensor.md)
