@@ -3,8 +3,10 @@
 ## Prerequisites
 
 ### 1. Generate a Self-Signed SSL Certificate
-This is used to set up the server for HTTPS communication with VisionPro. VisionPro needs to be connected to the server network (generally, being on the same local network/router is sufficient). The certificate can be generated using mkcert, which can be installed via Homebrew. The specific command for generating the certificate is as follows:
-```
+
+SSL certificate is used to set up HTTPS communication between simulation and VisionPro. VisionPro should be able to access the host running simulation through network (better within one local network for optimal performance). Instructions for generating the certificate using mkcert is as follows:
+
+```bash
 # Install Homebrew on Linux
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 $ (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc
@@ -18,7 +20,7 @@ $ brew install mkcert
 $ ip addr | grep inet  # Find the IP address Vision Pro can access, assume 192.168.100.101
 $ cd GRUtopia && mkdir mkcert && cd mkcert
 $ mkcert -install  # Generate the local CA and install it in the system trust store.
-$ mkcert -cert-file cert.pem -key-file key.pem 192.168.100.101 localhost 127.0.0.1  # Replace 192.168.100.101 with your IP addr
+$ mkcert -cert-file cert.pem -key-file key.pem 192.168.100.101 localhost 127.0.0.1  # Replace 192.168.100.101 with your host IP addr
 
 # Get the location of local CA cert.
 $ mkcert -CAROOT
@@ -26,61 +28,68 @@ $ ls $(mkcert -CAROOT)
 ```
 
 ### 2. Transfer the CA Certificate to VisionPro and Trust It
+
 To transfer the certificate to VisionPro, you can start a server and then access it from VisionPro to download the certificate directly.
-```
+
+```bash
 $ cd $(mkcert -CAROOT) && python -m http.server
 ```
+
 1. Open Settings and install the downloaded profile
 2. Settings > General > About > Certificate Trust Settings. Under "Enable full trust for root certificates", turn on trust for the certificate.
 3. Settings > Apps > Safari > Advanced > Feature Flags > Enable "WebXR Related Features"
 
-### 3. Prepare the Conda Environment
-- if you only need to use VisionPro to obtain pose data, you can directly run the following command in the Isaac Sim Conda environment:
-```
-$ pip install -r requirements/runtime.txt
-```
-- If you need to control GR1, you will need to create a new Conda environment and then run:
-```
+## Run GR1 Teleoperation Example
+
+To run the example, you need to start the IK solver process for GR1 first:
+
+```bash
 $ conda create -n sim-teleop python=3.10
 $ conda activate sim-teleop
-$ pip install -r requirements/teleop.txt
+$ pip install -r GRUtopia/requirements/teleop.txt
+$ cd GRUtopia/grutopia_extension/controllers && conda run --no-capture-output -n sim-teleop python gr1_teleop.py
 ```
 
-## Running Instructions
-This section explains how to obtain the pose data collected by VisionPro during runtime.
+If you see the message "waiting for teleop action...", it indicates that the solver process has started successfully.
 
-In this document, we will use the GR1 as an example to demonstrate how to utilize VisionPro for teleoperating it. For a complete example of GR1 teleoperation, please refer to the next section.
+Then open another session with grutopia conda environment, and specify the locations of server cert and key in `GRUtopia/demo/gr1_teleop.py`.
 
-In the demo script, you need to specify the server certificate and key generated previously using mkcert.
-```PYTHON
-from grutopia.core.env import Env
-from grutopia.core.runtime import SimulatorRuntime
-from grutopia.core.util.container import is_in_container
-from grutopia_extension import import_extensions
+```python
+...
+teleop = VuerTeleop(
+    cert_file='./GRUtopia/mkcert/cert.pem', key_file='./GRUtopia/mkcert/key.pem',   # Specify locations of your cert and key here
+    resolution=(720, 1280)
+)
+...
+```
 
-# Run with single inference task
-file_path = './GRUtopia/demo/configs/gr1t2_teleop.yaml'
+Then run the demo script:
 
-headless = False
-webrtc = False
+```bash
+$ python GRUtopia/demo/gr1_teleop.py
+```
 
-if is_in_container():
-    headless = True
-    webrtc = True
+Once the simulation starts, open Safari on VisionPro and navigate to:
+https://192.168.100.101:8012?ws=wss://192.168.100.101:8012 (Replace 192.168.100.101 with your own IP address.)
+Select "Enter VR" to begin operations.
 
-sim_runtime = SimulatorRuntime(config_path=file_path, headless=headless, webrtc=webrtc)
+## Brief Explanation
 
-from grutopia_extension.interactions.visionpro.visionpro import VuerTeleop
+This section explains how the teleop process works.
 
-import_extensions()
-# import custom extensions here.
+Pose collecting logic with VisionPro comes from [Open-TeleVision](https://github.com/OpenTeleVision/TeleVision). In each step, the following poses are collected:
 
-env = Env(sim_runtime)
+- The pose of the user's head.
+- The pose of the user's left wrist.
+- The pose of the user's right wrist.
+- The pose of the user's left hand.
+- The pose of the user's right hand.
 
-import numpy as np
+The poses are used to control robot through a teleop controller, followed by a env step. Once the env step finished, the latest vision is collected from cameras and transferred to VisionPro.
 
-actions = {}
+You can refer to `GRUtopia/demo/gr1_teleop.py` for the complete implementation.
 
+```python
 teleop = VuerTeleop(cert_file='./GRUtopia/mkcert/cert.pem',
                     key_file='./GRUtopia/mkcert/key.pem',
                     resolution=(720, 1280))
@@ -98,71 +107,10 @@ while env.simulation_app.is_running():
     # - right_hand_mat: (25, 3)
     head_mat, left_wrist_mat, right_wrist_mat, left_hand_mat, right_hand_mat, begin_move = teleop.step()
 
-    # TODO: control and get vision from camera.
+    # Control robot and step env.
+    ...
 
-    # Send RGB vision frame to vision pro.
-    frame = (frame * 255).astype(np.uint8)
+    # Transfer RGB vision frame to vision pro.
+    frame = np.hstack((image_left, image_right)).astype(np.uint8)
     np.copyto(teleop.img_array, frame)
-
-teleop.cleanup()
-env.simulation_app.close()
 ```
-Then open Safari on VisionPro and navigate to:
- https://192.168.8.102:8012?ws=wss://192.168.8.102:8012 (Replace 192.168.8.102 with your own IP address.)
-
-The pose data obtained by VisionPro is represented as a 4x4 transformation matrix.
-
-The `hand_mat` is primarily used for retargeting the dexterous hand and has a shape of (25, 3).
-
-The following are GR1 Camera Settings:
-```PYTHON
-    camera_right = CameraCfg(
-        height=360*2,
-        width=640*2,
-        offset=CameraCfg.OffsetCfg(pos=(0.15, -0.06, 0.1), rot=(0.92388, 0.0, 0.38268, 0.0), convention='world'),
-        prim_path='/World/Robot/head_yaw_link/CameraRight',
-        update_period=1/60,
-        data_types=['rgb'],#,'depth'],
-        spawn=sim_utils.PinholeCameraCfg(
-            focal_length=1.5, focus_distance=10.0, horizontal_aperture=2, clipping_range=(0.05, 15)
-        ),
-    )
-
-    camera_left = CameraCfg(
-        height=360*2,
-        width=640*2,
-        offset=CameraCfg.OffsetCfg(pos=(0.15, 0.06, 0.1), rot=(0.92388, 0.0, 0.38268, 0.0), convention='world'), # wxyz in isaacsim
-        prim_path='/World/Robot/head_yaw_link/CameraLeft', # TODO fit in actual offset of camera and head
-        update_period=1/60,
-        data_types=['rgb'],#,'depth'],
-        spawn=sim_utils.PinholeCameraCfg(
-            focal_length=1.5, focus_distance=10.0, horizontal_aperture=2, clipping_range=(0.05, 15)
-        ),
-    )
-```
-
-## Example
-For a complete example demo, please refer to [this link](https://github.com/OpenRobotLab/GRUtopia/demo/gr1t2_teleop.py)
-
-The example utilizes robot and object assets, which should be extracted into the following directories:
-- assets/robots
-- assets/objects
-
-The server certificates can be found at:
-- GRUtopia/mkcert/cert.pem
-- GRUtopia/mkcert/key.pem
-
-To run this example, you need to start the solver process for GR1 first, followed by the Isaac Sim process:
-```
-$ conda create -n sim-teleop python=3.10
-$ conda activate sim-teleop
-$ pip install -r requirements/teleop.txt
-$ cd GRUtopia/grutopia_extension/controllers && conda run --no-capture-output -n sim-teleop python gr1t2_teleop.py
-```
-if you see the message "waiting for teleop action...", it indicates that the solver process has started successfully. Then, in the Isaac Sim Conda environment, run the following command:
-```
-$ python GRUtopia/demo/gr1t2_teleop.py
-```
-Once the simulation begins, open Safari on VisionPro and navigate to:
-https://192.168.8.102:8012?ws=wss://192.168.8.102:8012(Replace 192.168.8.102 with your own IP address.)
-Select "Enter VR" to begin operations.
