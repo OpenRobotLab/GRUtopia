@@ -1,8 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
 
-from grutopia.core.config.agent import AgentCfg
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.config.scene import ObjectCfg, Scene
 from grutopia.core.config.task import TaskCfg
@@ -35,4 +34,3 @@ class Config(BaseModel):
 
     simulator: Optional[SimConfig] = SimConfig()
     task_config: TaskCfg
-    agents: Optional[List[AgentCfg]] = []

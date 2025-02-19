@@ -8,10 +8,7 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
-from grutopia_extension.configs.tasks.social_navigation_task import (
-    SocialNavigationExtra,
-    TaskSettingCfg,
-)
+from grutopia_extension.configs.tasks.social_navigation_task import TaskSettingCfg
 
 
 @BaseTask.register('SocialNavigationTask')
@@ -23,13 +20,12 @@ class SocialNavigationTask(BaseTask):
             self.settings = runtime.task_settings
         else:
             raise ValueError('task_settings must be a TaskSettingCfg')
-        if isinstance(runtime.extra, SocialNavigationExtra):
-            self.episode_meta = runtime.extra
-        else:
-            raise ValueError('extra must be a SocialNavigationExtra')
+        self.episode_meta = runtime.extra
+        self.question = self.episode_meta['question']
+
         log.info(f'task_settings: max_step       : {self.settings.max_step}.)')
         # Episode
-        log.info(f'Episode meta : question         : {self.episode_meta.question}.)')
+        log.info(f'Episode meta : question         : {self.question}.)')
 
     def get_observations(self) -> Dict[str, Any]:
         """

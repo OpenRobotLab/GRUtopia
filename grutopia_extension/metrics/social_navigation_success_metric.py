@@ -19,7 +19,7 @@ class SocialNavigationSuccessMetric(BaseMetric):
 
     def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
-        self.param = SuccessParam(**config.metric_config)
+        self.param = SuccessParam(**config.metric_config.model_dump())
         self.navigation_error_threshold = self.param.navigation_error_threshold
 
         self.reset()
@@ -40,7 +40,9 @@ class SocialNavigationSuccessMetric(BaseMetric):
         self.distance += np.linalg.norm(self.position[:2] - robot_obs['position'][:2])
         self.position = robot_obs['position'][:2]
         self.landmarks = (
-            robot_obs['camera']['landmarks'] if robot_obs['camera']['landmarks'] is not None else self.landmarks
+            robot_obs['sensors']['camera']['landmarks']
+            if robot_obs['sensors']['camera']['landmarks'] is not None
+            else self.landmarks
         )
 
     def calc(self, task_info: dict):

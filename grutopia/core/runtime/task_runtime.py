@@ -55,7 +55,6 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
 def setup_offset_for_assets(
     episode: EpisodeCfg, env: Env, root_path: str, robots_root_path: str, objects_root_path: str
 ):
-    """ """
     env_id = env.env_id
     offset = env.offset
     for r in episode.robots:

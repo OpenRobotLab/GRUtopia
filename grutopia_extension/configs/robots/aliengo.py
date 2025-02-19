@@ -61,6 +61,6 @@ class AliengoRobotCfg(RobotCfg):
     # meta info
     name: Optional[str] = 'aliengo'
     type: Optional[str] = 'AliengoRobot'
-    prim_path: Optional[str] = '/World/aliengo'
+    prim_path: Optional[str] = '/aliengo'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/aliengo/aliengo_camera.usdz'

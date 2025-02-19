@@ -179,6 +179,6 @@ class GR1RobotCfg(RobotCfg):
     # meta info
     name: Optional[str] = 'gr1'
     type: Optional[str] = 'GR1Robot'
-    prim_path: Optional[str] = '/World/gr1'
+    prim_path: Optional[str] = '/gr1'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/gr1/gr1.usd'

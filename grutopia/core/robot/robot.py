@@ -22,6 +22,7 @@ class BaseRobot:
         self.isaac_robot: IsaacRobot | None = None
         self.controllers = {}
         self.sensors = {}
+        self._scene = None
 
     def set_up_to_scene(self, scene: Scene):
         """Set up robot in the scene.
@@ -29,6 +30,7 @@ class BaseRobot:
         Args:
             scene (Scene): scene to set up.
         """
+        self._scene = scene
         robot_cfg = self.config
         if self.isaac_robot:
             scene.add(self.isaac_robot)
@@ -45,6 +47,16 @@ class BaseRobot:
         """Set up things that happen after the world resets."""
         for sensor in self.sensors.values():
             sensor.reset()
+
+    def cleanup(self):
+        for controller in self.controllers.values():
+            controller.cleanup()
+        for sensor in self.sensors.values():
+            sensor.cleanup()
+        for rigid_body in self.get_rigid_bodies():
+            self._scene.remove_object(rigid_body.name)
+            log.debug(f'rigid body {rigid_body} removed')
+        log.debug(f'robot {self.name} clean up')
 
     def apply_action(self, action: dict):
         """Apply actions of controllers to robot.

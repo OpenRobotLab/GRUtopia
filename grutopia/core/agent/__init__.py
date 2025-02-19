@@ -1,4 +1,0 @@
-from grutopia.core.agent.agent import BaseAgent, create_agent
-
-if BaseAgent.loop is None:
-    BaseAgent.agent_loop_start()

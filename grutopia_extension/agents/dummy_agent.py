@@ -2,13 +2,13 @@ import random
 import time
 from typing import Any, Dict
 
-from grutopia.core.agent import BaseAgent
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
+from grutopia_extension.agents.core.agent import BaseAgent
 
 
 @BaseAgent.register('DummyAgent')
-class DummyAgent(BaseAgent):
+class DummyAgentClient(BaseAgent):
     """
     Dummy Agent that does nothing. And set is_done at the 2nd call.
     """

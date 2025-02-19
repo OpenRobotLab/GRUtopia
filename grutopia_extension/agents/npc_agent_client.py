@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from grutopia.core.agent import BaseAgent
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
+from grutopia_extension.agents.core.agent import BaseAgent
 
 # Load NPC from NPC repo
 from grutopia_extension.agents.npc_agent import NPC
@@ -11,7 +11,7 @@ from grutopia_extension.agents.npc_agent.config import NPCUserConfig
 
 
 @BaseAgent.register('NPCAgent')
-class NPCAgent(BaseAgent):
+class NPCAgentClient(BaseAgent):
     """
     NPC Agent.
 
@@ -39,3 +39,4 @@ class NPCAgent(BaseAgent):
         response_list = self.npc.feed(self.robot_name, obs, self.chat.get_message())
         for response in response_list:
             self.chat.send_message(**response.model_dump())
+        return {}

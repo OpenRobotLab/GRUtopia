@@ -42,14 +42,14 @@ class ECRMetric(BaseMetric):
         self.question = task_runtime.extra['question']
         self.object_dict_path = task_runtime.extra['object_dict_path']
         self.model_mapping_path = task_runtime.extra['model_mapping_path']
-        self.captions_path = task_runtime.extra['captions_path']
-        self.captions_embeddings_path = task_runtime.extra['captions_embeddings_path']
+        self.captions_path = config.metric_config['captions_path']
+        self.captions_embeddings_path = config.metric_config['captions_embeddings_path']
 
-        if task_runtime.extra['use_azure']:
-            with open(task_runtime.extra['azure_api_key_path'], 'r', encoding='utf-8') as file:
+        if config.metric_config['use_azure']:
+            with open(config.metric_config['azure_api_key_path'], 'r', encoding='utf-8') as file:
                 api_key = file.read().strip()
 
-            with open(task_runtime.extra['azure_api_key_e_path'], 'r', encoding='utf-8') as file:
+            with open(config.metric_config['azure_api_key_e_path'], 'r', encoding='utf-8') as file:
                 api_key_e = file.read().strip()
 
             self.llm = AzureOpenAI(
@@ -104,7 +104,7 @@ class ECRMetric(BaseMetric):
         This function is called at each world step.
         """
         robot_obs = task_obs[self.task_runtime.robots[0].name]
-        landmarks = robot_obs['camera']['landmarks']
+        landmarks = robot_obs['sensors']['camera']['landmarks']
         if landmarks:
             seen_landmarks = [landmark.split(',')[1].lower() for landmark in landmarks if len(landmark.split(',')) == 2]
             new_seen_candidates = [can for can in list(set(self.all_candidates)) if can.lower() in seen_landmarks]

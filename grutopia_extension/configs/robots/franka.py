@@ -23,6 +23,6 @@ class FrankaRobotCfg(RobotCfg):
     # meta info
     name: Optional[str] = 'franka'
     type: Optional[str] = 'FrankaRobot'
-    prim_path: Optional[str] = '/World/franka'
+    prim_path: Optional[str] = '/franka'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/franka/franka.usd'

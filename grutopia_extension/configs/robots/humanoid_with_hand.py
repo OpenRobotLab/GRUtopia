@@ -110,10 +110,12 @@ right_arm_ik_controller_cfg = InverseKinematicsControllerCfg(
     threshold=0.01,
 )
 
-humanoid_with_hand_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', resolution=(640, 480))
+humanoid_with_hand_camera_cfg = RepCameraCfg(
+    name='camera', prim_path='logo_link/Camera', resolution=(640, 480), depth=True
+)
 
 humanoid_with_hand_tp_camera_cfg = RepCameraCfg(
-    name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480)
+    name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480), depth=True
 )
 
 
@@ -121,6 +123,6 @@ class HumanoidWithHandRobotCfg(RobotCfg):
     # meta info
     name: Optional[str] = 'h1_with_hand'
     type: Optional[str] = 'HumanoidWithHandRobot'
-    prim_path: Optional[str] = '/World/h1_with_hand'
+    prim_path: Optional[str] = '/h1_with_hand'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/h1_with_hand/h1_with_hand_rt.usd'

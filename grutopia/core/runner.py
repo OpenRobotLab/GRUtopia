@@ -46,7 +46,7 @@ class SimulatorRunner:
         self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
         if self.metrics_save_path != 'console':
             try:
-                with open(self.metrics_save_path, 'rw'):
+                with open(self.metrics_save_path, 'w'):
                     pass
             except Exception as e:
                 log.error(f'Can not create result file at {self.metrics_save_path}.')
@@ -75,10 +75,10 @@ class SimulatorRunner:
         log.info(f'rendering interval: {self.render_interval}')
         self.render_trigger = 0
         self.loop = False
+        self._render = False
 
     @property
     def current_tasks(self) -> dict[str, BaseTask]:
-
         return self._world._current_tasks
 
     def warm_up(self, steps=10, render=True):
@@ -119,7 +119,7 @@ class SimulatorRunner:
                   further divided by robot names and their observation data.
                 - terminated_status (Dict[str, bool]): A dictionary mapping task names
                   to boolean values indicating whether the task has terminated.
-                - reward (Dict[str, float]): A dictionary that would理论上 contain rewards
+                - reward (Dict[str, float]): A dictionary that would contain rewards
                   for each task or robot; however, the actual return and computation of
                   rewards is not shown in the provided code snippet.
 
@@ -169,25 +169,18 @@ class SimulatorRunner:
                         raise e
 
         self.render_trigger += 1
-        render = render and self.render_trigger > self.render_interval
+        self._render = render and self.render_trigger > self.render_interval
         if self.render_trigger > self.render_interval:
             self.render_trigger = 0
 
         # Step
-        self._world.step(render=render)
+        self._world.step(render=self._render)
 
         # Get obs
         obs = self.get_obs()
 
-        # Add render obs
-        for task_name, task_obs in obs.items():
-            for robot_name, robot_obs in task_obs.items():
-                obs[task_name][robot_name]['render'] = render
-
         # update metrics
         for task in self.current_tasks.values():
-            for metric in task.metrics.values():
-                metric.update(obs[task.name])
             if task.is_done():
                 self.finished_tasks.add(task.name)
                 log.info(f'Task {task.name} finished.')
@@ -196,12 +189,6 @@ class SimulatorRunner:
                 self.metrics_results[task.name] = task.calculate_metrics()
                 # TO DELETE
                 self.metrics_results[task.name]['normally_end'] = True
-                if self.metrics_save_path == 'console':
-                    print(json.dumps(self.metrics_results, indent=4))
-                else:
-                    with open(self.metrics_save_path, 'w') as f:
-                        f.write(json.dumps(self.metrics_results))
-                exit()
 
             # finished tasks will no longer update metrics
             if task.name not in self.finished_tasks:
@@ -229,6 +216,10 @@ class SimulatorRunner:
         obs = {}
         for task_name, task in self.current_tasks.items():
             obs[task_name] = task.get_observations()
+        # Add render obs
+        for task_name, task_obs in obs.items():
+            for robot_name, robot_obs in task_obs.items():
+                obs[task_name][robot_name]['render'] = self._render
         return obs
 
     def stop(self):
@@ -261,7 +252,6 @@ class SimulatorRunner:
             return obs, new_task_runtime
 
         # switch to next episodes
-        # self.stop()
         new_task_runtime = self.next_episode(task)
         self.finished_tasks.discard(task)
         obs = self.get_obs()
@@ -277,18 +267,14 @@ class SimulatorRunner:
         Finalize the tasks and do some post-processing.
 
         This function is called after all tasks are finished. Currently, it handles the metrics saving.
-
         """
-        if len(self.current_tasks) == 0:
-            # TODO metrics data post process(add hook in task)
-            # print metrics data to console or save to file
-            if self.metrics_save_path == 'console':
-                # print to console
-                log.info(json.dumps(self.metrics_results, indent=4))
-            else:
-                # save to file
-                with open(self.metrics_save_path, 'w') as f:
-                    f.write(json.dumps(self.metrics_results))
+        if not self.metrics_results:
+            return
+        if self.metrics_save_path == 'console':
+            print(json.dumps(self.metrics_results, indent=4))
+        else:
+            with open(self.metrics_save_path, 'w') as f:
+                f.write(json.dumps(self.metrics_results))
 
     def world_clear(self):
         self._world.clear()
@@ -339,7 +325,6 @@ class SimulatorRunner:
 
         next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
         if next_task_runtime is None:
-            self._reset_sim_context()
             return next_task_runtime
 
         env_id = next_task_runtime.env.env_id

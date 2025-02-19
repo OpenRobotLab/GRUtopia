@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/isaac-sim:4.0.0
+FROM nvcr.io/nvidia/isaac-sim:4.2.0
 
 RUN apt-get update
 RUN apt-get install -y --allow-downgrades perl-base=5.34.0-3ubuntu1 netbase

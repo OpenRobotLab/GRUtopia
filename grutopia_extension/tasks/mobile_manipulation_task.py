@@ -8,14 +8,11 @@ from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
-from grutopia_extension.configs.tasks.mobile_manipulation_task import (
-    MobileManipulationExtra,
-    TaskSettingCfg,
-)
+from grutopia_extension.configs.tasks.mobile_manipulation_task import TaskSettingCfg
 
 
-@BaseTask.register('MobileManipulationBenchmarkTask')
-class MobileManipulationBenchmarkTask(BaseTask):
+@BaseTask.register('MobileManipulationTask')
+class MobileManipulationTask(BaseTask):
     def __init__(self, runtime: TaskRuntime, scene: Scene):
         super().__init__(runtime, scene)
         self.step_counter = 0
@@ -23,13 +20,12 @@ class MobileManipulationBenchmarkTask(BaseTask):
             self.settings = runtime.task_settings
         else:
             raise ValueError('task_settings must be a TaskSettingCfg')
-        if isinstance(runtime.extra, MobileManipulationExtra):
-            self.episode_meta = runtime.extra
-        else:
-            raise ValueError('extra must be a MobileManipulationExtra')
+        self.episode_meta: Dict[str, Any] = runtime.extra
+        self.instruction = self.episode_meta['instruction']
+
         log.info(f'task_settings: max_step       : {self.settings.max_step}.)')
         # Episode
-        log.info(f'Episode meta : instruction         : {self.episode_meta.instruction}.)')
+        log.info(f'Episode meta : instruction         : {self.instruction}.)')
 
     def get_observations(self) -> Dict[str, Any]:
         """

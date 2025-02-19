@@ -1,7 +1,7 @@
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
-from grutopia.core.util.agent import create_agent
 from grutopia_extension import import_extensions
+from grutopia_extension.agents.util.agent import create_agent
 
 # Run with dummy agent
 file_path = './GRUtopia/demo/configs/h1_locomotion_gym_env.yaml'

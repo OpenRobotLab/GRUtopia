@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from pydantic import BaseModel
 
@@ -30,4 +30,4 @@ class MetricUserConfig(BaseModel):
 
     type: str
     name: Optional[str] = None
-    metric_config: Optional[Dict] = {}
+    metric_config: Optional[Union[Dict, BaseModel]] = {}

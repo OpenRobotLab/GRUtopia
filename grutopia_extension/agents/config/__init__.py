@@ -32,4 +32,4 @@ class AgentCfg(BaseModel):
     #       And consider adding a disembodied robot for NPCs.
     robot_name: Optional[Union[str, None]] = None
     sync_mode: Optional[AgentModeEnum] = AgentModeEnum.sync_mode
-    agent_config: Dict[str, Any] = {}
+    agent_config: Optional[Dict[str, Any]] = {}

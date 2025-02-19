@@ -4,7 +4,6 @@ from functools import wraps
 from threading import Thread
 from typing import Any, Dict, Optional
 
-from grutopia.core.config.agent import AgentCfg
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
@@ -13,6 +12,7 @@ from grutopia.core.util.space import (
     get_action_space_by_task,
     get_observation_space_by_task,
 )
+from grutopia_extension.agents.config import AgentCfg
 
 
 def start_loop(loop):

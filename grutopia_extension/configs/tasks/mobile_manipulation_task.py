@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -8,18 +8,11 @@ from grutopia.core.config.task import TaskCfg
 
 class TaskSettingCfg(BaseModel):
     max_step: int
-
-
-class MobileManipulationExtra(BaseModel):
-    instruction: str
-    target: str
-    meta_path: str
-    start_point: list
-    conditions: List[dict]
+    verbose: Optional[bool] = False
 
 
 class MobileManipulationEpisodeCfg(EpisodeCfg):
-    extra: MobileManipulationExtra
+    extra: Optional[Dict[str, Any]] = {}
 
 
 class MobileManipulationTaskCfg(TaskCfg):

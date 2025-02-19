@@ -22,6 +22,7 @@ class RepCamera(BaseSensor):
         self.resolution = None
         self.name = name
         self.config = config
+        self.depth = config.depth
         self.camera_prim_path = self.create_camera()
         self.rp = None
         self.rp_annotators = {}
@@ -85,7 +86,7 @@ class RepCamera(BaseSensor):
             ldr_color.attach(self.rp)
             self.rp_annotators['rgba'] = ldr_color
 
-        if 'depth' in data_names and 'depth' not in self.rp_annotators:
+        if 'depth' in data_names and 'depth' not in self.rp_annotators and self.depth:
             distance_to_image_plane = rep.AnnotatorRegistry.get_annotator('distance_to_image_plane')
             distance_to_image_plane.attach(self.rp)
             self.rp_annotators['depth'] = distance_to_image_plane
@@ -109,7 +110,7 @@ class RepCamera(BaseSensor):
                 continue
             output_data[name] = annotator.get_data()
 
-        if 'pointcloud' in data_names:
+        if self.depth:
             try:
                 output_data['pointcloud'] = self.get_pointcloud(output_data['depth'], output_data['camera_params'])
             except Exception:
@@ -290,7 +291,7 @@ class RepCamera(BaseSensor):
             return self.get_camera_data(['landmarks', 'rgba', 'depth', 'camera_params', 'pointcloud'])
         return {}
 
-    def clean(self) -> None:
+    def cleanup(self) -> None:
         if self.rp is not None:
             log.debug('================ destroy render product =============')
             self.rp.destroy()
@@ -298,7 +299,7 @@ class RepCamera(BaseSensor):
 
     def reset(self):
         log.debug('reset camera')
-        self.clean()
+        self.cleanup()
         del self.camera_prim_path
         self.camera_prim_path = self.create_camera()
         self.init()

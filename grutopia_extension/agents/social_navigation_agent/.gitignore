@@ -1,0 +1,26 @@
+# Python cache files
+__pycache__/
+*.pyc
+
+# Editor and environment configurations
+.vscode/
+
+# Temporary and backup files
+lockfiles/
+
+# Output and generated files
+result/
+images/
+
+# Project-specific files
+yolov7
+GroundingDINO
+api_key/
+GroundingDINO/
+yolov7/
+
+# Local models or large files
+data/
+data
+local_model
+traced_model.pt

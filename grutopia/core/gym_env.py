@@ -79,6 +79,7 @@ class Env(gym.Env):
 
         origin_obs, task_runtime = self.runner.reset(self._current_task_name)
         if task_runtime is None:
+            log.info('All episodes have finished.')
             self.close()
 
         self._current_task_name = task_runtime.name
@@ -91,6 +92,7 @@ class Env(gym.Env):
         """
         run step with given action(with isaac step)
 
+        TODO: Implement the conversion between dict and action space/obs space
 
         Args:
             action (Any): an action provided by the agent to update the environment state.
@@ -117,8 +119,6 @@ class Env(gym.Env):
         if self._current_task_name is None:
             return obs, reward, terminated, truncated, info
 
-        # TODO: 转化，从 ndarray 到 dict
-        # TODO: 这里需要action_space和obs_space来实现转换
         _actions = {self._current_task_name: {self._robot_name: action}}
         origin_obs, terminated_status, rewards = self._runner.step(_actions)
 

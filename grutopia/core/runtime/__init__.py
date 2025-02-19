@@ -1,8 +1,8 @@
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import yaml
 
-from grutopia.core.config import AgentCfg, Config, EpisodeConfigFile, SimConfig
+from grutopia.core.config import Config, EpisodeConfigFile, SimConfig
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.distributed_task_runtime_manager import (
     DistributedTaskRuntimeManager,
@@ -37,7 +37,6 @@ class SimulatorRuntime:
         self.config = None
         self.simulator: Optional[SimConfig] = None
         self.task_runtime_manager: Optional[BaseTaskRuntimeManager] = None
-        self.agents: Optional[List[AgentCfg]] = []
         if self.config_file_path:
             self.init(config_dict=self.get_config_from_file())
         elif config_class:
@@ -106,6 +105,10 @@ class SimulatorRuntime:
             episodes_dict = self.read_yaml_file(config.task_config.episodes)
             config.task_config.episodes = EpisodeConfigFile(**episodes_dict).episodes
 
+        # TO DELETE: Multiple episodes are not supported yet. Coming soon.
+        if len(config.task_config.episodes) > 1:
+            raise ValueError('multiple episodes are not supported yet !')
+
         # Init Datahub
         DataHub.datahub_init()
 
@@ -113,7 +116,6 @@ class SimulatorRuntime:
         self.simulator = config.simulator
         self.task_runtime_manager = _trm
         self.env_num = _trm.env_num
-        self.agents = config.agents
         log.debug('SimulatorRuntime init done')
 
     def active_runtime(self) -> Dict[str, TaskRuntime]:

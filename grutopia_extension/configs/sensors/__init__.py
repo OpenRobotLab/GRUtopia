@@ -15,6 +15,7 @@ class RepCameraCfg(SensorCfg):
     type: Optional[str] = 'RepCamera'
     enable: Optional[bool] = True
     resolution: Optional[Tuple[int, int]] = None  # Camera only
+    depth: Optional[bool] = False
 
 
 class MocapControlledCameraCfg(SensorCfg):

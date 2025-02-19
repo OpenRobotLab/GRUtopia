@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -8,18 +8,11 @@ from grutopia.core.config.task import TaskCfg
 
 class TaskSettingCfg(BaseModel):
     max_step: int
-
-
-class SocialNavigationExtra(BaseModel):
-    question: Optional[str] = None
-    target: str
-    distance: float
-    start_point: list
-    target_point: list
+    verbose: Optional[bool] = False
 
 
 class SocialNavigationEpisodeCfg(EpisodeCfg):
-    extra: SocialNavigationExtra
+    extra: Optional[Dict[str, Any]] = {}
 
 
 class SocialNavigationTaskCfg(TaskCfg):

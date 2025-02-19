@@ -36,7 +36,9 @@ class DebugMetric(BaseMetric):
         if 'render' in robot_obs and robot_obs['render']:
             self.path.append(robot_obs['position'].tolist())
         self.landmarks = (
-            robot_obs['camera']['landmarks'] if robot_obs['camera']['landmarks'] is not None else self.landmarks
+            robot_obs['sensors']['camera']['landmarks']
+            if robot_obs['sensors']['camera']['landmarks'] is not None
+            else self.landmarks
         )
         if task_obs[self.task_runtime.robots[0].name].get('question') is not None:
             self.question = task_obs[self.task_runtime.robots[0].name].get('question')

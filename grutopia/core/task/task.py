@@ -208,11 +208,8 @@ class BaseTask(OmniBaseTask, ABC):
                 log.info('objs cleaned.')
         for robot_name, robot in self.robots.items():
             # Using try here because we want to ignore all exceptions
-            for controller in robot.controllers.values():
-                controller.cleanup()
-            for sensor in robot.sensors.values():
-                sensor.cleanup()
             try:
+                robot.cleanup()
                 self.scene.remove_object(robot_name)
             finally:
                 log.info('robots cleaned.')

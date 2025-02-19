@@ -6,6 +6,7 @@ from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.humanoid import (
     HumanoidRobotCfg,
     humanoid_camera_cfg,
+    humanoid_tp_camera_cfg,
     move_along_path_cfg,
     move_by_speed_cfg,
     rotate_cfg,
@@ -27,7 +28,8 @@ h1_1 = HumanoidRobotCfg(
         rotate_cfg,
     ],
     sensors=[
-        humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (320, 240), 'enable': True}, deep=True)
+        humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (320, 240), 'enable': True}, deep=True),
+        humanoid_tp_camera_cfg.model_copy(update={'enable': False}, deep=False),
     ],
 )
 
@@ -53,7 +55,7 @@ import_extensions()
 
 env = Env(sim_runtime)
 obs, _ = env.reset()
-# print(f'========INIT OBS{obs}=============')
+print(f'========INIT OBS{obs}=============')
 
 path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
 i = 0
@@ -62,10 +64,12 @@ move_action = {move_along_path_cfg.name: [path]}
 
 while env.simulation_app.is_running():
     i += 1
-    env_action = move_action
-    obs, _, terminated, _, _ = env.step(action=env_action)
-    if i % 500 == 0:
+    action = move_action
+    obs, _, terminated, _, _ = env.step(action=action)
+    if i % 100 == 0:
         print(i)
         # print(obs)
+    if i % 1000 == 0:
+        env.reset()
 
 env.simulation_app.close()

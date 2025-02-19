@@ -91,15 +91,17 @@ recover_cfg = RecoverControllerCfg(
     sub_controllers=[joint_controller],
 )
 
-humanoid_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', resolution=(640, 480))
+humanoid_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', resolution=(640, 480), depth=True)
 
-humanoid_tp_camera_cfg = RepCameraCfg(name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480))
+humanoid_tp_camera_cfg = RepCameraCfg(
+    name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480), depth=True
+)
 
 
 class HumanoidRobotCfg(RobotCfg):
     # meta info
     name: Optional[str] = 'h1'
     type: Optional[str] = 'HumanoidRobot'
-    prim_path: Optional[str] = '/World/h1'
+    prim_path: Optional[str] = '/h1'
     create_robot: Optional[bool] = True
     usd_path: Optional[str] = 'GRUtopia/assets/robots/h1/h1.usd'

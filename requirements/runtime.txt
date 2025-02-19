@@ -1,5 +1,5 @@
 aiohttp_cors==0.7.0
-httpx==0.25.0
+httpx==0.25.2
 inputs==0.5
 ipython==8.20.0
 lcm==1.5.0
