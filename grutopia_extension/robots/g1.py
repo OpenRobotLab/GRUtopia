@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import numpy as np
 from omni.isaac.core.prims import RigidPrim
@@ -203,6 +204,9 @@ class G1Robot(BaseRobot):
     def post_reset(self):
         super().post_reset()
         self.isaac_robot.set_gains()
+
+    def get_rigid_bodies(self) -> List[RigidPrim]:
+        return self._rigid_bodies
 
     def get_robot_scale(self):
         return self._robot_scale

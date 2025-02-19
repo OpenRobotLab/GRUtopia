@@ -141,7 +141,6 @@ class G1MoveBySpeedController(BaseController):
         imu_quat_w = torch.tensor(imu_pose_w[1]).reshape(1, -1)
         imu_ang_vel_w = torch.tensor(imu_link.get_angular_velocity()[:]).reshape(1, -1)
         imu_ang_vel = np.array(math_utils.quat_rotate_inverse(imu_quat_w, imu_ang_vel_w).reshape(-1))
-        imu_ang_vel = imu_ang_vel * np.pi / 180.0
 
         projected_gravity = torch.tensor([[0.0, 0.0, -1.0]], device='cpu', dtype=torch.float)
         projected_gravity = np.array(math_utils.quat_rotate_inverse(imu_quat_w, projected_gravity).reshape(-1))
