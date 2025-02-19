@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     HumanoidMoveBySpeedControllerCfg,
     InverseKinematicsControllerCfg,
@@ -39,7 +40,7 @@ joint_controller = JointControllerCfg(
 
 move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
+    policy_weights_path=gm.ASSET_PATH + '/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
     joint_names=[
         'left_hip_yaw_joint',
         'right_hip_yaw_joint',
@@ -104,8 +105,8 @@ right_arm_joint_controller_cfg = JointControllerCfg(
 
 right_arm_ik_controller_cfg = InverseKinematicsControllerCfg(
     name='right_arm_ik_controller',
-    robot_description_path='GRUtopia/assets/robots/h1_with_hand/right_arm_descriptor.yaml',
-    robot_urdf_path='GRUtopia/assets/robots/h1_with_hand/h1_with_hand.urdf',
+    robot_description_path=gm.ASSET_PATH + '/robots/h1_with_hand/right_arm_descriptor.yaml',
+    robot_urdf_path=gm.ASSET_PATH + '/robots/h1_with_hand/h1_with_hand.urdf',
     end_effector_frame_name='right_hand_link',
     threshold=0.01,
 )
@@ -125,4 +126,4 @@ class HumanoidWithHandRobotCfg(RobotCfg):
     type: Optional[str] = 'HumanoidWithHandRobot'
     prim_path: Optional[str] = '/h1_with_hand'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/h1_with_hand/h1_with_hand_rt.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1_with_hand/h1_with_hand_rt.usd'

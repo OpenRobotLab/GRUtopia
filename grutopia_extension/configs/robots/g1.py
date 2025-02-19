@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     G1MoveBySpeedControllerCfg,
     MoveAlongPathPointsControllerCfg,
@@ -10,7 +11,7 @@ from grutopia_extension.configs.controllers import (
 
 move_by_speed_cfg = G1MoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/robots/g1/policy/move_by_speed/g1_15000.onnx',
+    policy_weights_path=gm.ASSET_PATH + '/robots/g1/policy/move_by_speed/g1_15000.onnx',
     joint_names=[
         'left_hip_pitch_joint',
         'right_hip_pitch_joint',
@@ -73,4 +74,4 @@ class G1RobotCfg(RobotCfg):
     type: Optional[str] = 'G1Robot'
     prim_path: Optional[str] = '/g1'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/g1/g1_29dof_color.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/g1/g1_29dof_color.usd'

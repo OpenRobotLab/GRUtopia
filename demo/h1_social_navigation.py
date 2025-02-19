@@ -1,6 +1,7 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.agents.config import AgentCfg
 from grutopia_extension.agents.util.agent import create_agent
@@ -65,7 +66,8 @@ config = Config(
         ),
         episodes=[
             SocialNavigationEpisodeCfg(
-                scene_asset_path='evaluate_data/splits/MV7J6NIKTKJZ2AABAAAAADY8_usd/start_result_navigation.usd',
+                scene_asset_path=gm.ASSET_PATH
+                + '/evaluate_data/splits/MV7J6NIKTKJZ2AABAAAAADY8_usd/start_result_navigation.usd',
                 scene_scale=(0.01, 0.01, 0.01),
                 robots=[h1_1],
                 extra={

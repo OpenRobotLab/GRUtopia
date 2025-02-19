@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     AliengoMoveBySpeedControllerCfg,
     MoveAlongPathPointsControllerCfg,
@@ -11,7 +12,7 @@ from grutopia_extension.configs.sensors import CameraCfg
 
 move_by_speed_cfg = AliengoMoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/robots/aliengo/policy/move_by_speed/aliengo_loco_model_4000.pt',
+    policy_weights_path=gm.ASSET_PATH + '/robots/aliengo/policy/move_by_speed/aliengo_loco_model_4000.pt',
     joint_names=[
         'FL_hip_joint',
         'FR_hip_joint',
@@ -63,4 +64,4 @@ class AliengoRobotCfg(RobotCfg):
     type: Optional[str] = 'AliengoRobot'
     prim_path: Optional[str] = '/aliengo'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/aliengo/aliengo_camera.usdz'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/aliengo/aliengo_camera.usdz'

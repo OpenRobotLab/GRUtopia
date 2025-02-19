@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     FrankaMocapTeleopControllerCfg,
     GripperControllerCfg,
@@ -10,9 +11,9 @@ from grutopia_extension.configs.sensors import MocapControlledCameraCfg
 
 rmpflow_controller_cfg = RMPFlowControllerCfg(
     name='rmpflow_controller',
-    robot_description_path='GRUtopia/assets/robots/franka/rmpflow/robot_descriptor.yaml',
-    robot_urdf_path='GRUtopia/assets/robots/franka/lula_franka_gen.urdf',
-    rmpflow_config_path='GRUtopia/assets/robots/franka/franka_rmpflow_common.yaml',
+    robot_description_path=gm.ASSET_PATH + '/robots/franka/rmpflow/robot_descriptor.yaml',
+    robot_urdf_path=gm.ASSET_PATH + '/robots/franka/lula_franka_gen.urdf',
+    rmpflow_config_path=gm.ASSET_PATH + '/robots/franka/franka_rmpflow_common.yaml',
     end_effector_frame_name='right_gripper',
 )
 
@@ -43,4 +44,4 @@ class MocapControlledFrankaRobotCfg(RobotCfg):
     type: Optional[str] = 'MocapControlledFrankaRobot'
     prim_path: Optional[str] = '/mocap_controlled_franka'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/franka/mocap_teleop_franka.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/franka/mocap_teleop_franka.usd'

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     GR1MoveBySpeedControllerCfg,
     GR1TeleOpControllerCfg,
@@ -14,7 +15,7 @@ from grutopia_extension.configs.sensors import CameraCfg
 
 move_by_speed_cfg = GR1MoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/robots/gr1/policy/move_by_speed/gr1_policy.onnx',
+    policy_weights_path=gm.ASSET_PATH + '/robots/gr1/policy/move_by_speed/gr1_policy.onnx',
     joint_names=[
         'left_hip_roll_joint',
         'left_hip_yaw_joint',
@@ -181,4 +182,4 @@ class GR1RobotCfg(RobotCfg):
     type: Optional[str] = 'GR1Robot'
     prim_path: Optional[str] = '/gr1'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/gr1/gr1.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/gr1/gr1.usd'

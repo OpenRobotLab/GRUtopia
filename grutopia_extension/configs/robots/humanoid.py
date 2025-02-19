@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     HumanoidMoveBySpeedControllerCfg,
     JointControllerCfg,
@@ -38,7 +39,7 @@ joint_controller = JointControllerCfg(
 
 move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
     name='move_by_speed',
-    policy_weights_path='GRUtopia/assets/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
+    policy_weights_path=gm.ASSET_PATH + '/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
     joint_names=[
         'left_hip_yaw_joint',
         'right_hip_yaw_joint',
@@ -104,4 +105,4 @@ class HumanoidRobotCfg(RobotCfg):
     type: Optional[str] = 'HumanoidRobot'
     prim_path: Optional[str] = '/h1'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/h1/h1.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1/h1.usd'

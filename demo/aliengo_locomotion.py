@@ -2,6 +2,7 @@ from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
+from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.aliengo import AliengoRobotCfg, move_to_point_cfg
 from grutopia_extension.configs.tasks import (
@@ -22,7 +23,7 @@ config = Config(
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
-                scene_asset_path='GRUtopia/assets/scenes/empty.usd',
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 robots=[
                     AliengoRobotCfg(
                         position=[0.0, 0.0, 1.05],

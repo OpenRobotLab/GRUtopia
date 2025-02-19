@@ -1,6 +1,7 @@
 from typing import Optional
 
 from grutopia.core.config import RobotCfg
+from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     GripperControllerCfg,
     InverseKinematicsControllerCfg,
@@ -8,8 +9,8 @@ from grutopia_extension.configs.controllers import (
 
 arm_ik_cfg = InverseKinematicsControllerCfg(
     name='arm_ik_controller',
-    robot_description_path='GRUtopia/assets/robots/franka/rmpflow/robot_descriptor.yaml',
-    robot_urdf_path='GRUtopia/assets/robots/franka/lula_franka_gen.urdf',
+    robot_description_path=gm.ASSET_PATH + '/robots/franka/rmpflow/robot_descriptor.yaml',
+    robot_urdf_path=gm.ASSET_PATH + '/robots/franka/lula_franka_gen.urdf',
     end_effector_frame_name='right_gripper',
     threshold=0.01,
 )
@@ -25,4 +26,4 @@ class FrankaRobotCfg(RobotCfg):
     type: Optional[str] = 'FrankaRobot'
     prim_path: Optional[str] = '/franka'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = 'GRUtopia/assets/robots/franka/franka.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/franka/franka.usd'
