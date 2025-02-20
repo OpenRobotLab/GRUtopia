@@ -4,15 +4,17 @@
 
 ## Supported Robots
 
- The directory `grutopia_extension/config/robots/` contains a list of all supported robots:
+ The directory `grutopia_extension/configs/robots/` contains a list of all supported robots:
 
 ![img.png](../_static/image/config_robots_list.png)
 
 
 ## Robot Configuration
-It is important to note that both controllers and sensors must operate in conjunction with the robot and cannot function independently. Only the controllers and sensors specified in the robot's configuration will be available for that robot.
 
- Let's take `HumanoidRobot` for instance, The file `grutopia_extension/config/robots/humaniod.py` lists all available controllers and sensors for `HumanoidRobot` as follows:
+It is important to note that both controller and sensor must be used with a robot. Only the controllers and sensors specified in the robot's configuration will be available for that robot in simulation.
+
+Let's take `HumanoidRobot` for instance, the file `grutopia_extension/configs/robots/humaniod.py` includes some ready-to-use controllers and sensors configurations for `HumanoidRobot`, as well as the config class for HumanoidRobot:
+
 ```python
 ...
 move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
@@ -34,12 +36,27 @@ rotate_cfg = RotateControllerCfg(
 humanoid_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', size=(640, 480))
 
 humanoid_tp_camera_cfg = RepCameraCfg(name='tp_camera', prim_path='torso_link/TPCamera', size=(640, 480))
-...
+
+
+class HumanoidRobotCfg(RobotCfg):
+    ...
 ```
-## How to Use a Robot
-The following demonstration illustrates how to set up a robot configuration by adding controllers and sensors and how to integrate this configuration into a task. Once this is completed, the robot will be scheduled in the main loop of the script.
+
+These configurations can be used to create a robot instance in the simulation environment.
+
+## How to Create a Robot in Simulation
+
+The following code snippet illustrates how to assemble a robot configuration by adding controllers and sensors and how to integrate the robot configuration into a task.
 
 ```python
+from grutopia_extension.configs.robots.humanoid import (
+    HumanoidRobotCfg,
+    humanoid_camera_cfg,
+    move_along_path_cfg,
+    move_by_speed_cfg,
+    rotate_cfg,
+)
+
 h1_1 = HumanoidRobotCfg(
     controllers=[
         move_by_speed_cfg,
@@ -61,5 +78,23 @@ config = Config(
         ],
     ),
 )
+
+sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
+
+import_extensions()  # The robot class is registered here.
+
+# Create the environment.
+env = Env(sim_runtime)
+obs, _ = env.reset()
+
+...
+
+while env.simulation_app.is_running():
+    i += 1
+    env_action = {move_by_speed_cfg.name: [1.0, 0.0, 0.0]}  # Use move_by_speed controller
+    obs, _, terminated, _, _ = env.step(action=env_action)
+
+env.simulation_app.close()
 ```
+
 Please read `demo/h1_locomotion.py` for complete demo where a robot moves at a specified speed and direction.

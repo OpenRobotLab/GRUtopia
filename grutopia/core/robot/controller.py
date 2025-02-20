@@ -1,4 +1,3 @@
-# yapf: disable
 from abc import ABC, abstractmethod
 from functools import wraps
 from typing import Any, Dict, List, Union
@@ -9,14 +8,9 @@ from omni.isaac.core.controllers import BaseController as Base
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-# yapf: disable
 from grutopia.core.config.robot import ControllerCfg, RobotCfg
 from grutopia.core.robot.robot import BaseRobot
-
-# yapf: enable
 from grutopia.core.util import log
-
-# yapf: enable
 
 
 class BaseController(Base, ABC):

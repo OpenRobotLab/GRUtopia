@@ -25,7 +25,6 @@ class MocapControlledCamera(BaseSensor):
         super().__init__(config, robot, scene)
         self.name = name
         self.config = config
-        self._camera = self.create_camera()
 
         self.camera_mover = CameraMover([0, 0, 0])
 
@@ -48,13 +47,9 @@ class MocapControlledCamera(BaseSensor):
         log.debug(f'resolution      : {resolution}')
         return i_Camera(prim_path=prim_path, resolution=resolution, translation=translation, orientation=orientation)
 
-    def init(self) -> None:
-        """
-        Initialize the camera sensor.
-
-        TODO Add `camera frame config` into GRUtopia config file.
-        """
+    def post_reset(self):
         if self.config.enable:
+            self._camera = self.create_camera()
             self._camera.initialize()
             # self._camera.add_pointcloud_to_frame()
             # self._camera.add_distance_to_image_plane_to_frame()
@@ -69,11 +64,6 @@ class MocapControlledCamera(BaseSensor):
             frame = self._camera.get_current_frame()
             return {'rgba': rgba, 'frame': frame}
         return {}
-
-    def reset(self):
-        del self._camera
-        self._camera = self.create_camera()
-        self.init()
 
     @property
     def camera(self):

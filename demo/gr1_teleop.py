@@ -92,9 +92,7 @@ import numpy as np
 
 actions = {}
 
-teleop = VuerTeleop(
-    cert_file='./GRUtopia/mkcert/cert.pem', key_file='./GRUtopia/mkcert/key.pem', resolution=(720, 1280)
-)
+teleop = VuerTeleop(cert_file='./mkcert/cert.pem', key_file='./mkcert/key.pem', resolution=(720, 1280))
 
 cubes: List[RigidPrim] = []
 original_poses: List[Tuple[np.ndarray, np.ndarray]] = []
@@ -117,7 +115,7 @@ while env.simulation_app.is_running():
     if i == 1:
         create_joint(
             prim_path='/fix_joint',
-            body0='/World/env_0/robots/World/gr1/base_link',
+            body0='/World/env_0/robots/gr1/base_link',
             joint_type='FixedJoint',
             enabled=True,
         )

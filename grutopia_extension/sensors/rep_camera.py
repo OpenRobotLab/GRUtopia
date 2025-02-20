@@ -23,16 +23,13 @@ class RepCamera(BaseSensor):
         self.name = name
         self.config = config
         self.depth = config.depth
-        self.camera_prim_path = self.create_camera()
         self.rp = None
         self.rp_annotators = {}
 
-    def init(self) -> None:
-        """
-        Initialize the camera sensor.
-
-        TODO Add `camera frame config` into GRUtopia config file.
-        """
+    def post_reset(self):
+        log.debug('reset camera')
+        self.cleanup()
+        self.camera_prim_path = self.create_camera()
         if self.rp is None:
             self.rp = rep.create.render_product(self.camera_prim_path, self.resolution)
 
@@ -55,15 +52,6 @@ class RepCamera(BaseSensor):
         log.debug('name            : ' + self.config.name)
         log.debug(f'resolution      : {self.resolution}')
         return prim_path
-
-    def sensor_init(self) -> None:
-        """
-        Initialize the camera sensor.
-        """
-        # if self.config.enable:
-        #     self._camera.initialize()
-        #     self._camera.add_distance_to_image_plane_to_frame()
-        pass
 
     def get_camera_data(self, data_names):
         """
@@ -296,13 +284,6 @@ class RepCamera(BaseSensor):
             log.debug('================ destroy render product =============')
             self.rp.destroy()
             self.rp = None
-
-    def reset(self):
-        log.debug('reset camera')
-        self.cleanup()
-        del self.camera_prim_path
-        self.camera_prim_path = self.create_camera()
-        self.init()
 
     def _get_face_to_instances(self, bbox: np.array, idToLabels):
         bbox = self._merge_tuples(bbox)

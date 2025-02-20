@@ -3,36 +3,81 @@
 > This tutorial will show you how to add a sensor for a robot
 
 The implementation of the sensor does not rely on any dependencies.
-It serves as an abstraction layer that can either encapsulate existing sensors within Isaac Sim or generate synthetic data outputs to emulate a robot's sensor behavior.
+It serves as an abstraction layer that can either encapsulate native sensors within Isaac Sim or generate synthetic data outputs to emulate a robot's sensor behavior.
 
-## 1. Create Sensor's Configuration
-Let's assume we need a camera sensor to collect depth information.
 
-Our camera requires some input parameters:
-- Switch for turning it on.
-- Camera size.
+To add a custom sensor, you need to:
+- Create a config class for sensor config, inheriting from the `grutopia.core.config.robot.SensorCfg`.
+- Create a class for sensor, inheriting from the `grutopia.core.robot.sensor.BaseSensor`.
 
-Create the custom sensor's configuration in `grutopia_extension/config/sensors/__init__.py`. The configuration will cover all parameters that sensor needs.
+## Create Config Class
+
+Let's assume we need a depth camera.
+
+The camera accepts the following config parameters:
+
+- Flag to enable/disable the sensor.
+- Camera resolution.
+
+Here's an example of a config class for the sensor:
+
 ```Python
-class DepthCameraCfg(SensorModel):
-    # Fields from params.
+class DepthCameraCfg(SensorCfg):
+
     type: Optional[str] = 'DepthCamera'
     enable: Optional[bool] = True
-    size: Optional[Tuple[int, int]] = None
+    resolution: Optional[Tuple[int, int]] = None
 ```
 
-## 2. Inherit from `grutopia.core.robot.sensor`
+Generally, when creating a new config class, reasonable default values for required fields should be specified, and sensor specific config fields can be added when necessary.
 
-```Python
+## Create Sensor Class
+
+In the simplest scenario, the following methods are required to be implemented in your sensor class:
+
+```python
+from grutopia.core.robot.robot import BaseRobot, Scene
+from grutopia.core.robot.sensor import BaseSensor
+
+
+@BaseSensor.register('DepthCamera')
+class DepthCamera(BaseSensor):
+    def __init__(self, config: DepthCameraCfg, robot: BaseRobot, scene: Scene):
+        """Initialize the sensor with the given config.
+
+        Args:
+            config (DepthCameraCfg): sensor configuration.
+            robot (BaseRobot): robot owning the sensor.
+            scene (Scene): scene from isaac sim.
+        """
+
+    def get_data(self) -> Dict:
+        """Get data from sensor.
+
+        Returns:
+            Dict: data dict of sensor.
+        """
+```
+
+The `get_data` method gets the sensor data in each step.
+
+For complete list of sensor methods, please refer to the [Seonsor API documentation](../api/robot.rst).
+
+Please note that the registration of the sensor class is done through the `@BaseSensor.register` decorator, and the registered name should match the value of `type` field within the corresponding sensor config class (here is `DepthCamera`).
+
+For some native sensor types, initialization after env reset is required for the sensor to work properly. The `post_reset` method of sensor is meant to be used in this situation.
+
+An example of sensor class implementation is shown as following:
+
+```python
 from typing import Dict
 
 from omni.isaac.sensor import Camera as i_Camera
 
-from grutopia.core.config.robot import RobotUserConfig
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.config.robot import SensorModel
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
+from grutopia_extension.configs.sensors import DepthCameraCfg
 
 
 @BaseSensor.register('DepthCamera')
@@ -40,51 +85,28 @@ class DepthCamera(BaseSensor):
     """
     wrap of isaac sim's Camera class
     """
-     def __init__(self, config: SensorModel, robot: BaseRobot, name: str = None, scene: Scene = None):
+     def __init__(self, config: DepthCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.name = name
         self._camera = self.create_camera()
 
     def __init__(self,
-                 robot_user_config: RobotUserConfig,
-                 sensor_config: SensorModel,
+                 config: DepthCameraCfg,
                  robot: BaseRobot,
                  name: str = None,
                  scene: Scene = None):
-        super().__init__(robot_user_config, sensor_config, robot, name)
-        self.param = None
-        if self.robot_user_config.sensors is not None:
-            self.param = [p for p in self.robot_user_config.sensors if p.name == self.name][0]
-        self._camera = self.create_camera()
+        super().__init__(config, robot, scene)
 
-    def create_camera(self) -> i_Camera:
-        size = (1280, 720)
-        if self.config.size is not None:
-            size = self.config.size
-
-        prim_path = self.robot_user_config.prim_path + '/' + self.sensor_config.prim_path
-        return i_Camera(prim_path=prim_path, resolution=size)
-
-    def sensor_init(self) -> None:
-         if self.config.enable:
+    def post_reset(self):
+        if self.config.enable:
+            resolution = (1280, 720) if self.config.resolution is None else self.config.resolution
+            prim_path = self._robot.config.prim_path + '/' + self.config.prim_path
+            self._camera = i_Camera(prim_path=prim_path, resolution=resolution)
             self._camera.initialize()
-            self._camera.add_distance_to_image_plane_to_frame()
 
     def get_data(self) -> Dict:
          if self.config.enable:
             depth = self._camera.get_depth()
             return {'depth': depth}
         return {}
-```
-
-## 3. Sensor Usage Preview
-Follow the steps outlined in [how to use robot](../tutorials/how-to-use-robot.md) to add the new sensor to a robot. Then you can use it as demonstrated below:
-```python
-...
-while env.simulation_app.is_running():
-    ...
-    obs, _, _, _, _ = env.step(action=env_action)
-    print(obs['camera']['depth'])
-    ...
-env.simulation_app.close()
 ```

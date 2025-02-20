@@ -1,75 +1,123 @@
 # How to Add Custom Controller
 
-> This tutorial will show you how to add a custom controller for a robot
+> This tutorial will show you how to add a custom controller for a robot.
 
-Note that the controller cannot operate independently. It works with robots to enable robots to move, which serves as a prerequisite for the robot's motion.
+Note that the controller cannot be operated independently. It must be used with robot to enable robot to act in the environment.
 
 
-## 1. Create Controller's Configuration
-Create the custom controller's configuration in `grutopia_extension/config/controllers/`. The configuration will cover all parameters that controller needs.
+To add a custom controller, you need to:
+- Create a config class for controller config, inheriting from the `grutopia.core.config.robot.ControllerCfg`.
+- Create a class for controller, inheriting from the `grutopia.core.robot.controller.BaseController`.
+
+## Create Config Class
+
+Here's an example of a config class for a controller:
 
 ```Python
+from grutopia.core.config.robot import ControllerCfg
 
-class DummyMoveControllerCfg(ControllerModel):
-    ...
+
+class DemoControllerCfg(ControllerCfg):
+
+    name: str = 'demo_controller'
+    type: str = 'DemoController'
+    forward_speed: float = 1.0
 ```
 
-## 2. Inherit from `grutopia.core.robot.controller`
-`grutopia.core.robot.controller` serves as the base class for all controllers we use. Its primary functions include:
+Generally, when creating a new config class, reasonable default values for required fields should be specified, and controller specific config fields can be added when necessary.
 
-- Validating the input parameters.
-- Implementing robot movement through the `forward` method.
-- Providing output observations (obs) required by the controller.(Its worth noting that all observations should ideally come from sensors, this has been included only for debugging convenience.)
+## Create Controller Class
+
+In the simplest scenario, the following methods are required to be implemented in your controller class:
 
 ```python
-from datetime import datetime
-from typing import Any, Dict, List, Union
+import numpy as np
+from typing import List, Union
+from omni.isaac.core.utils.types import ArticulationAction
+
+from grutopia.core.robot.controller import BaseController
+from grutopia.core.robot.robot import BaseRobot
+
+
+@BaseController.register('DemoController')
+class DemoController(BaseController):
+
+    def __init__(self, config: DemoControllerCfg, robot: BaseRobot, scene: Scene):
+        """Initialize the controller with the given configuration and its owner robot.
+
+        Args:
+            config (DemoControllerCfg): controller configuration.
+            robot (BaseRobot): robot owning the controller.
+            scene (Scene): scene from isaac sim.
+        """
+
+    def action_to_control(self, action: Union[np.ndarray, List]) -> ArticulationAction:
+        """Convert input action (in 1d array format) to joint signals to apply.
+
+        Args:
+            action (Union[np.ndarray, List]): input control action.
+
+        Returns:
+            ArticulationAction: joint signals to apply
+        """
+```
+
+The `action_to_control` method translates the input action into joint signals to apply in each step.
+
+For complete list of controller methods, please refer to the [Controller API documentation](../api/robot.rst).
+
+Please note that the registration of the controller class is done through the `@BaseController.register` decorator, and the registered name should match the value of `type` field within the corresponding controller config class (here is `DemoController`).
+
+Sometimes the calculation logic is defined in a method named `forward` to show the input parameters the controller accepts, making it more human-readable. In this case, the `action_to_control` method itself only expands the parameters, and invokes `forward` method to calculate the joint signals.
+
+An example of controller class implementation is shown as following:
+
+```python
+from typing import List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
-from grutopia.core.datahub.model_data import LogData, ModelData
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.config.robot import ControllerModel
+from grutopia_extension.configs.controllers import DemoControllerCfg
 
 
-@BaseController.register('DummyMoveController')
-class DummyMoveController(BaseController):
-
-    # Let's define a controller which moves based on input. It accepts a two-element array, where the first element represents the orientation and the second element represents the velocity.
-    def __init__(self,config: DummyMoveControllerModel, robot: BaseRobot, scene: Scene) -> None:
+@BaseController.register('DemoController')
+class DemoController(BaseController):
+    def __init__(self, config: DemoControllerCfg, robot: BaseRobot, scene: Scene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
-        self._user_config = None
-        self.counter = 1
 
+    def forward(
+        self,
+        forward_speed: float = 0,
+        rotation_speed: float = 0,
+        scaler: float = 1,
+    ) -> ArticulationAction:
+        if forward_speed == 0 and rotation_speed == 0:
+            return ArticulationAction(joint_velocities=np.array([0, 0]))
 
-    def action_to_control(self, action: Union[np.ndarray, List]) -> ArticulationAction:
-        # Validate and mutate the action
-        return self.forward(action[])
+        forward_basis = np.array([1.0, 1.0])
+        spin_basis = np.array([-1.0, 1.0])
 
-    def forward(self, action: str) -> ArticulationAction:
-        # This function does not include an implementation, as it is intended solely as an example.
+        wheel_vel_for = forward_basis * forward_speed
+        wheel_vel_rot = spin_basis * rotation_speed
+        wheel_vel = wheel_vel_for + wheel_vel_rot
 
-        ...
-        return ArticulationAction()
+        return ArticulationAction(joint_velocities=wheel_vel)
 
-    def get_obs(self) -> Dict[str, Any]:
-        # return the observations
-        ...
-        return {}
-```
-
-## 3. Controller Usage Preview
-Follow the steps outlined in [how to use robot](../tutorials/how-to-use-robot.md) to add the new controller to a robot. Then you can use it as demonstrated below:
-```python
-...
-while env.simulation_app.is_running():
-    ...
-    env_action = {'dummy_move': np.array([0.0, 1.0])}
-    obs, _, _, _, _ = env.step(action=env_action)
-    print(obs)
-    ...
-env.simulation_app.close()
+    def action_to_control(self, action: List | np.ndarray) -> ArticulationAction:
+        """
+        Args:
+            action (List | np.ndarray): n-element 1d array containing:
+              0. forward_speed (float)
+              1. rotation_speed (float)
+        """
+        assert len(action) == 2, 'action must contain 2 elements'
+        return self.forward(
+            forward_speed=action[0],
+            rotation_speed=action[1],
+            scaler=1 / self.robot.get_robot_scale()[0],
+        )
 ```

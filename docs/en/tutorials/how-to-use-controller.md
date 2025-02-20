@@ -8,18 +8,32 @@ Controllers typically manage the joints of a robot and serve as the entries to r
 
 ## Supported Controllers
 
-The directory `grutopia_extension/config/controllers/` contains a list of all supported controllers:
+The directory `grutopia_extension/controllers/` contains a list of all supported controllers:
 
 ![img.png](../_static/image/config_controller_list.png)
 
+For each robot, we provide some ready-to-use controller configurations in `grutopia_extension/configs/robots/{robot_name}.py`.
+
 ## How to Use a Controller
 
-We can utilize a controller in the main loop of the script, as shown below:
+A controller must be used with a robot. So first of all, the controller configuration must be added to the controller list in robot configuration:
+
+```
+move_by_speed_cfg = MoveBySpeedCfg(...)
+
+h1_1 = HumanoidRobotCfg(
+    position=(0.0, 0.0, 1.05),
+    controllers=[
+        move_by_speed_cfg,
+    ],
+）
+```
+
+Then in the main loop of the simulation, use the controller name as key, and corresponding action as value in the env action dict:
 
 ```Python
 ...
-path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
-move_action = {move_along_path_cfg.name: [path]}
+move_action = {move_by_speed_cfg.name: (1.0, 0.0, 0.0)}
 
 while env.simulation_app.is_running():
     env_action = move_action

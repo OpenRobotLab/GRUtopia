@@ -28,10 +28,6 @@ class BaseSensor(ABC):
         self._robot = robot
 
     @abstractmethod
-    def init(self):
-        raise NotImplementedError()
-
-    @abstractmethod
     def get_data(self) -> Dict:
         """Get data from sensor.
 
@@ -40,9 +36,9 @@ class BaseSensor(ABC):
         """
         raise NotImplementedError()
 
-    @abstractmethod
-    def reset(self):
-        raise NotImplementedError()
+    def post_reset(self):
+        """Post reset operations."""
+        pass
 
     def cleanup(self):
         """

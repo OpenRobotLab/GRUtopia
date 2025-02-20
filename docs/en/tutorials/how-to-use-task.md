@@ -24,7 +24,7 @@ from grutopia_extension.tasks import (
     social_navigation_task,
 )
 ```
-We can also review the configuration of each individual task in `grutopia_extension/config/tasks/__init__.py`
+We can also review the configuration of each individual task in `grutopia_extension/configs/tasks/__init__.py`
 
 
 

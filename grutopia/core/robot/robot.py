@@ -46,7 +46,7 @@ class BaseRobot:
     def post_reset(self):
         """Set up things that happen after the world resets."""
         for sensor in self.sensors.values():
-            sensor.reset()
+            sensor.post_reset()
 
     def cleanup(self):
         for controller in self.controllers.values():
