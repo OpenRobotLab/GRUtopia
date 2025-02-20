@@ -15,6 +15,8 @@ from grutopia_extension.configs.robots.humanoid_with_hand import (
     move_by_speed_cfg,
     move_to_point_cfg,
     recover_cfg,
+    right_arm_ik_controller_cfg,
+    right_arm_joint_controller_cfg,
     rotate_cfg,
 )
 from grutopia_extension.configs.tasks import (
@@ -26,7 +28,16 @@ from grutopia_extension.configs.tasks import (
 # AgentConfig
 h1_1 = HumanoidWithHandRobotCfg(
     position=(8.482455253601074, -0.8219017386436462, 1.05),
-    controllers=[move_by_speed_cfg, joint_controller, recover_cfg, rotate_cfg, move_along_path_cfg, move_to_point_cfg],
+    controllers=[
+        move_by_speed_cfg,
+        joint_controller,
+        recover_cfg,
+        rotate_cfg,
+        move_along_path_cfg,
+        move_to_point_cfg,
+        right_arm_joint_controller_cfg,
+        right_arm_ik_controller_cfg,
+    ],
     sensors=[
         humanoid_with_hand_camera_cfg.model_copy(
             update={'name': 'camera', 'resolution': (512, 512), 'enable': True}, deep=True

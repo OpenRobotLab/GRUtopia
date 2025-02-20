@@ -28,7 +28,7 @@ h1_1 = HumanoidRobotCfg(
     ],
     sensors=[
         humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (320, 240), 'enable': True}, deep=True),
-        humanoid_tp_camera_cfg.model_copy(update={'enable': False}, deep=False),
+        humanoid_tp_camera_cfg.model_copy(update={'enable': False}, deep=True),
     ],
 )
 
