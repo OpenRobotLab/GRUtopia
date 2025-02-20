@@ -11,7 +11,7 @@ np.random.seed(2024)
 from collections import defaultdict
 from typing import Union
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
 from grutopia.core.util import log
@@ -36,7 +36,7 @@ class ECRMetric(BaseMetric):
     Calculate the average reduced candidates per dialogue in this episode
     """
 
-    def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
+    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
         self.target = task_runtime.extra['target']
         self.question = task_runtime.extra['question']

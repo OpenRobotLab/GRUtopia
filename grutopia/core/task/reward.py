@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from functools import wraps
 from typing import Any, Dict
 
-from grutopia.core.config.task import RewardConfig
+from grutopia.core.config.task import RewardCfg
 from grutopia.core.task import BaseTask
 
 
@@ -50,7 +50,7 @@ class BaseReward(ABC):
         return decorator
 
 
-def create_reward(reward_config: RewardConfig, task: BaseTask):
+def create_reward(reward_config: RewardCfg, task: BaseTask):
     if reward_config.reward_type not in BaseReward.rewards:
         raise KeyError(
             f"""The reward {reward_config.reward_type} is not registered, please register it using `@BaseReward.register`"""

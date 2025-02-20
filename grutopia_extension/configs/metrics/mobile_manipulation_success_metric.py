@@ -1,7 +1,7 @@
 from typing import Optional
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 
 
-class MobileManipulationSuccessMetricCfg(MetricUserConfig):
+class MobileManipulationSuccessMetricCfg(MetricCfg):
     type: Optional[str] = 'MobileManipulationSuccessMetric'

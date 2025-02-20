@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Extra
 
 from grutopia.core.config import EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
-from grutopia.core.config.metric import MetricUserConfig
-from grutopia.core.config.task.reward import RewardConfig
+from grutopia.core.config.metric import MetricCfg
+from grutopia.core.config.task.reward import RewardCfg
 
 
 class Env(BaseModel):
@@ -38,8 +38,8 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     # inherit
     robots: Optional[List[RobotCfg]] = []
     objects: Optional[List[ObjectCfg]] = []
-    metrics: Optional[List[MetricUserConfig]] = []
-    reward_setting: Optional[RewardConfig] = []
+    metrics: Optional[List[MetricCfg]] = []
+    reward_setting: Optional[RewardCfg] = []
 
     # path
     root_path: str

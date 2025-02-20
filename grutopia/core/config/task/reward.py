@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from pydantic import BaseModel
 
 
-class RewardConfig(BaseModel, extra='allow'):
+class RewardCfg(BaseModel, extra='allow'):
     """
     Configures reward settings for a system.
 

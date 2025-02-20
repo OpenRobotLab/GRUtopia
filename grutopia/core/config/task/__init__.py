@@ -2,9 +2,9 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Extra
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 from grutopia.core.config.task.episode import EpisodeCfg
-from grutopia.core.config.task.reward import RewardConfig
+from grutopia.core.config.task.reward import RewardCfg
 
 
 class TaskCfg(BaseModel, extra=Extra.allow):
@@ -20,7 +20,7 @@ class TaskCfg(BaseModel, extra=Extra.allow):
 
         env_num (Optional[int], default=1): Specifies the number of environments to be instantiated for parallel execution.
 
-        metrics (Optional[List[MetricUserConfig]], default=[]): Configuration details for metrics to track during task execution.
+        metrics (Optional[List[MetricCfg]], default=[]): Configuration details for metrics to track during task execution.
 
         metrics_save_path (Optional[str], default='console'): Determines where metric results are saved; defaults to console output.
 
@@ -45,9 +45,9 @@ class TaskCfg(BaseModel, extra=Extra.allow):
     env_num: Optional[int] = 1
 
     # inherit
-    metrics: Optional[List[MetricUserConfig]] = []
+    metrics: Optional[List[MetricCfg]] = []
     metrics_save_path: Optional[str] = 'console'
-    reward_setting: Optional[RewardConfig] = None
+    reward_setting: Optional[RewardCfg] = None
 
     # path
     scene_root_path: Optional[str] = '/scene'

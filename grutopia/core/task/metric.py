@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from functools import wraps
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
 
 
 class BaseMetric(ABC):
     metrics = {}
 
-    def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
+    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
         self.config = config
         self.name = config.name
         self.task_runtime = task_runtime
@@ -52,7 +52,7 @@ class BaseMetric(ABC):
         return decorator
 
 
-def create_metric(config: MetricUserConfig, task_runtime: TaskRuntime):
+def create_metric(config: MetricCfg, task_runtime: TaskRuntime):
     if config.type not in BaseMetric.metrics:
         raise KeyError(
             f"""The metric {config.type} is not registered, please register it using `@BaseMetric.register`"""

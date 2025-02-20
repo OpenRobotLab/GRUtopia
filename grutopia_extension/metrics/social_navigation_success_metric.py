@@ -1,7 +1,7 @@
 import numpy as np
 from pydantic import BaseModel
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
 from grutopia.core.util import log
@@ -17,7 +17,7 @@ class SocialNavigationSuccessMetric(BaseMetric):
     Calculate the success of this episode
     """
 
-    def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
+    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
         self.param = SuccessParam(**config.metric_config.model_dump())
         self.navigation_error_threshold = self.param.navigation_error_threshold

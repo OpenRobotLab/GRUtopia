@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 from pydantic import BaseModel
 
 
-class MetricUserConfig(BaseModel):
+class MetricCfg(BaseModel):
     """
     A configuration model for users to define metrics.
 
@@ -20,7 +20,7 @@ class MetricUserConfig(BaseModel):
 
     Example Usage:
     ```python
-    config = MetricUserConfig(
+    config = MetricCfg(
         type="accuracy",
         name="Training Accuracy",
         metric_config={"threshold": 0.9}

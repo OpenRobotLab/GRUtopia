@@ -1,7 +1,7 @@
 from typing import Optional
 
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 
 
-class ResetTimeMetricCfg(MetricUserConfig):
+class ResetTimeMetricCfg(MetricCfg):
     type: Optional[str] = 'ResetTimeMetric'

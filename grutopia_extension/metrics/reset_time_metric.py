@@ -1,4 +1,4 @@
-from grutopia.core.config.metric import MetricUserConfig
+from grutopia.core.config.metric import MetricCfg
 from grutopia.core.datahub.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
@@ -11,7 +11,7 @@ class ResetTimeMetric(BaseMetric):
     Calculate the fall times of the robot
     """
 
-    def __init__(self, config: MetricUserConfig, task_runtime: TaskRuntime):
+    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
         super().__init__(config, task_runtime)
         self.reset()
 
