@@ -1,6 +1,7 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.agents.config import AgentCfg
 from grutopia_extension.agents.util.agent import create_agent
@@ -46,7 +47,8 @@ config = Config(
         ),
         episodes=[
             MobileManipulationEpisodeCfg(
-                scene_asset_path='evaluate_data/splits/MV7J6NIKTKJZ2AABAAAAADA8_usd/start_result_interaction.usd',
+                scene_asset_path=gm.ASSET_PATH
+                + '/scenes/GRScenes-100/home_scenes/scenes/MV7J6NIKTKJZ2AABAAAAADA8_usd/start_result_interaction.usd',
                 scene_scale=(0.01, 0.01, 0.01),
                 robots=[h1_1],
                 extra={
@@ -75,7 +77,7 @@ config = Config(
                     ],
                     'episode_idx': 0,
                     'instruction': 'Pick the bowl located near the window and place it on the nightstand near the pillow and the cabinet.',
-                    'meta_path': 'evaluate_data/meta/MV7J6NIKTKJZ2AABAAAAADA8_usd',
+                    'meta_path': gm.ASSET_PATH + 'benchmark/meta/MV7J6NIKTKJZ2AABAAAAADA8_usd',
                     'start_point': [4.983360290527344, 2.8359479904174805],
                     'target': 'bowl/model_a3dd96e3fed88481d94f5b8c727e3c6c_0',
                 },
@@ -117,7 +119,7 @@ while env.simulation_app.is_running() and not env.finished():
     task_finished = terminated
 
     if task_finished:
-        env.close()
+        env.reset()
 
     if i % 1000 == 0:
         print(i)

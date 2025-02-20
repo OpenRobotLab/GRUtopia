@@ -42,7 +42,6 @@ class SimulatorRunner:
         )
 
         self.metrics_config = None
-        self.metrics_results = {}
         self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
         if self.metrics_save_path != 'console':
             try:
@@ -184,11 +183,16 @@ class SimulatorRunner:
             if task.is_done():
                 self.finished_tasks.add(task.name)
                 log.info(f'Task {task.name} finished.')
-                if task.name not in self.metrics_results:
-                    self.metrics_results[task.name] = task.calculate_metrics()
-                self.metrics_results[task.name] = task.calculate_metrics()
-                # TO DELETE
-                self.metrics_results[task.name]['normally_end'] = True
+                metrics_results = task.calculate_metrics()
+                metrics_results['normally_end'] = True
+                if self.metrics_save_path == 'console':
+                    print(json.dumps(metrics_results, indent=4))
+                elif self.metrics_save_path == 'none':
+                    pass
+                else:
+                    with open(self.metrics_save_path, 'a') as f:
+                        f.write(json.dumps(metrics_results))
+                        f.write('\n')
 
             # finished tasks will no longer update metrics
             if task.name not in self.finished_tasks:
@@ -265,16 +269,8 @@ class SimulatorRunner:
     def _finalize(self):
         """
         Finalize the tasks and do some post-processing.
-
-        This function is called after all tasks are finished. Currently, it handles the metrics saving.
         """
-        if not self.metrics_results:
-            return
-        if self.metrics_save_path == 'console':
-            print(json.dumps(self.metrics_results, indent=4))
-        else:
-            with open(self.metrics_save_path, 'w') as f:
-                f.write(json.dumps(self.metrics_results))
+        pass
 
     def world_clear(self):
         self._world.clear()

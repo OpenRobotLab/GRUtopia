@@ -14,12 +14,12 @@ We have defined a base class for task along with several implementation subclass
 
 The directory `grutopia_extension/tasks/__init__.py` contains a list of all supported tasks:
 
-```
+```Python
 from grutopia_extension.tasks import (
     manipulation_task,
     mobile_manipulation_task,
     object_navigation_task,
-    simple_agent_task,
+    finite_step_task,
     single_inference_task,
     social_navigation_task,
 )

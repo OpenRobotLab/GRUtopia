@@ -1,3 +1,7 @@
+from grutopia_extension.configs.tasks.finite_step_task import (
+    FiniteStepTaskCfg,
+    FiniteStepTaskEpisodeCfg,
+)
 from grutopia_extension.configs.tasks.manipulation_task import (
     ManipulationEpisodeCfg,
     ManipulationExtra,
@@ -12,10 +16,6 @@ from grutopia_extension.configs.tasks.mobile_manipulation_task import (
 )
 from grutopia_extension.configs.tasks.mobile_manipulation_task import (
     TaskSettingCfg as MobileManipulationTaskSetting,
-)
-from grutopia_extension.configs.tasks.simple_agent_task import (
-    SimpleAgentEpisodeCfg,
-    SimpleAgentTaskCfg,
 )
 from grutopia_extension.configs.tasks.single_inference_task import (
     SingleInferenceEpisodeCfg,
