@@ -63,11 +63,8 @@ Make sure you have [Isaac Sim 4.1.0](https://docs.omniverse.nvidia.com/isaacsim/
 
 1. Verify the Installation.
 
-   Run at the root path of Isaac Sim:
-
    ```bash
-   $ cd PATH/TO/ISAAC_SIM/ROOT
-   $ python ./GRUtopia/demo/h1_locomotion.py  # start simulation
+   $ python -m grutopia.demo.h1_locomotion  # start simulation
    ```
 
    If properly installed, Isaac Sim GUI window should pop up and you can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
@@ -144,7 +141,7 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
 
    ```bash
    # run inside container
-   $ python ./GRUtopia/demo/h1_locomotion.py  # start simulation
+   $ python -m grutopia.demo.h1_locomotion  # start simulation
    ```
 
    If properly installed, observation from simulation will be displayed in the terminal every 100 steps, and you can access the Isaac Sim through WebRTC at <http://127.0.0.1:8211/streaming/webrtc-demo/?server=127.0.0.1> (if you have set a different `WEBUI_HOST`, use that instead of `127.0.0.1`).

@@ -66,7 +66,7 @@ teleop = VuerTeleop(
 Then run the demo script:
 
 ```bash
-$ python GRUtopia/demo/gr1_teleop.py
+$ python -m grutopia.demo.gr1_teleop
 ```
 
 Once the simulation starts, open Safari on VisionPro and navigate to:

@@ -46,7 +46,7 @@ Once the server is running successfully, make a note of the Hamer server URL (e.
 Now, update the `mocap_url` parameter in `GRUtopia/demo/franka_manipulation_mocap_teleop.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
 
 ```
-python GRUtopia/demo/franka_manipulation_mocap_teleop.py
+python -m grutopia.demo.franka_manipulation_mocap_teleop
 ```
 
 After the Isaac Sim interface finishes loading, move your right hand in front of the RGB camera (from Step 1), and the Franka arm will follow your hand movements.

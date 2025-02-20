@@ -13,7 +13,7 @@ $ cd assets/scenes/
 $ unzip demo_house.zip
 # start simulation
 $ cd ../../..
-$ python ./GRUtopia/demo/h1_house.py
+$ python -m grutopia.demo.h1_house
 ```
 
 You can control the h1 robot with keyboard command:
@@ -38,7 +38,7 @@ $ cd assets/scenes/
 $ unzip demo_city.zip
 # start simulation
 $ cd ../../..
-$ python ./GRUtopia/demo/h1_city.py
+$ python -m grutopia.demo.h1_city
 ```
 
 You can control the h1 robot with keyboard command:
