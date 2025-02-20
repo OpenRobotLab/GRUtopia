@@ -8,7 +8,7 @@ with open('requirements/runtime.txt', 'r') as fr:
 
 setuptools.setup(
     name='grutopia',
-    version='0.1.0',
+    version='2.0.0',
     author='APX103',
     author_email='lijialun@pjlab.org.cn',
     description='Easy to use omniverse isaac sim standalone package',
