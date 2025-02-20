@@ -78,7 +78,7 @@ We provide the installation guide [here](docs/en/get_started/installation.md). Y
 Following the installation guide, you can verify the installation by running:
 
 ```bash
-python ./GRUtopia/demo/h1_locomotion.py  # start simulation
+python ./GRUtopia/grutopia/demo/h1_locomotion.py  # start simulation
 ```
 
 You can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
@@ -88,10 +88,10 @@ You can see a humanoid robot (Unitree H1) walking following a pre-defined trajec
 Referring to the [guide](docs/en/get_started/wander-with-keyboard.md), you can basically run to wander a demo house:
 
 ```bash
-# python ./GRUtopia/demo/h1_city.py will run a humanoid in the city block
+# python ./GRUtopia/grutopia/demo/h1_city.py will run a humanoid in the city block
 # Its movement is much smaller given the large space of the block.
 # Therefore, we recommend try with h1_house.py
-python ./GRUtopia/demo/h1_house.py  # start simulation
+python ./GRUtopia/grutopia/demo/h1_house.py  # start simulation
 ```
 
 You can control a humanoid robot to walk around in a demo house and look around from different views by changing the camera view in Isaac Sim (on the top of the UI).

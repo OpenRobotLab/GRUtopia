@@ -4,19 +4,14 @@
 
 ## Supported Sensors
 
-In `grutopia_extension/configs/sensors/__init__.py`, we can observe all available sensors:
+The directory `grutopia_extension/sensors/` contains a list of all supported sensors::
 
-```Python
-class CameraCfg(SensorCfg):
-   ...
-
-
-class RepCameraCfg(SensorCfg):
-    ...
-
-
-class MocapControlledCameraCfg(SensorCfg):
-    ...
+```
+grutopia_extension/
+└── sensors
+    ├── camera.py
+    ├── mocap_controlled_camera.py
+    └── rep_camera.py
 ```
 
 For each robot, we provide some ready-to-use sensor configurations in `grutopia_extension/configs/robots/{robot_name}.py`.

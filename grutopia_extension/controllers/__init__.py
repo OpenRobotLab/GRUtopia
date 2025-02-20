@@ -15,5 +15,4 @@ from grutopia_extension.controllers import (
     rmpflow_controller,
     rotate_controller,
     rotate_oracle,
-    web_chat_box_controller,
 )

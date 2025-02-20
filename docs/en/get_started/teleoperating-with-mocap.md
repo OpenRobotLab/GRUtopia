@@ -1,49 +1,50 @@
 # Teleoperating with Mocap
 
-This tutorial will guide you how to teleoperate with hand gesture-based motion capture (Mocap). It takes Franka robotic arm as example to give an instruction for the process of setting up and controlling the Franka robotic arm using Mocap. By following this guide, you will be able to complete the `GRUtopia/demo/franka_manipulation_mocap_teleop.py` task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
+This tutorial will guide you how to teleoperate with hand gesture-based motion capture (Mocap). It takes Franka robotic arm as example to give an instruction for the process of setting up and controlling the Franka robotic arm using Mocap. By following this guide, you will be able to complete the `GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py` task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
 
 ## 1. Implementation Guide
 
 ### Step 1: Set Up a Real-Time Data Stream Server with an RGB Camera
 
-First, you'll need to set up a real-time image data stream from an RGB camera. The provided script, `GRUtopia/toolkits/mocap/rgb_camera_server.py`, can be used as a reference to create a local streaming server. The command to start the server is:
+First, create a new conda environment, and install all necessary dependencies:
 
+```bash
+$ pip install opencv-python flask
 ```
-python rgb_camera_server.py
+
+Second, you'll need to set up a real-time image data stream from an RGB camera. The provided script, `GRUtopia/toolkits/mocap/rgb_camera_server.py`, can be used as a reference to create a local streaming server. The command to start the server is:
+
+```bash
+$ python rgb_camera_server.py
 ```
 
 After running the script, make sure to note the server’s URL. If you're using the sample code and running it locally, the URL (using the loopback address as an example) should be: `http://127.0.0.1:5000/video`.
 
-> **Required Python Dependencies for Step 1:**
-> To ensure the script works properly, you can install the necessary Python packages using the following pip command: `pip install opencv-python flask`
->
 > **Note:**
 > The provided code is a reference and may need adjustments based on your specific setup. In the simplest case, you can use your laptop's built-in camera to capture the real-time data.
 
 
 ### Step 2: Set Up a Real-Time Hand Gesture Recognition Server with Hamer
 
+> In addition to the Hamer environment, the following Python packages are required: `pip install OneEuroFilter flask`
+
 Next, you'll set up the hand gesture recognition system using Hamer. You can find the relevant GitHub repository for Hamer [here](https://github.com/geopavlakos/hamer). After setting up the Hamer environment, place `GRUtopia/toolkits/mocap/hamer_real_time.py` and `hamer_real_time_server.py` into the `hamer/` directory. The command to start the server is:
 
-```
-python hamer_re.py --video_url {{video_url}}
+```bash
+$ python hamer_re.py --video_url {{video_url}}
 ```
 
 The `video_url` parameter should correspond to the URL generated in Step 1. For example, if you're using the URL from Step 1, the command should be:
 
-```
-python hamer_re.py --video_url http://127.0.0.1:5000/video
+```bash
+$ python hamer_re.py --video_url http://127.0.0.1:5000/video
 ```
 
 Once the server is running successfully, make a note of the Hamer server URL (e.g., `http://127.0.0.1:5001` as shown in the example code).
 
-> **Required Python Dependencies for Step 2:**
-> In addition to the Hamer environment, the following Python packages need to be installed: `pip install OneEuroFilter flask`
-
-
 ### Step 3: Start the Task in GRUtopia
 
-Now, update the `mocap_url` parameter in `GRUtopia/demo/franka_manipulation_mocap_teleop.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
+Now, update the `mocap_url` parameter in `GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
 
 ```
 python -m grutopia.demo.franka_manipulation_mocap_teleop

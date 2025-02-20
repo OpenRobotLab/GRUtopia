@@ -41,7 +41,7 @@ $ cd $(mkcert -CAROOT) && python -m http.server
 
 ## Run GR1 Teleoperation Example
 
-To run the example, you need to start the IK solver process for GR1 first:
+To run the example, you need to create a new conda env to run the IK solver process for GR1 first:
 
 ```bash
 $ conda create -n sim-teleop python=3.10
@@ -52,7 +52,7 @@ $ cd GRUtopia/grutopia_extension/controllers && conda run --no-capture-output -n
 
 If you see the message "waiting for teleop action...", it indicates that the solver process has started successfully.
 
-Then open another session with grutopia conda environment, and specify the locations of server cert and key in `GRUtopia/demo/gr1_teleop.py`.
+Then open another session with grutopia conda environment, and specify the locations of server cert and key in `GRUtopia/grutopia/demo/gr1_teleop.py`.
 
 ```python
 ...
@@ -73,6 +73,8 @@ Once the simulation starts, open Safari on VisionPro and navigate to:
 https://192.168.100.101:8012?ws=wss://192.168.100.101:8012 (Replace 192.168.100.101 with your own IP address.)
 Select "Enter VR" to begin operations.
 
+![](../_static/image/teleop_with_vision_pro.jpg)
+
 ## Brief Explanation
 
 This section explains how the teleop process works.
@@ -87,11 +89,11 @@ Pose collecting logic with VisionPro comes from [Open-TeleVision](https://github
 
 The poses are used to control robot through a teleop controller, followed by a env step. Once the env step finished, the latest vision is collected from cameras and transferred to VisionPro.
 
-You can refer to `GRUtopia/demo/gr1_teleop.py` for the complete implementation.
+You can refer to `GRUtopia/grutopia/demo/gr1_teleop.py` for the complete implementation.
 
 ```python
-teleop = VuerTeleop(cert_file='./GRUtopia/mkcert/cert.pem',
-                    key_file='./GRUtopia/mkcert/key.pem',
+teleop = VuerTeleop(cert_file='./mkcert/cert.pem',
+                    key_file='./mkcert/key.pem',
                     resolution=(720, 1280))
 
 i = 0

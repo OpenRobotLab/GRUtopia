@@ -4,14 +4,26 @@
 
 ## Supported Robots
 
- The directory `grutopia_extension/configs/robots/` contains a list of all supported robots:
+The directory `grutopia_extension/robots/` contains a list of all supported robots:
 
-![img.png](../_static/image/config_robots_list.png)
-
+```
+grutopia_extension/
+└── robots
+    ├── aliengo.py
+    ├── franka.py
+    ├── g1.py
+    ├── gr1.py
+    ├── humanoid.py
+    ├── humanoid_with_hand.py
+    ├── mocap_controlled_franka.py
+    └── npc.py
+```
 
 ## Robot Configuration
 
 It is important to note that both controller and sensor must be used with a robot. Only the controllers and sensors specified in the robot's configuration will be available for that robot in simulation.
+
+All our pre-defined robot config classes are located in the `grutopia_extension/configs/robots` folder.
 
 Let's take `HumanoidRobot` for instance, the file `grutopia_extension/configs/robots/humaniod.py` includes some ready-to-use controllers and sensors configurations for `HumanoidRobot`, as well as the config class for HumanoidRobot:
 

@@ -1,53 +1,40 @@
 # Wander with keyboard
 
-> This tutorial guides you to wander with keyboard as h1 robot.
-
-## Wander in house
-
-VRAM requirement: 12GB+
+> This tutorial guides you to wander with keyboard as g1 robot.
 
 ```bash
-# decompress the house scene
-$ cd PATH/TO/GRUTOPIA/ROOT
-$ cd assets/scenes/
-$ unzip demo_house.zip
-# start simulation
-$ cd ../../..
-$ python -m grutopia.demo.h1_house
+$ python -m grutopia.demo.g1_locomotion
 ```
 
-You can control the h1 robot with keyboard command:
+You can control the g1 robot with keyboard command:
 
-- W: Move Forward
-- S: Move Backward
-- A: Move Left
-- D: Move Right
-- Q: Turn Left
-- E: Turn Right
+- I: Move Forward
+- K: Move Backward
+- J: Move Left
+- L: Move Right
+- U: Turn Left
+- O: Turn Right
 
-You can change camera view to perspective/first-person/third-person camera.
+## Brief Explanation
 
-## Wander in city
+The keyboard is abstracted as an interaction device. A vector is used to denote which key is being pressed, and this vector is then translated into the robot's actions at each step.
 
-VRAM requirement: 16GB+
+```python
+from grutopia_extension.interactions.keyboard import KeyboardInteraction
 
-```bash
-# decompress the city scene
-$ cd PATH/TO/GRUTOPIA/ROOT
-$ cd assets/scenes/
-$ unzip demo_city.zip
-# start simulation
-$ cd ../../..
-$ python -m grutopia.demo.h1_city
+keyboard = KeyboardInteraction()
+
+while env.simulation_app.is_running():
+    i += 1
+    command = keyboard.get_input()
+    x_speed = command[0] - command[1]
+    y_speed = command[2] - command[3]
+    z_speed = command[4] - command[5]
+    env_action = {
+        move_by_speed_cfg.name: (x_speed, y_speed, z_speed),
+    }
+    obs, _, terminated, _, _ = env.step(action=env_action)
+    ...
 ```
 
-You can control the h1 robot with keyboard command:
-
-- W: Move Forward
-- S: Move Backward
-- A: Move Left
-- D: Move Right
-- Q: Turn Left
-- E: Turn Right
-
-You can change camera view to perspective/first-person/third-person camera.
+You can refer to `GRUtopia/grutopia/demo/g1_locomotion.py` for a complete example.
