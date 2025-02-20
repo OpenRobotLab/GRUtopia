@@ -26,7 +26,7 @@ table_cfg = UsdObjCfg(
     prim_path='/World/table',
     scale=(0.001, 0.001, 0.001),
     position=(0.0, 0.0, 0.374),
-    usd_path=gm.ASSET_PATH + '/objects/table/white_big/instance.usda',
+    usd_path=gm.ASSET_PATH + '/objects/table/white_big/instance.usd',
 )
 
 cube_cfgs = [
@@ -111,7 +111,7 @@ i = 0
 while env.simulation_app.is_running():
     i += 1
 
-    # create a fixed joint to ensure stable vision.
+    # create a fixed joint to ensure a stable vision.
     if i == 1:
         create_joint(
             prim_path='/fix_joint',
