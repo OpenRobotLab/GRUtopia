@@ -2,6 +2,8 @@ import os
 
 from addict import Dict
 
+import grutopia.default_config as dc
+
 
 class MacroDict(Dict):
     def __init__(self, *args, **kwargs):
@@ -48,4 +50,4 @@ def determine_gm_path(default_path, env_var_name):
 
 
 # Users can override the path if needed
-gm.ASSET_PATH = determine_gm_path('../assets', 'GRUTOPIA_ASSET_PATH')
+gm.ASSET_PATH = determine_gm_path(dc.DEFAULT_ASSET_PATH, 'GRUTOPIA_ASSET_PATH')

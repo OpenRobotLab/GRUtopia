@@ -129,6 +129,21 @@ def unzip_all(dir_path):
                     zip_ref.extractall(root)
                 print(f'Extracted: {zip_path} to {root}')
 
+    # Rename directory target_69_new to home_scenes, target_30_new to commercial_scenes
+    print('Renaming...')
+    for root, dirs, files in os.walk(dir_path):
+        for dir in dirs:
+            if dir == 'target_69_new':
+                rename(root, 'target_69_new', 'home_scenes')
+            if dir == 'target_30_new':
+                rename(root, 'target_30_new', 'commercial_scenes')
+
+
+def rename(root, old_name, new_name) -> str:
+    old_path = os.path.join(root, old_name)
+    new_path = os.path.join(root, new_name)
+    os.rename(old_path, new_path)
+
 
 def main():
     print('Welcome to the Dataset Downloader!')
@@ -143,10 +158,10 @@ def main():
 
     # Determine the target path
     target_path = gm.ASSET_PATH
-    macros_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'macros.py')
+    default_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default_config.py')
     print(f'Asset (~250GB) will be installed under this location: {target_path}')
     print(
-        f'If you want to install data under a different path, please change the ASSET_PATH variable in {macros_path} and rerun GRUtopia/grutopia/download_assets.py.'
+        f'If you want to install data under a different path, please change the DEFAULT_ASSET_PATH variable in {default_path} and rerun GRUtopia/grutopia/download_assets.py.'
     )
     path_confirm = input('Do you want to continue? (Y/n): ').strip().lower()
     if path_confirm not in ['y', 'yes']:
@@ -172,7 +187,7 @@ def main():
         # Unzip the dataset
         unzip_all(target_path)
 
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f'Error downloading assets: {e}')
         print('Removing downloaded assets files...')
         remove_dir(target_path)

@@ -128,3 +128,6 @@ work_dirs/
 
 # sphinx build dir
 docs/en/_build
+
+# default value for marcos.py
+grutopia/default_config.py
