@@ -16,6 +16,7 @@ repos:
     hooks:
       - id: codespell
         exclude: ^toolkits/grscenes_scripts/README.md
+        exclude: ^toolkits/indoor_scenes_generation/infinigen/infinigen_examples/constraints
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.22.1
     hooks:
