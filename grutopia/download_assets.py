@@ -158,11 +158,20 @@ def main():
 
     # Determine the target path
     target_path = gm.ASSET_PATH
-    default_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default_config.py')
     print(f'Asset (~250GB) will be installed under this location: {target_path}')
-    print(
-        f'If you want to install data under a different path, please change the DEFAULT_ASSET_PATH variable in {default_path} and rerun GRUtopia/grutopia/download_assets.py.'
-    )
+    desired_path = input('If you want to use a different one, please type in (must be absolute path): ').strip().lower()
+    if desired_path != '':
+        target_path = desired_path
+        while True:
+            if target_path.startswith('/'):
+                break
+            print('desired path must be absolute path')
+            target_path = input('Please enter the desired path : ').strip()
+        # Persistent the target path.
+        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default_config.py')
+        with open(config_file, 'w') as f:
+            f.write(f'DEFAULT_ASSETS_PATH = "{target_path}"')
+        print(f'Assets will be installed under this location: {target_path}')
     path_confirm = input('Do you want to continue? (Y/n): ').strip().lower()
     if path_confirm not in ['y', 'yes']:
         return
@@ -191,9 +200,9 @@ def main():
         print(f'Error downloading assets: {e}')
         print('Removing downloaded assets files...')
         remove_dir(target_path)
-
-    # Remove the conda env
-    delete_conda_env()
+    finally:
+        # Remove the conda env
+        delete_conda_env()
 
 
 if __name__ == '__main__':
