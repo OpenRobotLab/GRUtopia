@@ -23,7 +23,7 @@ Welcome to GRUtopia's documentation!
    get_started/how-to-use-grscenes.md
    get_started/teleoperating-with-mocap.md
    get_started/teleoperating-with-visionpro.md
-   get_started/benchmark.md
+   get_started/run-benchmark-baseline.md
 
 .. toctree::
    :maxdepth: 1
@@ -33,6 +33,7 @@ Welcome to GRUtopia's documentation!
    tutorials/how-to-use-sensor.md
    tutorials/how-to-use-robot.md
    tutorials/how-to-use-task.md
+   tutotials/how-to-run-benchmark-with-custom-agent.md
 
 .. toctree::
    :maxdepth: 1

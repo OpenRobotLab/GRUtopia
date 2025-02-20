@@ -21,7 +21,3 @@ class FiniteStepTask(BaseTask):
     def is_done(self) -> bool:
         self.stop_count += 1
         return self.stop_count > self.max_step
-
-    def individual_reset(self):
-        for name, metric in self.metrics.items():
-            metric.reset()
