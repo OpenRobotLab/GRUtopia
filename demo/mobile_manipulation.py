@@ -113,13 +113,17 @@ while env.simulation_app.is_running() and not env.finished():
     action = mm_agent.step(obs)
 
     if 'terminate' in action:
-        env.reset()
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     obs, _, terminated, _, _ = env.step(action=action)
     task_finished = terminated
 
     if task_finished:
-        env.reset()
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     if i % 1000 == 0:
         print(i)

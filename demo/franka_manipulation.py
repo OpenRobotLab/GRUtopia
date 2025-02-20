@@ -48,7 +48,7 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=True, webrtc=False, native=True)
+sim_runtime = SimulatorRuntime(config_class=config, headless=False, webrtc=False, native=True)
 
 import_extensions()
 import numpy as np
@@ -79,9 +79,14 @@ while env.simulation_app.is_running():
     else:
         env_actions = {}
 
-    obs, _, _, _, _ = env.step(action=env_actions)
+    obs, _, terminated, _, _ = env.step(action=env_actions)
+
+    if terminated:
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     if i % 1000 == 0:
         print(i)
 
-env.simulation_app.close()
+env.close()

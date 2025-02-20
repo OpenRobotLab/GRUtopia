@@ -66,4 +66,4 @@ while env.simulation_app.is_running():
     if i % 1000 == 0:
         print(i)
 
-env.simulation_app.close()
+env.close()

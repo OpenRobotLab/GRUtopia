@@ -68,9 +68,11 @@ while env.simulation_app.is_running():
     obs, _, terminated, _, _ = env.step(action=action)
 
     if terminated:
-        env.reset()
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     if i % 100 == 0:
         print(i)
 
-env.simulation_app.close()
+env.close()

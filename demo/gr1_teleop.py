@@ -148,4 +148,4 @@ while env.simulation_app.is_running():
         print(i)
 
 teleop.cleanup()
-env.simulation_app.close()
+env.close()

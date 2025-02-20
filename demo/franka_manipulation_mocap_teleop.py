@@ -66,4 +66,4 @@ while env.simulation_app.is_running():
     obs, _, _, _, _ = env.step(action=arm_action)
 
 mocap_interaction.server_stop()
-env.simulation_app.close()
+env.close()

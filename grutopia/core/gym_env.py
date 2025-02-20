@@ -80,7 +80,7 @@ class Env(gym.Env):
         origin_obs, task_runtime = self.runner.reset(self._current_task_name)
         if task_runtime is None:
             log.info('All episodes have finished.')
-            self.close()
+            return {}, {}
 
         self._current_task_name = task_runtime.name
         info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime
@@ -99,7 +99,6 @@ class Env(gym.Env):
 
         Returns:
             observation (Any): An element of the environment's :attr:`observation_space` as the next observation due to the agent actions.
-
             reward (float): The reward as a result of taking the action.
             terminated (bool): Whether the agent reaches the terminal state. If true, the user needs to call :meth:`reset`.
             truncated (bool): Whether the truncation condition outside the scope of the MDP is satisfied.
