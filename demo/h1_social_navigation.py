@@ -49,8 +49,8 @@ config = Config(
                 metric_config={
                     'azure_api_key_e_path': 'GRUtopia/grutopia_extension/agents/social_navigation_agent/modules/vlm/api_key/azure_api_key_e.txt',
                     'azure_api_key_path': 'GRUtopia/grutopia_extension/agents/social_navigation_agent/modules/vlm/api_key/azure_api_key.txt',
-                    'captions_embeddings_path': gm.ASSET_PATH + 'benchmark/object_captions_embeddings.pkl',
-                    'captions_path': gm.ASSET_PATH + 'benchmark/object_captions_score_sort.json',
+                    'captions_embeddings_path': gm.ASSET_PATH + '/benchmark/object_captions_embeddings.pkl',
+                    'captions_path': gm.ASSET_PATH + '/benchmark/object_captions_score_sort.json',
                     'use_azure': True,
                 }
             ),
@@ -74,10 +74,10 @@ config = Config(
                     'distance': 9.110975175263214,
                     'episode_idx': 0,
                     'model_mapping_path': gm.ASSET_PATH
-                    + 'benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/model_mapping.json',
+                    + '/benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/model_mapping.json',
                     'npc_scene_data_config': gm.ASSET_PATH
-                    + 'benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/object_dict_with_caption.json',
-                    'object_dict_path': gm.ASSET_PATH + 'benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/object_dict.json',
+                    + '/benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/object_dict_with_caption.json',
+                    'object_dict_path': gm.ASSET_PATH + '/benchmark/meta/MV7J6NIKTKJZ2AABAAAAADY8_usd/object_dict.json',
                     'question': 'Can you help me locate the chest of drawers that is near a curtain?',
                     'start_point': [-13.947606086730957, 0.1635608822107315],
                     'target': 'chestofdrawers/model_7434427118680313ebf8e9cb10677aec_0',

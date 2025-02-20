@@ -35,7 +35,7 @@ config = Config(
         ],
         episodes=[
             ManipulationEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + 'scenes/demo_scenes/franka_mocap_teleop/table_scene.usd',
+                scene_asset_path=gm.ASSET_PATH + '/scenes/demo_scenes/franka_mocap_teleop/table_scene.usd',
                 robots=[franka],
                 extra=ManipulationExtra(
                     prompt='Prompt test 1',

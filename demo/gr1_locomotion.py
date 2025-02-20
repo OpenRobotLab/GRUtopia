@@ -21,7 +21,7 @@ config = Config(
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + 'scenes/empty.usd',
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 robots=[
                     GR1RobotCfg(
                         position=[0.0, 0.0, 0.95],
