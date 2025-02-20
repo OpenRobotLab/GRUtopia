@@ -159,7 +159,7 @@ def main():
     # Determine the target path
     target_path = gm.ASSET_PATH
     print(f'Asset (~250GB) will be installed under this location: {target_path}')
-    desired_path = input('If you want to use a different one, please type in (must be absolute path): ').strip().lower()
+    desired_path = input('If you want to use a different one, please type in (must be absolute path): ').strip()
     if desired_path != '':
         target_path = desired_path
         while True:
