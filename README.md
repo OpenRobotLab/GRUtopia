@@ -51,7 +51,20 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 
 ## 🔥 News
 
+- \[2025-02\] GRUtopia 2.0 released!
 - \[2024-07\] We release the [paper](https://arxiv.org/abs/2407.10943) and demos of GRUtopia.
+
+## New Features in 2.0 release
+
+- Use standard Gym Env.
+- Use pythonic config system to support clearer and extendable configuration.
+- Add diverse robots and corresponding policies
+- Support teleportation with Mocap and VisionPro.
+- Benchmark and baseline for social navigation and mobile manipulation task.
+- Add more realistic and diverse scenes for simulation.
+- Provide a large number of refined interactive object models in the scenes.
+- Provide semantic annotations for a large number of objects in the scenes.
+- Procedural Indoor Scene Generation with GRScenes-100.
 
 ## 📚 Getting Started
 
@@ -60,51 +73,22 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 We test our codes under the following environment:
 
 - Ubuntu 20.04, 22.04
-- [NVIDIA Omniverse Isaac Sim 2023.1.1](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html)
+- [NVIDIA Omniverse Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html)
   - Ubuntu 20.04/22.04 Operating System
   - NVIDIA GPU (RTX 2070 or higher)
-  - NVIDIA GPU Driver (recommended version 525.85)
+  - NVIDIA GPU Driver (recommended version 535.129.03)
   - Docker (Optional)
   - NVIDIA Container Toolkit (Optional)
 - Conda
-  - Python 3.10.13 (3.10.* is ok, well installed automatically)
+  - Python 3.10.16 (3.10.* should be ok)
 
 ### Installation
 
 We provide the installation guide [here](docs/en/get_started/installation.md). You can install locally or use docker and verify the installation easily.
 
-### Demo
-
-Following the installation guide, you can verify the installation by running:
-
-```bash
-python ./GRUtopia/grutopia/demo/h1_locomotion.py  # start simulation
-```
-
-You can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
-
-### Wander the Demo Scenes
-
-Referring to the [guide](docs/en/get_started/wander-with-keyboard.md), you can basically run to wander a demo house:
-
-```bash
-# python ./GRUtopia/grutopia/demo/h1_city.py will run a humanoid in the city block
-# Its movement is much smaller given the large space of the block.
-# Therefore, we recommend try with h1_house.py
-python ./GRUtopia/grutopia/demo/h1_house.py  # start simulation
-```
-
-You can control a humanoid robot to walk around in a demo house and look around from different views by changing the camera view in Isaac Sim (on the top of the UI).
-
-BTW, you can also simply load the demo city USD file into Isaac Sim to freely sightsee the city block with keyboard and mouse operations supported by Omniverse.
-
-### WebUI and NPC Demo
-
-Please refer to the [guide](docs/en/get_started/webui.md) to try with WebUI and play with NPCs. Note that there are some additional requirements, such as installing with the docker and LLM's API keys.
-
 ### Documentation \& Tutorial
 
-We provide detailed [docs](docs/en) and simple [tutorials](docs/en/tutorials/) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
+We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
 ## 📦 Model and Benchmark
 
@@ -121,10 +105,13 @@ For now, please see the [paper](https://arxiv.org/abs/2407.10943) for more detai
 
 - \[x\] Release the paper with demos.
 - \[x\] Release the platform with basic functions and demo scenes.
-- \[ \] Release 100 curated scenes.
-- \[ \] Release the baseline models and benchmark codes.
-- \[ \] Polish APIs and related codes.
-- \[ \] Full release and further updates.
+- \[x\] Release 100 curated scenes.
+- \[x\] Release the baseline models and benchmark codes.
+- \[x\] Polish APIs and related codes.
+- \[x\] Full release and further updates.
+- \[ \] Support multiple episodes.
+- \[ \] Vectorized env and batch execution.
+- \[ \] Training framework.
 
 ## 🔗 Citation
 
@@ -151,3 +138,10 @@ GRUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRSc
 - [RSL_RL](https://github.com/leggedrobotics/rsl_rl): We use `rsl_rl` library to train the control policies for legged robots.
 - [ReferIt3D](https://github.com/referit3d/referit3d): We refer to the Sr3D's approach to extract spatial relationship.
 - [Isaac Lab](https://github.com/isaac-sim/IsaacLab): We use some utilities from Orbit (Isaac Lab) for driving articulated joints in Isaac Sim.
+- [Open-TeleVision](https://github.com/OpenTeleVision/TeleVision): We use Open-TeleVision to teleoperate with Apple VisionPro.
+- [HaMeR](https://github.com/geopavlakos/hamer): We use HaMeR to recognize hand gesture in teleoperate with camera.
+- [Infinigen](https://github.com/princeton-vl/infinigen): We use Infinigen to procedurally generate indoor scenes upon [GRScenes-100 dataset](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100).
+- [VLFM](https://github.com/bdaiinstitute/vlfm): We refer to VLFM to implement our benchmark baselines.
+- [Grounding DINO](https://github.com/IDEA-Research/GroundingDINO): We use Grounding DINO in our benchmark baselines.
+- [YOLOv7](https://github.com/WongKinYiu/yolov7): We use YOLOv7 in our benchmark baselines.
+- [MobileSAM](https://github.com/ChaoningZhang/MobileSAM): We use MobileSAM in our benchmark baselines.
