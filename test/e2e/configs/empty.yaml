@@ -1,5 +1,0 @@
-task_config:
-  type: "SingleInferenceTask"
-  task_name_prefix: "test"
-  episodes:
-  - scene_asset_path: null
