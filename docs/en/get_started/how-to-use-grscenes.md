@@ -1,24 +1,21 @@
 # How to Use GRscenes
 
+## Where to Download
 
-## How to Download
+GRScenes has been publicly released on [**OpenXLab**](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes), [**ModelScope**](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/summary) and [**HuggingFace**](https://huggingface.co/datasets/OpenRobotLab/GRScenes).
 
-GRScenes has been publicly released on OpenXLab, ModelScope, and HuggingFace. Users can download it from the respective platforms as needed. The dataset paths for GRScenes are as follows:
+## Instructions
 
-- **OpenXLab**: https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes
-- **ModelScope**: https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes
-- **HuggingFace**: https://huggingface.co/datasets/OpenRobotLab/GRScenes
+The GRScenes dataset provides nearly 100 high-quality scenes, covering home and commercial scenes. The dataset directory structure is as follows.
 
-## Usage Instructions
-
-The GRScenes dataset provides nearly 100 high-quality scenes, thousands of materials, and tens of thousands of item assets. The dataset offers users raw item assets and raw scenes. Users can perform operations like binding physical properties to scenes using the example code in the provided scripts directory, or customize and process scenes according to their needs. Currently, the GRScenes dataset successfully supports benchmark testing and validation for Navigation and Manipulation scenarios.
-
-The organizational structure of the GRScenes dataset is as follows: Users can find scene assets in the scenes directory, item assets by category in the models directory, and material files in the Materials directory. Each item and scene asset corresponds to a metadata.json file, which records the relative paths of referenced items and materials, allowing for the packaging and exporting of individual items or scene assets based on this metadata.json file.
+### GRScenes-100 Directory Structure
 
 ```
-.../homes_scenes
+GRScenes-100/commercial_scenes.zip --(unzip)--> commercial_scenes
+└── ...
+GRScenes-100/home_scenes.zip --(unzip)--> home_scenes
 ├── Materials
-│   └── ... (material files)
+│   └── ... (material mdl files and texture pictures)
 ├── models
 │   ├── layout
 │   │   ├── articulated
@@ -35,17 +32,38 @@ The organizational structure of the GRScenes dataset is as follows: Users can fi
     │   ├── Materials -> ../../Materials
     │   ├── models    -> ../../models
     │   ├── metadata.json (records the referenced model and material paths)
-    │   └── start_result_xxx.usd (initial stage usd)
+    │   └── start_result_xxx.usd (scene usd files)
     └── ... (other scene folders)
 ```
-Additionally, the following utility scripts are provided with the dataset:
-```
-# The specific usages for these scripts can be reviewed by running python xxx.py --help
-.../scripts
-├── export_scenes.py
-├── preprocess.py
-```
 
-- **preprocess.py**: This script is used for binding and processing physical properties (such as colliders and rigid bodies) for raw scenes, allowing for different types of binding for navigation and manipulation.
+- **Materials** folder contains mdl files and texture pictures. The mdl files, which are Material Definition Language files commonly used by rendering engines such as NVIDIA Omniverse. These mdl files are used with texture pictures to define the physically based material properties such as color, reflectivity, and transparency that can be applied to 3D objects.
 
-- **export_scenes.py**: This script is used to find specified one or more scenes associated with items and materials, allowing for individual packaging and exporting for sharing and validation.
+- **models** folder contains 3D object models, where layouts objects under `layout/` and interactive objects under `object/`. Subdirectories are further categorized according to the model semantic labels such as `door` and `oven`.
+
+- **scenes** folder (e.g., `MV7J6NIKTKJZ2AABAAAAADA8_usd/`) contains the following files:
+  - **Scene USD Files**
+
+  	We provides three usd files.
+  	- **raw scene**, named as `start_result_raw.usd`, which defines the layout of the scene.
+  	- **navigation scene**, named as `start_result_navigation.usd`, which used for navigation tasks.
+  	- **interaction scene**, named as `start_result_interaction.usd`, which used for manipulation tasks.
+
+  - **metadata.json**
+
+  	This file records the metadata information of the models and materials referenced in the raw scene.
+
+  - **interactive_obj_list.json**
+
+  	This file records the prim paths of the interactive objects in the interaction scene.
+
+### Usage
+
+Please ensure that the [prerequisites](../../../toolkits/grscenes_scripts/README.md#prerequisites) has been configured before using GRScenes-100.
+
+**1. Use the scene asset for your custom task**
+
+Currently, we have provided two types of scene assets for navigation and manipulation tasks respectively. Users can get these scene assets from the GRScenes dataset, the scene asset path is typically like `.../GRScenes-100/home_scenes/scenes/{scene_id}/start_result_xxx.usd`. Please refer to the [demo](../../../grutopia/demo/) to learn where to input the parameter `scene_asset_path`.
+
+**2. Use the raw dataset**
+
+The dataset contains raw models and raw scenes. We recommend using [OpenUSD python SDK](https://openusd.org/release/intro.html) to apply physics APIs such as the rigid body and collider to the models. We also provide an example [preprocess](../../../toolkits/grscenes_scripts/preprocess.py) script to learn the detailed workflow of the physics property bindings. Besides, here are some other [tool scripts](../../../toolkits/grscenes_scripts/) for GRScenes-100.
