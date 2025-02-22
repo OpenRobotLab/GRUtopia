@@ -27,11 +27,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'GRUtopia'
-copyright = '2024, OpenRobotLab'
+copyright = '2025, OpenRobotLab'
 author = 'OpenRobotLab'
 
 # The full version, including alpha/beta/rc tags
-release = 'v0.1.0'
+release = 'v2.0.0'
 
 # -- General configuration ---------------------------------------------------
 

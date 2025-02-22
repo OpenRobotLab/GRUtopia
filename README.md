@@ -88,7 +88,7 @@ We provide the installation guide [here](docs/en/get_started/installation.md). Y
 
 ### Documentation \& Tutorial
 
-We provide detailed [docs](docs/en) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
+We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
 ## 📦 Model and Benchmark
 
