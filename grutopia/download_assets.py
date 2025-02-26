@@ -10,6 +10,20 @@ from grutopia.macros import gm
 # Default environment name
 DEFAULT_ENV_NAME = ''
 
+minimum_exclude_path_patterns = [
+    'scenes/GRScenes-100/*',
+    'benchmark/*',
+]
+
+minimum_include_paths = [
+    '/objects/',
+    '/robots/',
+    '/scenes/empty.usd',
+    '/scenes/demo_scenes',
+    '/scene.png',
+    '/README.md',
+]
+
 
 def generate_random_env_name() -> str:
     prefix = 'grutopia_asset_'
@@ -26,7 +40,7 @@ def create_conda_env():
         raise
 
 
-def download_via_openxlab(target_path):
+def download_via_openxlab(target_path, minimum=False):
     # Install package
     print('Installing openxlab via pip...')
     subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'openxlab==0.1.2'])
@@ -34,6 +48,9 @@ def download_via_openxlab(target_path):
     # Check login
     auth_path = os.path.expanduser('~/.openxlab/')
     if not os.path.exists(auth_path):
+        print(
+            'Downloading from openxlab requires AK/SK, which can be found at https://sso.openxlab.org.cn/usercenter?tab=secret after login.'
+        )
         ak = input('Enter your openxlab Access Key (AK): ')
         sk = input('Enter your openxlab Secret Key (SK): ')
 
@@ -54,21 +71,43 @@ def download_via_openxlab(target_path):
     # openxlab dataset get --dataset-repo OpenRobotLab/GRScenes  --target-path <target_path>
     print('Downloading assets...')
     dataset_repo = 'OpenRobotLab/GRScenes'
-    subprocess.check_call(
-        [
-            'conda',
-            'run',
-            '-n',
-            DEFAULT_ENV_NAME,
-            'openxlab',
-            'dataset',
-            'get',
-            '--dataset-repo',
-            dataset_repo,
-            '--target-path',
-            target_path,
-        ]
-    )
+    if not minimum:
+        subprocess.check_call(
+            [
+                'conda',
+                'run',
+                '--no-capture-output',
+                '-n',
+                DEFAULT_ENV_NAME,
+                'openxlab',
+                'dataset',
+                'get',
+                '--dataset-repo',
+                dataset_repo,
+                '--target-path',
+                target_path,
+            ]
+        )
+        return
+    # Download minimum dataset.
+    base_args = [
+        'conda',
+        'run',
+        '--no-capture-output',
+        '-n',
+        DEFAULT_ENV_NAME,
+        'openxlab',
+        'dataset',
+        'download',
+        '--dataset-repo',
+        dataset_repo,
+        '--target-path',
+        target_path,
+    ]
+    for path in minimum_include_paths:
+        args = base_args + ['--source-path', path]
+        print(f'Downloading {path}...')
+        subprocess.check_call(args)
 
     # There will be an unnecessary directory created after download, remove it
     print('Removing unnecessary directory...')
@@ -78,29 +117,57 @@ def download_via_openxlab(target_path):
     remove_dir(asset_dir)
 
 
-def download_via_huggingface(target_path):
+def download_via_huggingface(target_path, minimum=False):
     # Install package
     print('Installing huggingface-hub via pip...')
     subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'huggingface-hub==0.28.1'])
 
-    # huggingface-cli download huuuyeah/MeetingBank_Audio --repo-type dataset --local-dir <target_path>
+    # huggingface-cli download OpenRobotLab/GRScenes --repo-type dataset --local-dir <target_path>
     print('Downloading assets...')
     dataset_repo = 'OpenRobotLab/GRScenes'
-    subprocess.check_call(
-        [
-            'conda',
-            'run',
-            '-n',
-            DEFAULT_ENV_NAME,
-            'huggingface-cli',
-            'download',
-            dataset_repo,
-            '--repo-type',
-            'dataset',
-            '--local-dir',
-            target_path,
-        ]
-    )
+    args = [
+        'conda',
+        'run',
+        '--no-capture-output',
+        '-n',
+        DEFAULT_ENV_NAME,
+        'huggingface-cli',
+        'download',
+        dataset_repo,
+        '--repo-type',
+        'dataset',
+        '--local-dir',
+        target_path,
+    ]
+    if minimum:
+        args.extend(['--exclude'] + minimum_exclude_path_patterns)
+    subprocess.check_call(args)
+
+
+def download_via_modelscope(target_path, minimum=False):
+    # Install package
+    print('Installing modelscope via pip...')
+    subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'modelscope==1.23.0'])
+
+    # modelscope download --dataset Shanghai_AI_Laboratory/GRScenes --local_dir <target_path>
+    print('Downloading assets...')
+    dataset_repo = 'Shanghai_AI_Laboratory/GRScenes'
+    args = [
+        'conda',
+        'run',
+        '--no-capture-output',
+        '-n',
+        DEFAULT_ENV_NAME,
+        'modelscope',
+        'download',
+        '--dataset',
+        dataset_repo,
+        '--local_dir',
+        target_path,
+    ]
+    if minimum:
+        args.extend(['--exclude'] + minimum_exclude_path_patterns)
+    subprocess.check_call(args)
 
 
 def remove_dir(dir_path):
@@ -150,15 +217,31 @@ def main():
 
     # Validate dataset source
     dataset_src = (
-        input('Please choose the dataset source for download (openxlab/huggingface): ').strip().lower() or 'huggingface'
+        input('Please choose the dataset source for download (huggingface/modelscope/openxlab): ').strip().lower()
+        or 'huggingface'
     )
-    if dataset_src not in ['openxlab', 'huggingface']:
-        print("Invalid dataset source. Please choose 'openxlab' or 'huggingface'.")
+    if dataset_src not in ['huggingface', 'modelscope', 'openxlab']:
+        print("Invalid dataset source. Please choose 'huggingface' or 'modelscope' or 'openxlab'.")
         return
 
     # Determine the target path
     target_path = gm.ASSET_PATH
-    print(f'Asset (~250GB) will be installed under this location: {target_path}')
+    full = (
+        input(
+            """
+Options:
+    - min (~500MiB): only a minimum set of assets will be downloaded, without the GRScenes-100 and assets required by benchmark baselines.
+    - full: (~80GiB to download, ~230GiB after unzipped): full assets will be downloaded.
+Please choose (min/full): """
+        )
+        .strip()
+        .lower()
+    )
+    minimum = True
+    if full != 'min':
+        full = 'full'
+        minimum = False
+    print(f'Asset ({full}) will be installed under this location: {target_path}')
     desired_path = input('If you want to use a different one, please type in (must be absolute path): ').strip()
     if desired_path != '':
         target_path = desired_path
@@ -188,10 +271,12 @@ def main():
 
     try:
         print('Starting to download assets...')
-        if dataset_src == 'openxlab':
-            download_via_openxlab(target_path)
         if dataset_src == 'huggingface':
-            download_via_huggingface(target_path)
+            download_via_huggingface(target_path, minimum)
+        if dataset_src == 'modelscope':
+            download_via_modelscope(target_path, minimum)
+        if dataset_src == 'openxlab':
+            download_via_openxlab(target_path, minimum)
 
         # Unzip the dataset
         unzip_all(target_path)
