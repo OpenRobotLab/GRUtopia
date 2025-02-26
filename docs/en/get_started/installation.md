@@ -24,7 +24,7 @@ There are two methods provided to install GRUtopia:
  - Installation from GitHub
  - Installation from PyPI
 
-In addition, the [dataset](./how-to-use-grscenes.md) is provided alongside with a download script that supports dataset download  via OpenXLab and HuggingFace.
+In addition, the [dataset](./how-to-use-grscenes.md) is provided alongside with a download script that supports dataset download via OpenXLab and HuggingFace. You can also [Prepare Dataset Manually](#prepare-dataset-manually).
 
 Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) and [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
@@ -150,3 +150,16 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
    ```
 
    If properly installed, observation from simulation will be displayed in the terminal every 100 steps, and you can access the Isaac Sim through Omniverse Streaming Client via `127.0.0.1`.
+
+
+## Prepare Dataset Manually
+
+If you prefer the dataset manually, or you only want to download a subset of the dataset, you can refer to the [dataset chapter](./how-to-use-grscenes.md) to find the links and content description.
+
+After downloading the dataset, you should use the following command to tell GRUtopia where the assets locate (with GRUtopia installed):
+
+```bash
+$ python -m grutopia.set_assets_path
+```
+
+The command will prompt you to enter the path to the dataset.

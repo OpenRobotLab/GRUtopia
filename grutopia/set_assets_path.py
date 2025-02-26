@@ -1,5 +1,13 @@
 import os
 
+from grutopia.download_assets import unzip_all
+
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+END = '\033[0m'
+
 
 def main():
     target_path = ''
@@ -8,15 +16,20 @@ def main():
         if target_path.startswith('/'):
             break
         print('target path must be absolute path')
-    try:
-        os.stat(target_path)
-    except Exception as e:
-        print(f'Cannot stat path {target_path}: {e}\nPlease ensure the assets have been placed at {target_path}.')
-    else:
-        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default_config.py')
-        with open(config_file, 'w') as f:
-            f.write(f'DEFAULT_ASSETS_PATH = "{target_path}"')
-        print(f'Assets path has been set to: {target_path}')
+    if not os.path.isdir(target_path):
+        print(
+            f'{RED}ERROR{END}: {target_path} is not an existing directory.\nPlease ensure the assets have been placed at {target_path}.'
+        )
+        return
+
+    config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'default_config.py')
+    with open(config_file, 'w') as f:
+        f.write(f'DEFAULT_ASSETS_PATH = "{target_path}"')
+    print(f'Assets path has been set to: {target_path}')
+
+    unzip = input('Need to unzip all the assets? (assets should only be unzipped once) (Y/N) ').strip().lower()
+    if unzip == 'y':
+        unzip_all(target_path)
 
 
 if __name__ == '__main__':
