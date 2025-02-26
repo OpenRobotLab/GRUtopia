@@ -212,6 +212,14 @@ def rename(root, old_name, new_name) -> str:
     os.rename(old_path, new_path)
 
 
+def cleanup_process(dataset_src: str):
+    print('Cleanup downloading process')
+    subprocess.check_call(
+        f'ps -ef | grep {DEFAULT_ENV_NAME} | grep {dataset_src} |' + " awk '{print $2}' | xargs kill",
+        shell=True,
+    )
+
+
 def main():
     print('Welcome to the Dataset Downloader!')
 
@@ -285,6 +293,8 @@ Please choose (min/full): """
         print(f'Error downloading assets: {e}')
         print('Removing downloaded assets files...')
         remove_dir(target_path)
+    except KeyboardInterrupt:
+        cleanup_process(dataset_src)
     finally:
         # Remove the conda env
         delete_conda_env()
