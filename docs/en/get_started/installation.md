@@ -66,7 +66,7 @@ Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](
 2. Install GRUtopia
    ```bash
    $ conda activate <env>
-   $ pip install grutopia==2.0.0
+   $ pip install grutopia
    ```
 3. Configure the conda environment.
 
