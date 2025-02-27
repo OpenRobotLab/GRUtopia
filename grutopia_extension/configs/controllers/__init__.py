@@ -16,8 +16,8 @@ from grutopia_extension.configs.controllers.gr1_teleop_controller import (
 from grutopia_extension.configs.controllers.gripper_controller import (
     GripperControllerCfg,
 )
-from grutopia_extension.configs.controllers.humanoid_move_by_speed_controller import (
-    HumanoidMoveBySpeedControllerCfg,
+from grutopia_extension.configs.controllers.h1_move_by_speed_controller import (
+    H1MoveBySpeedControllerCfg,
 )
 from grutopia_extension.configs.controllers.ik_controller import (
     InverseKinematicsControllerCfg,

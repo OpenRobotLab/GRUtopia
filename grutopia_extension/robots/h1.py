@@ -13,7 +13,7 @@ from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
 
 
-class Humanoid(IsaacRobot):
+class H1(IsaacRobot):
     def __init__(
         self,
         prim_path: str,
@@ -89,22 +89,22 @@ class Humanoid(IsaacRobot):
         self.set_solver_velocity_iteration_count(0)
 
 
-@BaseRobot.register('HumanoidRobot')
-class HumanoidRobot(BaseRobot):
+@BaseRobot.register('H1Robot')
+class H1Robot(BaseRobot):
     def __init__(self, config: RobotCfg, scene: Scene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
-        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'h1 {config.name}: position    : ' + str(self._start_position))
+        log.debug(f'h1 {config.name}: orientation : ' + str(self._start_orientation))
 
         usd_path = config.usd_path
 
-        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
-        self.isaac_robot = Humanoid(
+        log.debug(f'h1 {config.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'h1 {config.name}: config.prim_path : ' + str(config.prim_path))
+        self.isaac_robot = H1(
             prim_path=config.prim_path,
             name=config.name,
             position=self._start_position,

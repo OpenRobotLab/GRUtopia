@@ -13,8 +13,8 @@ grutopia_extension/
     ├── franka.py
     ├── g1.py
     ├── gr1.py
-    ├── humanoid.py
-    ├── humanoid_with_hand.py
+    ├── h1.py
+    ├── h1_with_hand.py
     ├── mocap_controlled_franka.py
     └── npc.py
 ```
@@ -25,11 +25,11 @@ It is important to note that both controller and sensor must be used with a robo
 
 All our pre-defined robot config classes are located in the `grutopia_extension/configs/robots` folder.
 
-Let's take `HumanoidRobot` for instance, the file `grutopia_extension/configs/robots/humaniod.py` includes some ready-to-use controllers and sensors configurations for `HumanoidRobot`, as well as the config class for HumanoidRobot:
+Let's take `H1Robot` for instance, the file `grutopia_extension/configs/robots/h1.py` includes some ready-to-use controllers and sensors configurations for `H1Robot`, as well as the config class for H1Robot:
 
 ```python
 ...
-move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
+move_by_speed_cfg = H1MoveBySpeedControllerCfg(
    ...
 )
 
@@ -45,12 +45,12 @@ rotate_cfg = RotateControllerCfg(
    ...
 )
 
-humanoid_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', size=(640, 480))
+h1_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', size=(640, 480))
 
-humanoid_tp_camera_cfg = RepCameraCfg(name='tp_camera', prim_path='torso_link/TPCamera', size=(640, 480))
+h1_tp_camera_cfg = RepCameraCfg(name='tp_camera', prim_path='torso_link/TPCamera', size=(640, 480))
 
 
-class HumanoidRobotCfg(RobotCfg):
+class H1RobotCfg(RobotCfg):
     ...
 ```
 
@@ -61,21 +61,21 @@ These configurations can be used to create a robot instance in the simulation en
 The following code snippet illustrates how to assemble a robot configuration by adding controllers and sensors and how to integrate the robot configuration into a task.
 
 ```python
-from grutopia_extension.configs.robots.humanoid import (
-    HumanoidRobotCfg,
-    humanoid_camera_cfg,
+from grutopia_extension.configs.robots.h1 import (
+    H1RobotCfg,
+    h1_camera_cfg,
     move_along_path_cfg,
     move_by_speed_cfg,
     rotate_cfg,
 )
 
-h1_1 = HumanoidRobotCfg(
+h1_1 = H1RobotCfg(
     controllers=[
         move_by_speed_cfg,
         move_along_path_cfg,
         rotate_cfg,
     ],
-    sensors=[humanoid_camera_cfg.model_copy(update={'name': 'camera', 'size': (320, 240), 'enable': True}, deep=True)],
+    sensors=[h1_camera_cfg.update(name='camera', size=(320, 240), enable=True)],
 )
 
 config = Config(

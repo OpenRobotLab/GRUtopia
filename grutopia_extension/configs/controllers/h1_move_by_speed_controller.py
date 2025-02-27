@@ -3,8 +3,8 @@ from typing import List, Optional
 from grutopia.core.config.robot import ControllerCfg
 
 
-class HumanoidMoveBySpeedControllerCfg(ControllerCfg):
+class H1MoveBySpeedControllerCfg(ControllerCfg):
 
-    type: Optional[str] = 'HumanoidMoveBySpeedController'
+    type: Optional[str] = 'H1MoveBySpeedController'
     joint_names: List[str]
     policy_weights_path: str

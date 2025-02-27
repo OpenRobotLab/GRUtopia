@@ -4,8 +4,8 @@ from grutopia_extension.robots import (
     franka,
     g1,
     gr1,
-    humanoid,
-    humanoid_with_hand,
+    h1,
+    h1_with_hand,
     mocap_controlled_franka,
     npc,
 )

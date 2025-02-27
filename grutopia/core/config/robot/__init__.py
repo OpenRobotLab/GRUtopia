@@ -3,7 +3,12 @@ from typing import List, Optional, Tuple
 from pydantic import BaseModel
 
 
-class SensorCfg(BaseModel):
+class BaseCfg(BaseModel):
+    def update(self, **kwargs):
+        return self.model_copy(update=kwargs, deep=True)
+
+
+class SensorCfg(BaseCfg):
     """
     Represents a model for sensors, encapsulating their attributes and providing a structured approach to handling sensor data within a base model framework.
 
@@ -20,7 +25,7 @@ class SensorCfg(BaseModel):
     type: str
 
 
-class ControllerCfg(BaseModel, extra='allow'):
+class ControllerCfg(BaseCfg, extra='allow'):
     """
     A specialized model representing controllers within a system, inheriting from BaseModel with an extended configuration to allow additional keys.
 
@@ -67,11 +72,11 @@ class ControllerCfg(BaseModel, extra='allow'):
     # model_path: Optional[str] = None  # for planning policy, weight path of model
 
 
-class RobotCfg(BaseModel):
+class RobotCfg(BaseCfg):
     """
     Represents a robot configuration with customizable attributes and optional components like controllers and sensors.
 
-    This RobotCfg class is designed to store metadata and common configurations for robotic models. It inherits from BaseModel,
+    This RobotCfg class is designed to store metadata and common configurations for robotic models. It inherits from BaseCfg,
     providing a structured way to define a robot's properties within a simulation or robotic application context. The model includes
     details about the robot's USD (Universal Scene Description) path, initial position, orientation, and other settings crucial for
     simulation initialization and control.

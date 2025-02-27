@@ -4,10 +4,10 @@ from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
-from grutopia_extension.configs.robots.humanoid import (
-    HumanoidRobotCfg,
-    humanoid_camera_cfg,
-    humanoid_tp_camera_cfg,
+from grutopia_extension.configs.robots.h1 import (
+    H1RobotCfg,
+    h1_camera_cfg,
+    h1_tp_camera_cfg,
     move_along_path_cfg,
     move_by_speed_cfg,
     rotate_cfg,
@@ -21,7 +21,7 @@ headless = False
 if not has_display():
     headless = True
 
-h1_1 = HumanoidRobotCfg(
+h1_1 = H1RobotCfg(
     position=(0.0, 0.0, 1.05),
     controllers=[
         move_by_speed_cfg,
@@ -29,8 +29,8 @@ h1_1 = HumanoidRobotCfg(
         rotate_cfg,
     ],
     sensors=[
-        humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (320, 240), 'enable': True}, deep=True),
-        humanoid_tp_camera_cfg.model_copy(update={'enable': False}, deep=False),
+        h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=True),
+        h1_tp_camera_cfg.update(enable=False),
     ],
 )
 

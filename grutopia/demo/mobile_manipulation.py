@@ -6,10 +6,10 @@ from grutopia_extension import import_extensions
 from grutopia_extension.agents.config import AgentCfg
 from grutopia_extension.agents.util.agent import create_agent
 from grutopia_extension.configs.metrics import MobileManipulationSuccessMetricCfg
-from grutopia_extension.configs.robots.humanoid_with_hand import (
-    HumanoidWithHandRobotCfg,
-    humanoid_with_hand_camera_cfg,
-    humanoid_with_hand_tp_camera_cfg,
+from grutopia_extension.configs.robots.h1_with_hand import (
+    H1WithHandRobotCfg,
+    h1_with_hand_camera_cfg,
+    h1_with_hand_tp_camera_cfg,
     joint_controller,
     move_along_path_cfg,
     move_by_speed_cfg,
@@ -26,7 +26,7 @@ from grutopia_extension.configs.tasks import (
 )
 
 # AgentConfig
-h1_1 = HumanoidWithHandRobotCfg(
+h1_1 = H1WithHandRobotCfg(
     position=(8.482455253601074, -0.8219017386436462, 1.05),
     controllers=[
         move_by_speed_cfg,
@@ -39,12 +39,8 @@ h1_1 = HumanoidWithHandRobotCfg(
         right_arm_ik_controller_cfg,
     ],
     sensors=[
-        humanoid_with_hand_camera_cfg.model_copy(
-            update={'name': 'camera', 'resolution': (512, 512), 'enable': True}, deep=True
-        ),
-        humanoid_with_hand_tp_camera_cfg.model_copy(
-            update={'name': 'tp_camera', 'resolution': (512, 512), 'enable': True}, deep=True
-        ),
+        h1_with_hand_camera_cfg.update(name='camera', resolution=(512, 512), enable=True),
+        h1_with_hand_tp_camera_cfg.update(name='tp_camera', resolution=(512, 512), enable=True),
     ],
 )
 

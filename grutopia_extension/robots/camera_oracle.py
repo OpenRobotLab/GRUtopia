@@ -8,7 +8,7 @@ from omni.isaac.core.utils.rotations import euler_angles_to_quat
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.util import log
-from grutopia_extension.robots.humanoid import Humanoid
+from grutopia_extension.robots.h1 import H1
 
 
 @BaseRobot.register('CameraRobot')
@@ -19,14 +19,14 @@ class CameraRobot(BaseRobot):
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 
-        log.debug(f'humanoid {config.name}: position    : ' + str(self._start_position))
-        log.debug(f'humanoid {config.name}: orientation : ' + str(self._start_orientation))
+        log.debug(f'h1 {config.name}: position    : ' + str(self._start_position))
+        log.debug(f'h1 {config.name}: orientation : ' + str(self._start_orientation))
 
         usd_path = config.usd_path
 
-        log.debug(f'humanoid {config.name}: usd_path         : ' + str(usd_path))
-        log.debug(f'humanoid {config.name}: config.prim_path : ' + str(config.prim_path))
-        self.isaac_robot = Humanoid(
+        log.debug(f'h1 {config.name}: usd_path         : ' + str(usd_path))
+        log.debug(f'h1 {config.name}: config.prim_path : ' + str(config.prim_path))
+        self.isaac_robot = H1(
             prim_path=config.prim_path,
             name=config.name,
             position=self._start_position,

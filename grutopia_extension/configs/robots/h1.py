@@ -3,8 +3,7 @@ from typing import Optional
 from grutopia.core.config import RobotCfg
 from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
-    HumanoidMoveBySpeedControllerCfg,
-    InverseKinematicsControllerCfg,
+    H1MoveBySpeedControllerCfg,
     JointControllerCfg,
     MoveAlongPathPointsControllerCfg,
     MoveToPointBySpeedControllerCfg,
@@ -38,7 +37,7 @@ joint_controller = JointControllerCfg(
     ],
 )
 
-move_by_speed_cfg = HumanoidMoveBySpeedControllerCfg(
+move_by_speed_cfg = H1MoveBySpeedControllerCfg(
     name='move_by_speed',
     policy_weights_path=gm.ASSET_PATH + '/robots/h1/policy/move_by_speed/h1_loco_model_20000.pt',
     joint_names=[
@@ -93,37 +92,15 @@ recover_cfg = RecoverControllerCfg(
     sub_controllers=[joint_controller],
 )
 
-right_arm_joint_controller_cfg = JointControllerCfg(
-    name='right_arm_joint_controller',
-    joint_names=[
-        'right_shoulder_pitch_joint',
-        'right_shoulder_roll_joint',
-        'right_shoulder_yaw_joint',
-        'right_elbow_joint',
-    ],
-)
+h1_camera_cfg = RepCameraCfg(name='camera', prim_path='logo_link/Camera', resolution=(640, 480), depth=True)
 
-right_arm_ik_controller_cfg = InverseKinematicsControllerCfg(
-    name='right_arm_ik_controller',
-    robot_description_path=gm.ASSET_PATH + '/robots/h1_with_hand/right_arm_descriptor.yaml',
-    robot_urdf_path=gm.ASSET_PATH + '/robots/h1_with_hand/h1_with_hand.urdf',
-    end_effector_frame_name='right_hand_link',
-    threshold=0.01,
-)
-
-humanoid_with_hand_camera_cfg = RepCameraCfg(
-    name='camera', prim_path='logo_link/Camera', resolution=(640, 480), depth=True
-)
-
-humanoid_with_hand_tp_camera_cfg = RepCameraCfg(
-    name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480), depth=True
-)
+h1_tp_camera_cfg = RepCameraCfg(name='tp_camera', prim_path='torso_link/TPCamera', resolution=(640, 480), depth=True)
 
 
-class HumanoidWithHandRobotCfg(RobotCfg):
+class H1RobotCfg(RobotCfg):
     # meta info
-    name: Optional[str] = 'h1_with_hand'
-    type: Optional[str] = 'HumanoidWithHandRobot'
-    prim_path: Optional[str] = '/h1_with_hand'
+    name: Optional[str] = 'h1'
+    type: Optional[str] = 'H1Robot'
+    prim_path: Optional[str] = '/h1'
     create_robot: Optional[bool] = True
-    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1_with_hand/h1_with_hand_rt.usd'
+    usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1/h1.usd'

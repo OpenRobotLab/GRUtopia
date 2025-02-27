@@ -19,7 +19,7 @@ grutopia_extension/
     ├── gr1_move_by_speed_controller.py
     ├── gr1_teleop_controller.py
     ├── gripper_controller.py
-    ├── humanoid_move_by_speed_controller.py
+    ├── h1_move_by_speed_controller.py
     ├── ik_controller.py
     ├── joint_controller.py
     ├── move_along_path_points_controller.py
@@ -39,7 +39,7 @@ A controller must be used with a robot. So first of all, the controller configur
 ```
 move_by_speed_cfg = MoveBySpeedCfg(...)
 
-h1_1 = HumanoidRobotCfg(
+h1_1 = H1RobotCfg(
     position=(0.0, 0.0, 1.05),
     controllers=[
         move_by_speed_cfg,

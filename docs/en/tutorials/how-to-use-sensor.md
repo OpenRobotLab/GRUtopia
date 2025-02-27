@@ -23,7 +23,7 @@ Typically, a sensor should be used with a robot. So first of all, the sensor con
 ```python
 camera_cfg = CameraCfg(...)
 
-h1_1 = HumanoidRobotCfg(
+h1_1 = H1RobotCfg(
     position=(0.0, 0.0, 1.05),
     sensors=[
         camera_cfg,

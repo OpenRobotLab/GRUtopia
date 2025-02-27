@@ -19,10 +19,10 @@ from grutopia_extension.configs.metrics import (
     SocialNavigationSuccessMetricCfg,
     SocialNavigationSuccessMetricConfig,
 )
-from grutopia_extension.configs.robots.humanoid import (
-    HumanoidRobotCfg,
-    humanoid_camera_cfg,
-    humanoid_tp_camera_cfg,
+from grutopia_extension.configs.robots.h1 import (
+    H1RobotCfg,
+    h1_camera_cfg,
+    h1_tp_camera_cfg,
     joint_controller,
     move_along_path_cfg,
     move_by_speed_cfg,
@@ -37,12 +37,12 @@ from grutopia_extension.configs.tasks import (
 )
 
 # AgentConfig
-h1_1 = HumanoidRobotCfg(
+h1_1 = H1RobotCfg(
     position=({{ start_point[0] }}, {{ start_point[1] }}, 1.05),
     controllers=[move_by_speed_cfg, joint_controller, recover_cfg, rotate_cfg, move_along_path_cfg, move_to_point_cfg],
     sensors=[
-        humanoid_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (512, 512), 'enable': True}, deep=True),
-        humanoid_tp_camera_cfg.model_copy(
+        h1_camera_cfg.model_copy(update={'name': 'camera', 'resolution': (512, 512), 'enable': True}, deep=True),
+        h1_tp_camera_cfg.model_copy(
             update={'name': 'tp_camera', 'resolution': (512, 512), 'enable': True}, deep=True
         ),
     ],
