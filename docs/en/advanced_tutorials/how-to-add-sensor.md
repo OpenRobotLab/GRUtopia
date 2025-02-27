@@ -61,7 +61,7 @@ class DepthCamera(BaseSensor):
 
 The `get_data` method gets the sensor data in each step.
 
-For complete list of sensor methods, please refer to the [Seonsor API documentation](../api/robot.rst).
+For complete list of sensor methods, please refer to the [Sensor API documentation](../api/robot.rst#module-grutopia.core.robot.sensor).
 
 Please note that the registration of the sensor class is done through the `@BaseSensor.register` decorator, and the registered name should match the value of `type` field within the corresponding sensor config class (here is `DepthCamera`).
 

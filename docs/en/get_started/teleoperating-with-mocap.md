@@ -1,6 +1,6 @@
 # Teleoperating with Mocap
 
-This tutorial will guide you how to teleoperate with hand gesture-based motion capture (Mocap). It takes Franka robotic arm as example to give an instruction for the process of setting up and controlling the Franka robotic arm using Mocap. By following this guide, you will be able to complete the `GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py` task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
+This tutorial will guide you how to teleoperate with hand gesture-based motion capture (Mocap). It takes Franka robotic arm as example to give an instruction for the process of setting up and controlling the Franka robotic arm using Mocap. By following this guide, you will be able to complete the [`GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/franka_manipulation_mocap_teleop.py) task, enabling flexible control of the arm’s movement, rotation, gripper actions, and even the camera position in the simulated environment. Let's get started by following the steps below.
 
 ## 1. Implementation Guide
 
@@ -12,7 +12,7 @@ First, create a new conda environment, and install all necessary dependencies:
 $ pip install opencv-python flask
 ```
 
-Second, you'll need to set up a real-time image data stream from an RGB camera. The provided script, `GRUtopia/toolkits/mocap/rgb_camera_server.py`, can be used as a reference to create a local streaming server. The command to start the server is:
+Second, you'll need to set up a real-time image data stream from an RGB camera. The provided script, [`GRUtopia/toolkits/mocap/rgb_camera_server.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/toolkits/mocap/rgb_camera_server.py), can be used as a reference to create a local streaming server. The command to start the server is:
 
 ```bash
 $ python rgb_camera_server.py
@@ -28,7 +28,7 @@ After running the script, make sure to note the server’s URL. If you're using 
 
 > In addition to the Hamer environment, the following Python packages are required: `pip install OneEuroFilter flask`
 
-Next, you'll set up the hand gesture recognition system using Hamer. You can find the relevant GitHub repository for Hamer [here](https://github.com/geopavlakos/hamer). After setting up the Hamer environment, place `GRUtopia/toolkits/mocap/hamer_real_time.py` and `hamer_real_time_server.py` into the `hamer/` directory. The command to start the server is:
+Next, you'll set up the hand gesture recognition system using Hamer. You can find the relevant GitHub repository for Hamer [here](https://github.com/geopavlakos/hamer). After setting up the Hamer environment, place [`GRUtopia/toolkits/mocap/hamer_real_time.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/toolkits/mocap/hamer_real_time.py) and [`hamer_real_time_server.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/toolkits/mocap/hamer_real_time_server.py) into the `hamer/` directory. The command to start the server is:
 
 ```bash
 $ python hamer_re.py --video_url {{video_url}}
@@ -44,7 +44,7 @@ Once the server is running successfully, make a note of the Hamer server URL (e.
 
 ### Step 3: Start the Task in GRUtopia
 
-Now, update the `mocap_url` parameter in `GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py` with the Hamer server URL obtained in Step 2 (e.g.,  `http://127.0.0.1:5001`). After that, start the task by running the following command:
+Now, update the `mocap_url` parameter in [`GRUtopia/grutopia/demo/franka_manipulation_mocap_teleop.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/franka_manipulation_mocap_teleop.py) with the Hamer server URL obtained in Step 2 (e.g., `http://127.0.0.1:5001`). After that, start the task by running the following command:
 
 ```
 python -m grutopia.demo.franka_manipulation_mocap_teleop

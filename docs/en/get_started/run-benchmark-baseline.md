@@ -2,13 +2,13 @@
 
 ## Start Baseline Agent
 
-> These agents are currently in the directory `GRUtopia/grutopia_extension/agents/`. They may be removed from this repository later.
+> These agents are currently in the directory [`GRUtopia/grutopia_extension/agents/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/agents). They may be removed from this repository in the future.
 
 **System requirements:**
 
-1. At least 2 pieces of NVIDIA's RTX-supported GPU on 1 server.
+1. At least 2 NVIDIA's RTX-supported GPU installed on the same host.
 2. 64GB RAM
-3. 16GB+ GRAM
+3. 16GB+ VRAM
 
 > **Note**: We've tested our benchmarks on RTX 4090, and you can take it as a spec reference.
 

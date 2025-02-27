@@ -4,7 +4,7 @@
 
 ## Supported Sensors
 
-The directory `grutopia_extension/sensors/` contains a list of all supported sensors::
+The directory [`grutopia_extension/sensors/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/sensors) contains a list of all available sensors::
 
 ```
 grutopia_extension/

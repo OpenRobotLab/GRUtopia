@@ -38,7 +38,7 @@ GRScenes
 - scenes:
   - empty.usd: a minimum scene with ground plane.
   - demo_scenes: a directory containing scenes for demo scripts.
-  - GRScenes-100: a directory containing nearly 100 high-quality scenes, covering home and commercial scenes. You can refer to [GRScenes-100](#grscenes-100-directory-structure) chapter for detailed information.
+  - GRScenes-100: a directory containing nearly 100 high-quality scenes, covering home and commercial scenes. You can refer to [GRScenes-100](#grscenes-100) chapter for detailed information.
 
 ## GRScenes-100
 

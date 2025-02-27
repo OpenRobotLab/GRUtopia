@@ -52,7 +52,7 @@ $ cd GRUtopia/grutopia_extension/controllers && conda run --no-capture-output -n
 
 If you see the message "waiting for teleop action...", it indicates that the solver process has started successfully.
 
-Then open another session with grutopia conda environment, and specify the locations of server cert and key in `GRUtopia/grutopia/demo/gr1_teleop.py`.
+Then open another session with grutopia conda environment, and specify the locations of server cert and key in [`GRUtopia/grutopia/demo/gr1_teleop.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/gr1_teleop.py).
 
 ```python
 ...
@@ -89,7 +89,7 @@ Pose collecting logic with VisionPro comes from [Open-TeleVision](https://github
 
 The poses are used to control robot through a teleop controller, followed by a env step. Once the env step finished, the latest vision is collected from cameras and transferred to VisionPro.
 
-You can refer to `GRUtopia/grutopia/demo/gr1_teleop.py` for the complete implementation.
+You can refer to [`GRUtopia/grutopia/demo/gr1_teleop.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/gr1_teleop.py) for the complete implementation.
 
 ```python
 teleop = VuerTeleop(cert_file='./mkcert/cert.pem',

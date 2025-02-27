@@ -8,7 +8,7 @@ Controllers typically manage the joints of a robot and serve as the entries to r
 
 ## Supported Controllers
 
-The directory `grutopia_extension/controllers/` contains a list of all supported controllers:
+The directory [`grutopia_extension/controllers/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/controllers) contains a list of all available controllers:
 
 ```
 grutopia_extension/

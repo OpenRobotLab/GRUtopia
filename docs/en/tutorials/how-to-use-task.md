@@ -12,7 +12,7 @@ We have defined a base class for task along with several implementation subclass
 
 ## Supported Tasks
 
-The directory `grutopia_extension/tasks/__init__.py` contains a list of all supported tasks:
+The directory [`grutopia_extension/tasks/__init__.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia_extension/tasks/__init__.py) contains a list of all available tasks:
 
 ```Python
 from grutopia_extension.tasks import (
@@ -23,7 +23,7 @@ from grutopia_extension.tasks import (
     social_navigation_task,
 )
 ```
-We can also review the configuration of each individual task in `grutopia_extension/configs/tasks/__init__.py`
+We can also review the configuration of each individual task in [`grutopia_extension/configs/tasks/__init__.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia_extension/configs/tasks/__init__.py).
 
 
 
@@ -39,7 +39,7 @@ config = Config(
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
-                scene_asset_path='GRUtopia/assets/scenes/empty.usd',
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 scene_scale=[0.01, 0.01, 0.01],
                 robots=[h1_1],
             ),
@@ -49,4 +49,4 @@ config = Config(
 ...
 ```
 
-This configuration is excerpted from `demo/h1_locomotion.py`, which is a demo where a robot moves at a specified speed and direction. It is a task that consists of a single episode and does not terminate automatically, which is suitable for debugging the robot, controller, or sensor.
+This configuration is excerpted from [`GRUtopia/grutopia/demo/h1_locomotion.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/h1_locomotion.py), which is a demo where a robot moves at a specified speed and direction. It is a task that consists of a single episode and does not terminate automatically, which is suitable for debugging the robot, controller, or sensor.

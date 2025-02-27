@@ -195,7 +195,7 @@ env = Env(sim_runtime)
 ...
 ```
 
-You can also run the `h1_traveled_distance.py` in the demo directly.
+You can also run the [`h1_traveled_distance.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/h1_traveled_distance.py) in the demo directly.
 
 And you can check result in `./h1_simple_metric.jsonl`
 

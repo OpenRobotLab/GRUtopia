@@ -4,7 +4,7 @@
 
 ## Supported Robots
 
-The directory `grutopia_extension/robots/` contains a list of all supported robots:
+The directory [`grutopia_extension/robots/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/robots) contains a list of all available robots:
 
 ```
 grutopia_extension/
@@ -23,9 +23,9 @@ grutopia_extension/
 
 It is important to note that both controller and sensor must be used with a robot. Only the controllers and sensors specified in the robot's configuration will be available for that robot in simulation.
 
-All our pre-defined robot config classes are located in the `grutopia_extension/configs/robots` folder.
+All our pre-defined robot config classes are located in the [`grutopia_extension/configs/robots`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/robots) folder.
 
-Let's take `H1Robot` for instance, the file `grutopia_extension/configs/robots/h1.py` includes some ready-to-use controllers and sensors configurations for `H1Robot`, as well as the config class for H1Robot:
+Let's take `H1Robot` for instance, the file [`grutopia_extension/configs/robots/h1.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia_extension/robots/h1.py) includes some ready-to-use controllers and sensors configurations for `H1Robot`, as well as the config class for H1Robot:
 
 ```python
 ...
@@ -83,7 +83,7 @@ config = Config(
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
-                scene_asset_path='GRUtopia/assets/scenes/empty.usd',
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 scene_scale=[0.01, 0.01, 0.01],
                 robots=[h1_1],
             ),
@@ -109,4 +109,4 @@ while env.simulation_app.is_running():
 env.simulation_app.close()
 ```
 
-Please read `demo/h1_locomotion.py` for complete demo where a robot moves at a specified speed and direction.
+Please read [`GRUtopia/grutopia/demo/h1_locomotion.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/h1_locomotion.py) for complete demo where a robot moves at a specified speed and direction.

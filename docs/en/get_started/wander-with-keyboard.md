@@ -37,4 +37,4 @@ while env.simulation_app.is_running():
     ...
 ```
 
-You can refer to `GRUtopia/grutopia/demo/g1_locomotion.py` for a complete example.
+You can refer to [`GRUtopia/grutopia/demo/g1_locomotion.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/g1_locomotion.py) for a complete example.

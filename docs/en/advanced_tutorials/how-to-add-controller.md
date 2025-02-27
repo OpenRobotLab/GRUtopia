@@ -64,7 +64,7 @@ class DemoController(BaseController):
 
 The `action_to_control` method translates the input action into joint signals to apply in each step.
 
-For complete list of controller methods, please refer to the [Controller API documentation](../api/robot.rst).
+For complete list of controller methods, please refer to the [Controller API documentation](../api/robot.rst#module-grutopia.core.robot.controller).
 
 Please note that the registration of the controller class is done through the `@BaseController.register` decorator, and the registered name should match the value of `type` field within the corresponding controller config class (here is `DemoController`).
 
