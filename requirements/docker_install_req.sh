@@ -39,3 +39,4 @@ source /isaac-sim/.venv/bin/activate
 
 python -m pip install -e GRUtopia -i https://pypi.tuna.tsinghua.edu.cn/simple
 python -m pip install -r ./GRUtopia/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+python -m pip install openxlab==0.1.2 huggingface-hub==0.29.1 modelscope==1.23.0 -i https://pypi.tuna.tsinghua.edu.cn/simple

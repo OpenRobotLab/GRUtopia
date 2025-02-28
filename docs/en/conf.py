@@ -31,7 +31,7 @@ copyright = '2025, OpenRobotLab'
 author = 'OpenRobotLab'
 
 # The full version, including alpha/beta/rc tags
-release = 'v2.0.0'
+release = 'v2.0.1'
 
 # -- General configuration ---------------------------------------------------
 

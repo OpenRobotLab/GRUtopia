@@ -135,6 +135,8 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
 
 1. Download dataset to the specified directory.
 
+   We recommend downloading the dataset to a location under `/isaac-sim/GRUtopia/` in container (which is mounted from a host path) so that it can be retained across container recreations.
+
    ```bash
    # run inside container
    $ python -m grutopia.download_assets

@@ -5,6 +5,7 @@ import string
 import subprocess
 import zipfile
 
+from grutopia.core.util import is_in_container
 from grutopia.macros import gm
 
 # Default environment name
@@ -41,9 +42,18 @@ def create_conda_env():
 
 
 def download_via_openxlab(target_path, minimum=False):
+    args_prefix = []
     # Install package
-    print('Installing openxlab via pip...')
-    subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'openxlab==0.1.2'])
+    if DEFAULT_ENV_NAME != '':
+        print('Installing openxlab via pip...')
+        subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'openxlab==0.1.2'])
+        args_prefix = [
+            'conda',
+            'run',
+            '--no-capture-output',
+            '-n',
+            DEFAULT_ENV_NAME,
+        ]
 
     # Check login
     auth_path = os.path.expanduser('~/.openxlab/')
@@ -58,11 +68,8 @@ def download_via_openxlab(target_path, minimum=False):
         os.environ['OPENXLAB_AK'] = ak
         os.environ['OPENXLAB_SK'] = sk
         subprocess.check_call(
-            [
-                'conda',
-                'run',
-                '-n',
-                DEFAULT_ENV_NAME,
+            args_prefix
+            + [
                 'python',
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login_openxlab.py'),
             ]
@@ -73,12 +80,8 @@ def download_via_openxlab(target_path, minimum=False):
     dataset_repo = 'OpenRobotLab/GRScenes'
     if not minimum:
         subprocess.check_call(
-            [
-                'conda',
-                'run',
-                '--no-capture-output',
-                '-n',
-                DEFAULT_ENV_NAME,
+            args_prefix
+            + [
                 'openxlab',
                 'dataset',
                 'get',
@@ -90,12 +93,7 @@ def download_via_openxlab(target_path, minimum=False):
         )
         return
     # Download minimum dataset.
-    base_args = [
-        'conda',
-        'run',
-        '--no-capture-output',
-        '-n',
-        DEFAULT_ENV_NAME,
+    base_args = args_prefix + [
         'openxlab',
         'dataset',
         'download',
@@ -118,19 +116,23 @@ def download_via_openxlab(target_path, minimum=False):
 
 
 def download_via_huggingface(target_path, minimum=False):
+    args_prefix = []
     # Install package
-    print('Installing huggingface-hub via pip...')
-    subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'huggingface-hub==0.28.1'])
+    if DEFAULT_ENV_NAME != '':
+        print('Installing huggingface-hub via pip...')
+        subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'huggingface-hub==0.28.1'])
+        args_prefix = [
+            'conda',
+            'run',
+            '--no-capture-output',
+            '-n',
+            DEFAULT_ENV_NAME,
+        ]
 
     # huggingface-cli download OpenRobotLab/GRScenes --repo-type dataset --local-dir <target_path>
     print('Downloading assets...')
     dataset_repo = 'OpenRobotLab/GRScenes'
-    args = [
-        'conda',
-        'run',
-        '--no-capture-output',
-        '-n',
-        DEFAULT_ENV_NAME,
+    args = args_prefix + [
         'huggingface-cli',
         'download',
         dataset_repo,
@@ -145,19 +147,23 @@ def download_via_huggingface(target_path, minimum=False):
 
 
 def download_via_modelscope(target_path, minimum=False):
+    args_prefix = []
     # Install package
-    print('Installing modelscope via pip...')
-    subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'modelscope==1.23.0'])
+    if DEFAULT_ENV_NAME != '':
+        print('Installing modelscope via pip...')
+        subprocess.check_call(['conda', 'run', '-n', DEFAULT_ENV_NAME, 'pip', 'install', 'modelscope==1.23.0'])
+        args_prefix = [
+            'conda',
+            'run',
+            '--no-capture-output',
+            '-n',
+            DEFAULT_ENV_NAME,
+        ]
 
     # modelscope download --dataset Shanghai_AI_Laboratory/GRScenes --local_dir <target_path>
     print('Downloading assets...')
     dataset_repo = 'Shanghai_AI_Laboratory/GRScenes'
-    args = [
-        'conda',
-        'run',
-        '--no-capture-output',
-        '-n',
-        DEFAULT_ENV_NAME,
+    args = args_prefix + [
         'modelscope',
         'download',
         '--dataset',
@@ -273,9 +279,10 @@ Please choose (min/full): """
         return
 
     # Create a conda env for download
-    global DEFAULT_ENV_NAME
-    DEFAULT_ENV_NAME = generate_random_env_name()
-    create_conda_env()
+    if not is_in_container():
+        global DEFAULT_ENV_NAME
+        DEFAULT_ENV_NAME = generate_random_env_name()
+        create_conda_env()
 
     try:
         print('Starting to download assets...')
@@ -294,10 +301,12 @@ Please choose (min/full): """
         print('Removing downloaded assets files...')
         remove_dir(target_path)
     except KeyboardInterrupt:
-        cleanup_process(dataset_src)
+        if DEFAULT_ENV_NAME != '':
+            cleanup_process(dataset_src)
     finally:
         # Remove the conda env
-        delete_conda_env()
+        if DEFAULT_ENV_NAME != '':
+            delete_conda_env()
 
 
 if __name__ == '__main__':
