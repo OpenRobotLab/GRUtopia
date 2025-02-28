@@ -6,6 +6,7 @@ from grutopia_extension.robots import (
     gr1,
     h1,
     h1_with_hand,
+    jetbot,
     mocap_controlled_franka,
     npc,
 )

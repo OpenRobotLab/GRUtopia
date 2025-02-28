@@ -82,7 +82,7 @@ class MoveAlongPathPointsController(BaseController):
             path_points=action[0],
             forward_speed=self.forward_speed,
             rotation_speed=self.rotation_speed,
-            threshold=self.threshold * self.robot.get_robot_scale()[0],
+            threshold=self.threshold,
         )
 
     def get_obs(self) -> Dict[str, Any]:

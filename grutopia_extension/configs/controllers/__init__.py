@@ -1,6 +1,9 @@
 from grutopia_extension.configs.controllers.aliengo_move_by_speed_controller import (
     AliengoMoveBySpeedControllerCfg,
 )
+from grutopia_extension.configs.controllers.dd_controller import (
+    DifferentialDriveControllerCfg,
+)
 from grutopia_extension.configs.controllers.franka_mocap_teleop_controller import (
     FrankaMocapTeleopControllerCfg,
 )
