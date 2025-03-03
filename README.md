@@ -1,39 +1,43 @@
-<br>
-<p align="center">
-<h1 align="center"><strong>GRUtopia: Dream General Robots in a City at Scale</strong></h1>
-  <p align="center">
-    <a href='https://github.com/OpenRobotLab' target='_blank'>OpenRobotLab</a>&emsp;
-    <br>
-    Shanghai AI Laboratory
-    <br>
-  </p>
-</p>
+[![demo](docs/en/_static/image/teaser.png "demo")](https://www.youtube.com/watch?v=fD0F1jIax5Y)
+<div id="top" align="left">
 
-<div id="top" align="center">
-
-[![arXiv](https://img.shields.io/badge/arXiv-2407.10943-orange)](https://arxiv.org/abs/2407.10943)
-[![](https://img.shields.io/badge/Paper-%F0%9F%93%96-yellow)](https://github.com/grutopia/grutopia.github.io/releases/download/v0.1.0/GRUtopia.pdf)
-[![](https://img.shields.io/badge/Project-%F0%9F%9A%80-pink)](https://github.com/OpenRobotLab/GRUtopia)
-[![](https://img.shields.io/badge/Doc-📘-green)](https://grutopia.github.io)
-[![](https://img.shields.io/badge/Youtube-🎬-red)](https://www.youtube.com/watch?v=fD0F1jIax5Y)
-[![](https://img.shields.io/badge/bilibili-📹-blue)](https://www.bilibili.com/video/BV1JUbxeMEsL/?buvid=XU42709457560E0722A8AA591EE792A3DAE59&from_spmid=search.search-result.0.0&is_story_h5=false&mid=vxiHfNKVdk6fb8fduRusuX8FTQ%2FSZMtL1rElX6M3iMo%3D&p=1&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=e78b4bb6-087b-4a72-817b-b06ef91167f3&share_source=COPY&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1720788955&unique_k=CeKgxGI&up_id=3546722198358311&vd_source=7f685cd616faf836ed7469749c100410)
-
+[![arxiv](https://img.shields.io/badge/arXiv%202407.10943-red?logo=arxiv)](https://arxiv.org/abs/2407.10943)
+[![pdf](https://img.shields.io/badge/Paper-06AC38?logo=pagekit)](https://github.com/grutopia/grutopia.github.io/releases/download/v0.1.0/GRUtopia.pdf)
+[![github](https://img.shields.io/badge/Project-0065D3?logo=rocket&logoColor=white)](https://github.com/OpenRobotLab/GRUtopia)
+[![doc](https://img.shields.io/badge/Document-FFA500?logo=readthedocs&logoColor=white)](https://grutopia.github.io)
+[![video-en](https://img.shields.io/badge/YouTube-D33847?logo=youtube)](https://www.youtube.com/watch?v=fD0F1jIax5Y)
+[![video-cn](https://img.shields.io/badge/Bilibili-00A1D6?logo=bilibili&logoColor=white)](https://www.bilibili.com/video/BV1JUbxeMEsL/?buvid=XU42709457560E0722A8AA591EE792A3DAE59&from_spmid=search.search-result.0.0&is_story_h5=false&mid=vxiHfNKVdk6fb8fduRusuX8FTQ%2FSZMtL1rElX6M3iMo%3D&p=1&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=e78b4bb6-087b-4a72-817b-b06ef91167f3&share_source=COPY&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1720788955&unique_k=CeKgxGI&up_id=3546722198358311&vd_source=7f685cd616faf836ed7469749c100410)
+[![PyPI Downloads](https://static.pepy.tech/badge/grutopia)](https://pepy.tech/projects/grutopia)
+[![GitHub Issues](https://img.shields.io/github/issues/OpenRobotLab/GRUtopia)](https://github.com/OpenRobotLab/GRUtopia/issues)
 </div>
 
-## 🤖 [Demo](https://www.youtube.com/watch?v=fD0F1jIax5Y)
+# GRUtopia
 
-[![demo](docs/en/_static/image/teaser.png "demo")](https://www.youtube.com/watch?v=fD0F1jIax5Y)
+## 🔥 News
+
+- \[2025-02\] GRUtopia 2.0 released!
+- \[2024-07\] We release the [paper](https://arxiv.org/abs/2407.10943) and demos of GRUtopia.
+
+## 🚀 New Features in 2.0 release
+- Gym compatible env implementation.
+- Easy-to-use pythonic config system to use out-of-the-box [sensors](https://grutopia.github.io/tutorials/how-to-use-sensor.html), [controllers](https://grutopia.github.io/tutorials/how-to-use-controller.html), [robots](https://grutopia.github.io/tutorials/how-to-use-robot.html) and [tasks](https://grutopia.github.io/tutorials/how-to-use-task.html).
+- Examples of driving [diverse robots](https://grutopia.github.io/tutorials/how-to-use-robot.html) and the corresponding policies.
+- [Benchmark and baseline](https://grutopia.github.io/get_started/run-benchmark-baseline.html#) for social navigation and mobile manipulation task.
+- Teleportation tools with [Mocap](https://grutopia.github.io/get_started/teleoperating-with-mocap.html) and [Apple VisionPro](https://grutopia.github.io/get_started/teleoperating-with-visionpro.html).
+- Physically accurate [interactive object assets](https://huggingface.co/datasets/OpenRobotLab/GRScenes) that are ready for simulation.
+- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/get_started/how-to-use-grscenes.html).
 
 ## 📋 Contents
-
 - [🏠 About](#-about) <!-- omit in toc -->
-- [🔥 News](#-news)
 - [📚 Getting Started](#-getting-started)
-- [📦 Model and Benchmark](#-model-and-benchmark)
+- [🏙️ Assets](#️-assets)
+- [📦 Benchmark & Method](#-benchmark--method)
+- [👥 Support](#-support)
 - [📝 TODO List](#-todo-list)
 - [🔗 Citation](#-citation)
 - [📄 License](#-license)
 - [👏 Acknowledgements](#-acknowledgements)
+
 
 ## 🏠 About
 
@@ -41,36 +45,21 @@
 
 Recent works have been exploring the scaling laws in the field of Embodied AI. Given the prohibitive costs of collecting real-world data, we believe the <b>Simulation-to-Real (Sim2Real) paradigm</b> is a more feasible path for scaling the learning of embodied models.
 
-We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), the first simulated interactive 3D society designed for various robots.
+We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), a general-purpose research platform for embodied AGI.
 It features several advancements:
-* 🏙️ <b>GRScenes</b>, the scene dataset, includes 100k interactive, finely annotated scenes, which can be freely combined into city-scale environments. In contrast to previous works mainly focusing on home, GRScenes covers 89 diverse scene categories, bridging the gap of <b>service-oriented environments</b> where general robots would initially be deployed.
-* 🧑‍🤝‍🧑 <b>GRResidents</b>, a Large Language Model (LLM) driven Non-Player Character (NPC) system that is responsible for social interaction, task generation, and task assignment, thus simulating <b>social scenarios</b> for embodied AI applications.
-* 🤖 <b>GRBench</b>, the benchmark, focuses on legged robots as primary agents and poses <b>moderately challenging</b> tasks involving Object Loco-Navigation, Social Loco-Navigation, and Loco-Manipulation.
+* 🏙️ <b>GRScenes</b>, the scene dataset, includes 100k interactive finely annotated scenes. GRScenes covers 89 diverse scene categories, facilitating deployment of general robots across different scenarios.
+* 🧑‍🤝‍🧑 <b>GRResidents</b>, a Large Language Model (LLM) driven Non-Player Character (NPC) system that enables social interaction, task generation, and task assignment, thus simulating <b>social scenarios</b> for embodied AI applications.
+* 🤖 <b>GRBench</b>, a collection of embodied AI benchmarks for assessing various capabilities of solving embodied tasks.
 
 We hope that this work can alleviate the scarcity of high-quality data in this field and provide a more comprehensive assessment of embodied AI research.
 
-## 🔥 News
 
-- \[2025-02\] GRUtopia 2.0 released!
-- \[2024-07\] We release the [paper](https://arxiv.org/abs/2407.10943) and demos of GRUtopia.
 
-## New Features in 2.0 release
 
-- Use standard Gym Env.
-- Use pythonic config system to support clearer and extendable configuration.
-- Add diverse robots and corresponding policies
-- Support teleportation with Mocap and VisionPro.
-- Benchmark and baseline for social navigation and mobile manipulation task.
-- Add more realistic and diverse scenes for simulation.
-- Provide a large number of refined interactive object models in the scenes.
-- Provide semantic annotations for a large number of objects in the scenes.
-- Procedural Indoor Scene Generation with GRScenes-100.
 
 ## 📚 Getting Started
 
 ### Prerequisites
-
-We test our codes under the following environment:
 
 - Ubuntu 20.04, 22.04
 - [NVIDIA Omniverse Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html)
@@ -90,25 +79,47 @@ We provide the installation guide [here](docs/en/get_started/installation.md). Y
 
 We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
-## 📦 Model and Benchmark
+## 🏙️ Assets
 
-### Benchmark Overview
+If `grutopia` is properly installed, you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script:
 
+```shell
+$ python -m grutopia.download_assets
+```
+The default path to store the downloaded assets is `${PATH/TO/GRUTOPIA/ROOT}/grutopia/assets`. Users have two ways to configure the asset path:
+
+1. Spcecify a custom path during download using `python -m grutopia.download_assets`.
+2. Set it later by running `python -m grutopia.set_assets_path` and entering the preferred directory.
+
+
+
+### GRScenes-100
+If you want to separately download the `GRScenes-100` scene assets, you can manually download them from [OpenXLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100). Please refer to the [instructions](https://huggingface.co/datasets/OpenRobotLab/GRScenes#%F0%9F%93%9A-getting-started) for scene usage.
+
+### Robots & Weights
+If you want to separately download robots and policy weights, you can manually download the `robot` directory from from [OpenXLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/robots), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/robots) and move it to the root of the asset path.
+
+## 📦 Benchmark & Method
 <p align="center">
   <img src="docs/en/_static/image/benchmark.png" align="center" width="100%">
 </p>
-An embodied agent is expected to actively perceive its environment, engage in dialogue to clarify ambiguous human instructions, and interact with its surroundings to complete tasks. Here, we preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. The target object in the instruction are subject to some constraints generated by the world knowledge manager. Navigation paths, dialogues, and actions are depicted in the figure.
 
-For now, please see the [paper](https://arxiv.org/abs/2407.10943) for more details of our models and benchmarks. We are actively re-organizing the codes and will release them soon. Please stay tuned.
+ We preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. Please refer to the [documentation](https://grutopia.github.io/get_started/run-benchmark-baseline.html) for running the benchmarks.
+
+## 👥 Support
+
+Join our WeChat support group for any help.
+
+![](https://cdn.vansin.top/taoyuan.jpg)
 
 ## 📝 TODO List
 
 - \[x\] Release the paper with demos.
 - \[x\] Release the platform with basic functions and demo scenes.
 - \[x\] Release 100 curated scenes.
-- \[x\] Release the baseline models and benchmark codes.
 - \[x\] Polish APIs and related codes.
 - \[x\] Full release and further updates.
+- \[x\] Release the baseline methods and benchmark data.
 - \[ \] Support multiple episodes.
 - \[ \] Vectorized env and batch execution.
 - \[ \] Training framework.
