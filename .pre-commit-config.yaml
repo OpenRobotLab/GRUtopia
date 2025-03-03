@@ -21,7 +21,7 @@ repos:
                 ^toolkits/indoor_scenes_generation/infinigen/infinigen_examples/constraints
             )
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.22.1
+    rev: v8.24.0
     hooks:
       - id: gitleaks
   - repo: https://github.com/pre-commit/pre-commit-hooks
