@@ -1,3 +1,5 @@
+import os
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
@@ -39,6 +41,9 @@ h1_1 = H1RobotCfg(
     ],
 )
 
+metrics_save_path = 'GRUtopia/results/sn_result.json'
+os.makedirs(os.path.dirname(metrics_save_path), exist_ok=True)
+
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, rendering_interval=100, use_fabric=False),
     task_config=SocialNavigationTaskCfg(
@@ -58,7 +63,7 @@ config = Config(
                 metric_config=SocialNavigationSuccessMetricConfig(navigation_error_threshold=3)
             ),
         ],
-        metrics_save_path='GRUtopia/results/sn_result.json',
+        metrics_save_path=metrics_save_path,
         task_settings=SocialNavigationTaskSetting(
             max_step=6000,
         ),

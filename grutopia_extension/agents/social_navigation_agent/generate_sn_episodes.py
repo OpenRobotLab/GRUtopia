@@ -4,7 +4,10 @@ import os
 
 from jinja2 import Template
 
-python_template = """
+from grutopia.macros import gm
+
+python_template = """import os
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
@@ -48,6 +51,8 @@ h1_1 = H1RobotCfg(
     ],
 )
 
+os.makedirs('{{ metrics_save_path }}', exist_ok=True)
+
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, rendering_interval=100, use_fabric=False),
     task_config=SocialNavigationTaskCfg(
@@ -56,8 +61,8 @@ config = Config(
                 metric_config={
                     'azure_api_key_e_path': '{{ azure_api_key_e_path }}',
                     'azure_api_key_path': '{{ azure_api_key_path }}',
-                    'captions_embeddings_path': gm.ASSET_PATH + 'benchmark/object_captions_embeddings.pkl',
-                    'captions_path': gm.ASSET_PATH + 'benchmark/object_captions_score_sort.json',
+                    'captions_embeddings_path': gm.ASSET_PATH + '/benchmark/object_captions_embeddings.pkl',
+                    'captions_path': gm.ASSET_PATH + '/benchmark/object_captions_score_sort.json',
                     'use_azure': True,
                 }
             ),
@@ -67,7 +72,7 @@ config = Config(
                 metric_config=SocialNavigationSuccessMetricConfig(navigation_error_threshold=3)
             ),
         ],
-        metrics_save_path='{{ metrics_save_path }}',
+        metrics_save_path='{{ metrics_save_path }}/{{ scene_name }}.json',
         task_settings=SocialNavigationTaskSetting(
             max_step={{ max_step }},
         ),
@@ -81,10 +86,10 @@ config = Config(
                     'distance': {{ distance }},
                     'episode_idx': {{ episode_idx }},
                     'model_mapping_path': gm.ASSET_PATH
-                    + 'benchmark/meta/{{ scene_name }}/model_mapping.json',
+                    + '/benchmark/meta/{{ scene_name }}/model_mapping.json',
                     'npc_scene_data_config': gm.ASSET_PATH
-                    + 'benchmark/meta/{{ scene_name }}/object_dict_with_caption.json',
-                    'object_dict_path': gm.ASSET_PATH + 'benchmark/meta/{{ scene_name }}/object_dict.json',
+                    + '/benchmark/meta/{{ scene_name }}/object_dict_with_caption.json',
+                    'object_dict_path': gm.ASSET_PATH + '/benchmark/meta/{{ scene_name }}/object_dict.json',
                     'question': '{{ question }}',
                     'start_point': {{ start_point }},
                     'target': '{{ target }}',
@@ -134,13 +139,17 @@ while env.simulation_app.is_running() and not env.finished():
     action = sn_agent.step(obs)
 
     if 'terminate' in action:
-        env.reset()
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     obs, _, terminated, _, _ = env.step(action=action)
     task_finished = terminated
 
     if task_finished:
-        env.reset()
+        obs, info = env.reset()
+        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+            break
 
     if i % 1000 == 0:
         print(i)
@@ -156,37 +165,54 @@ def parse_args():
         type=str,
         default='validate',
         choices=['all', 'test', 'validate'],
-        help='Splits to generate episodes for',
+        help='Splits to generate episodes for (default: "%(default)s")',
     )
 
-    parser.add_argument('--asset_path', type=str, default='./', help='Path to the assets')
-
-    parser.add_argument('--max_step', type=int, default=6000, help='Maximum steps of each episode')
+    parser.add_argument(
+        '--asset_path', type=str, default=gm.ASSET_PATH, help='Path to the assets (default: "%(default)s")'
+    )
 
     parser.add_argument(
-        '--api_base_url', type=str, default='https://gpt-4o-pjm.openai.azure.com/', help='Base URL for the API'
+        '--max_step', type=int, default=6000, help='Maximum steps of each episode (default: "%(default)s")'
+    )
+
+    parser.add_argument(
+        '--api_base_url',
+        type=str,
+        default='https://gpt-4o-pjm.openai.azure.com/',
+        help='Base URL for the API (default: "%(default)s")',
     )
     parser.add_argument(
         '--openai_api_key_path',
         type=str,
         default='GRUtopia/grutopia_extension/agents/social_navigation_agent/modules/vlm/api_key/azure_api_key.txt',
-        help='Path to the OpenAI API key',
+        help='Path to the OpenAI API key (default: "%(default)s")',
     )
     parser.add_argument(
         '--azure_api_key_e_path',
         type=str,
         default='GRUtopia/grutopia_extension/agents/social_navigation_agent/modules/vlm/api_key/azure_api_key_e.txt',
-        help='Path to the Azure API key E',
+        help='Path to the Azure API key E (default: "%(default)s")',
     )
     parser.add_argument(
         '--azure_api_key_path',
         type=str,
         default='GRUtopia/grutopia_extension/agents/social_navigation_agent/modules/vlm/api_key/azure_api_key.txt',
-        help='Path to the Azure API key',
+        help='Path to the Azure API key (default: "%(default)s")',
     )
 
-    parser.add_argument('--metrics_save_path', type=str, default='GRUtopia/results/', help='Path to save metrics')
-    parser.add_argument('--output_path', type=str, default='./sn_episodes', help='Path to save the generated episodes')
+    parser.add_argument(
+        '--metrics_save_path',
+        type=str,
+        default='GRUtopia/results/',
+        help='Path to save metrics (default: "%(default)s")',
+    )
+    parser.add_argument(
+        '--output_path',
+        type=str,
+        default='./sn_episodes',
+        help='Path to save the generated episodes (default: "%(default)s")',
+    )
 
     return parser.parse_args()
 

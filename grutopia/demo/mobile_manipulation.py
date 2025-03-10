@@ -1,3 +1,5 @@
+import os
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
@@ -44,11 +46,14 @@ h1_1 = H1WithHandRobotCfg(
     ],
 )
 
+metrics_save_path = 'GRUtopia/results/mm_result.json'
+os.makedirs(os.path.dirname(metrics_save_path), exist_ok=True)
+
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, rendering_interval=100, use_fabric=False),
     task_config=MobileManipulationTaskCfg(
         metrics=[MobileManipulationSuccessMetricCfg()],
-        metrics_save_path='GRUtopia/results/mm_result.json',
+        metrics_save_path=metrics_save_path,
         task_settings=MobileManipulationTaskSetting(
             max_step=6000,
         ),
@@ -84,7 +89,7 @@ config = Config(
                     ],
                     'episode_idx': 0,
                     'instruction': 'Pick the bowl located near the window and place it on the nightstand near the pillow and the cabinet.',
-                    'meta_path': gm.ASSET_PATH + 'benchmark/meta/MV7J6NIKTKJZ2AABAAAAADA8_usd',
+                    'meta_path': gm.ASSET_PATH + '/benchmark/meta/MV7J6NIKTKJZ2AABAAAAADA8_usd',
                     'start_point': [4.983360290527344, 2.8359479904174805],
                     'target': 'bowl/model_a3dd96e3fed88481d94f5b8c727e3c6c_0',
                 },

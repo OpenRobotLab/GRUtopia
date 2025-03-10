@@ -4,7 +4,10 @@ import os
 
 from jinja2 import Template
 
-python_template = """
+from grutopia.macros import gm
+
+python_template = """import os
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
@@ -55,11 +58,13 @@ h1_1 = H1WithHandRobotCfg(
     ],
 )
 
+os.makedirs('{{ metrics_save_path }}', exist_ok=True)
+
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, rendering_interval=100, use_fabric=False),
     task_config=MobileManipulationTaskCfg(
         metrics=[MobileManipulationSuccessMetricCfg()],
-        metrics_save_path='{{ metrics_save_path }}',
+        metrics_save_path='{{ metrics_save_path }}/{{ scene_name }}.json',
         task_settings=MobileManipulationTaskSetting(
             max_step={{ max_step }},
         ),
@@ -82,7 +87,7 @@ config = Config(
                                 'category': '{{ condition['object_attribute']['category'] }}',
                                 'instance_id': '{{ condition['object_attribute']['instance_id'] }}',
                                 'relation': {{ condition['object_attribute']['relation'] }},
-                                'room': {{ condition['object_attribute']['room'] }},
+                                'room': {% if condition['object_attribute']['room'] is none %}None{% else %}'{{ condition['object_attribute']['room'] }}'{% endif %},
                             },
                             'sample_relation': '{{ condition['sample_relation'] }}',
                         },
@@ -90,7 +95,7 @@ config = Config(
                     ],
                     'episode_idx': {{ episode_idx }},
                     'instruction': '{{ instruction }}',
-                    'meta_path': gm.ASSET_PATH + 'benchmark/meta/{{ scene_name }}',
+                    'meta_path': gm.ASSET_PATH + '/benchmark/meta/{{ scene_name }}',
                     'start_point': {{ start_point }},
                     'target': '{{ target }}',
                 },
@@ -154,22 +159,36 @@ def parse_args():
         type=str,
         default='validate',
         choices=['all', 'test', 'validate'],
-        help='Splits to generate episodes for',
+        help='Splits to generate episodes for (default: "%(default)s")',
     )
 
-    parser.add_argument('--asset_path', type=str, default='./', help='Path to the assets')
+    parser.add_argument(
+        '--asset_path', type=str, default=gm.ASSET_PATH, help='Path to the assets (default: "%(default)s")'
+    )
 
-    parser.add_argument('--max_step', type=int, default=6000, help='Maximum steps of each episode')
+    parser.add_argument(
+        '--max_step', type=int, default=6000, help='Maximum steps of each episode (default: "%(default)s")'
+    )
 
-    parser.add_argument('--metrics_save_path', type=str, default='GRUtopia/results/', help='Path to save metrics')
-    parser.add_argument('--output_path', type=str, default='./mm_episodes', help='Path to save the generated episodes')
+    parser.add_argument(
+        '--metrics_save_path',
+        type=str,
+        default='GRUtopia/results/',
+        help='Path to save metrics (default: "%(default)s")',
+    )
+    parser.add_argument(
+        '--output_path',
+        type=str,
+        default='./mm_episodes',
+        help='Path to save the generated episodes (default: "%(default)s")',
+    )
 
     return parser.parse_args()
 
 
 def gen_episode(python_template: str, episode: dict, episode_idx: int, scene_name: str, name: str, args) -> str:
     current = scene_name + '_' + '_'.join(name.split('/')) + str(episode_idx) + '.py'
-    with open(os.path.join('benchmark/meta', scene_name, 'paths.json'), 'r') as f:
+    with open(os.path.join(args.asset_path, 'benchmark/meta', scene_name, 'paths.json'), 'r') as f:
         paths = json.load(f)
     start_point = paths[name][0]['start_point']
     template = Template(python_template)

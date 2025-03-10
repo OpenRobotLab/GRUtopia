@@ -1,17 +1,26 @@
 # Project Setup and Run Instructions
 
-This guide will help you set up the necessary environment, install dependencies and model weights, and run the project.
+## 1 Install Dependencies for Agent
 
-## 1. Install Environment Dependencies
-To install the required Python packages, use the following command:
+Create a new conda/venv env (for agent), and then install the dependencies within the env:
 
-```bash
-# make sure your cudatoolkit version matches you pytorch cuda version
+```shell
+# make sure your cuda toolkit version matches your pytorch cuda version
+# PWD: grutopia_extension/agents/social_navigation_agent
 pip install -r requirements.txt
 ```
-## 2. Install Submodules
-```bash
-cd social_navigation_agent
+
+Tmux is required for running the agent entrypoint script. You can install it by:
+
+```shell
+sudo apt update
+sudo apt install tmux
+```
+
+## 2 Install Submodules
+
+```shell
+# PWD: grutopia_extension/agents/social_navigation_agent
 mkdir images
 # Please make sure your torch cuda version is equal with your cuda version
 # GroundingDINO
@@ -21,27 +30,73 @@ git clone https://github.com/IDEA-Research/GroundingDINO.git
 git clone https://github.com/WongKinYiu/yolov7.git
 ```
 
-## 3. Download Model Weights
-```bash
+The directory structure of the submodules is as follows:
+
+```
+grutopia_extension
+├── agents
+│   ├── social_navigation_agent
+│   │   ├── GroundingDINO                            # GroundingDINO repo
+│   │   ├── images                                   # Empty directory
+│   │   └── yolov7                                   # yolov7 repo
+```
+
+
+## 3 Download Model Weights
+
+```shell
+# PWD: grutopia_extension/agents/social_navigation_agent
 mkdir data
 cd data
 ```
-Download the necessary model weights from the provided sources and place them in an accessible directory within the project, put them under data folder. These weights are essential for running the models.
 
-- **MobileSAM**: Download `mobile_sam.pt` from the [MobileSAM GitHub Repository](https://github.com/ChaoningZhang/MobileSAM).
-- **GroundingDINO**: Download `groundingdino_swint_ogc.pth` from the [GroundingDINO GitHub Repository](https://github.com/IDEA-Research/GroundingDINO).
-- **YOLOv7**: Download `yolov7-e6e.pt` from the [YOLOv7 GitHub Repository](https://github.com/WongKinYiu/yolov7).
+Download the necessary model weights from the provided sources and place them in an accessible directory within the
+project, put them under the data folder. These weights are essential for running the models.
 
-> **Note**: Ensure these files are saved in a directory where the code can access them.
+- MobileSAM: Download mobile_sam.pt from the [MobileSAM GitHub Repository](https://github.com/ChaoningZhang/MobileSAM/blob/master/weights/mobile_sam.pt).
+- GroundingDINO: Download groundingdino_swint_ogc.pth from
+  the [GroundingDINO GitHub Repository](https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth).
+- YOLOv7: Download yolov7-e6e.pt from the [YOLOv7 GitHub Repository](https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-e6e.pt).
 
-## 4. Run the Initialization Script
+```
+grutopia_extension
+├── agents
+│   ├── social_navigation_agent
+│   │   ├── data
+│   │   │   ├── groundingdino_swint_ogc.pth
+│   │   │   ├── mobile_sam.pt
+│   │   │   └── yolov7-e6e.pt
+```
 
-```bash
+## 4 Configure API Keys
+
+Put your API keys under `./modules/vlm/api_key`.
+
+```
+grutopia_extension
+├── agents
+│   ├── social_navigation_agent
+│   │   ├── modules
+│   │   │   └── vlm
+│   │   │   │   └── api_key
+│   │   │   │   │   ├── azure_api_key.txt
+│   │   │   │   │   └── azure_api_key_e.txt
+```
+
+As mentioned above:
+- `azure_api_key.txt`: The API key for the Azure OpenAI `gpt-4o` model.
+- `azure_api_key_e.txt`: The API key for the Azure OpenAI `text-embedding-3-large` embedding model.
+
+You can learn how to get the keys through this [link](https://learn.microsoft.com/zh-cn/azure/ai-services/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions).
+
+
+## 5 Run the Agent Process
+
+Launch the agent process
+
+```shell
+# PWD: grutopia_extension/agents/social_navigation_agent
 ./scripts/launch_vlm_servers.sh
 ```
-## 5. Put your api key in ./modules/vlm/api_key
 
-```bash
-├── api_key.txt
-├── azure_api_key.txt
-```
+For complete instructions of how to run the benchmark with the agent, please refer to the [RUN BENCHMARK BASELINE](https://grutopia.github.io/get_started/run-benchmark-baseline.html).
