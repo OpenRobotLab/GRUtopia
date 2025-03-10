@@ -1,5 +1,11 @@
 # Run Benchmark Baseline
 
+NOTE: Benchmark baseline can only be run with the source code of GRUtopia currently. If GRUtopia is installed through pip, you must clone the repository of GRUtopia first.
+
+```shell
+$ git clone git@github.com:OpenRobotLab/GRUtopia.git
+```
+
 ## Overview
 
 The system overview when running the benchmark baseline is as follows:
