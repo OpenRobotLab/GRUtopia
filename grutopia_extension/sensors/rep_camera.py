@@ -1,5 +1,4 @@
-from collections import defaultdict
-from typing import Dict
+from collections import OrderedDict, defaultdict
 
 import numpy as np
 import omni.replicator.core as rep
@@ -23,6 +22,10 @@ class RepCamera(BaseSensor):
         self.name = name
         self.config = config
         self.depth = config.depth
+        self.obs_keys = ['landmarks', 'rgba', 'camera_params']
+        if self.depth:
+            self.obs_keys.append('depth')
+            self.obs_keys.append('pointcloud')
         self.rp = None
         self.rp_annotators = {}
 
@@ -53,7 +56,7 @@ class RepCamera(BaseSensor):
         log.debug(f'resolution      : {self.resolution}')
         return prim_path
 
-    def get_camera_data(self, data_names):
+    def get_camera_data(self, data_names) -> OrderedDict:
         """
         Get specified data from a camera.
 
@@ -74,7 +77,7 @@ class RepCamera(BaseSensor):
             ldr_color.attach(self.rp)
             self.rp_annotators['rgba'] = ldr_color
 
-        if 'depth' in data_names and 'depth' not in self.rp_annotators and self.depth:
+        if self.depth and 'depth' in data_names and 'depth' not in self.rp_annotators:
             distance_to_image_plane = rep.AnnotatorRegistry.get_annotator('distance_to_image_plane')
             distance_to_image_plane.attach(self.rp)
             self.rp_annotators['depth'] = distance_to_image_plane
@@ -104,7 +107,7 @@ class RepCamera(BaseSensor):
             except Exception:
                 output_data['pointcloud'] = None
 
-        return output_data
+        return OrderedDict((key, output_data) for key in self.obs_keys)
 
     # ============================================================================================================
     @staticmethod
@@ -274,10 +277,10 @@ class RepCamera(BaseSensor):
 
     # ====================================================================================
 
-    def get_data(self) -> Dict:
+    def get_data(self) -> OrderedDict:
         if self.config.enable:
-            return self.get_camera_data(['landmarks', 'rgba', 'depth', 'camera_params', 'pointcloud'])
-        return {}
+            return self.get_camera_data(self.obs_keys)
+        return OrderedDict()
 
     def cleanup(self) -> None:
         if self.rp is not None:

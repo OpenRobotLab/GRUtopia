@@ -118,7 +118,7 @@ class BaseTaskRuntimeManager:
         """
         Get next task runtime with env of last episode.
         Args:
-            last_env (Env):  Env of last episode.
+            last_env (Env): Env of last episode.
 
         Returns:
             TaskRuntime: TaskRuntime for next task.

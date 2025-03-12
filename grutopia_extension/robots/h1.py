@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 from typing import List
 
 import numpy as np
@@ -127,6 +128,7 @@ class H1Robot(BaseRobot):
         )
 
         self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]
+        self.obs_keys = ['position', 'orientation', 'controllers', 'sensors']
 
     def get_rigid_bodies(self) -> List[RigidPrim]:
         return self._rigid_bodies
@@ -160,20 +162,11 @@ class H1Robot(BaseRobot):
             control = controller.action_to_control(controller_action)
             self.isaac_robot.apply_action(control)
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self._robot_base.get_world_pose()
 
+        controllers_obs, sensors_obs = super()._get_controllers_and_sensors_obs()
         # custom
-        obs = {
-            'position': position,
-            'orientation': orientation,
-            'controllers': {},
-            'sensors': {},
-        }
+        obs = {'position': position, 'orientation': orientation, 'controllers': controllers_obs, 'sensors': sensors_obs}
 
-        # common
-        for c_obs_name, controller_obs in self.controllers.items():
-            obs['controllers'][c_obs_name] = controller_obs.get_obs()
-        for sensor_name, sensor_obs in self.sensors.items():
-            obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)

@@ -1,4 +1,5 @@
-from typing import Any, Dict, List
+from collections import OrderedDict
+from typing import Any, List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
@@ -23,6 +24,7 @@ class RotateController(BaseController):
         self.threshold = config.threshold if config.threshold is not None else 0.02
 
         super().__init__(config=config, robot=robot, scene=scene)
+        self.obs_keys = ['finished']
 
     @staticmethod
     def get_delta_z_rot(
@@ -78,7 +80,7 @@ class RotateController(BaseController):
             threshold=self.threshold,
         )
 
-    def get_obs(self) -> Dict[str, Any]:
+    def get_obs(self) -> OrderedDict[str, Any]:
         if self.goal_orientation is None or self.threshold is None:
             return {}
         start_orientation = self.robot.get_world_pose()[1]
@@ -86,9 +88,11 @@ class RotateController(BaseController):
             start_orientation=start_orientation, goal_orientation=self.goal_orientation
         )
         finished = True if abs(delta_z_rot) < self.threshold else False
-        return {
-            'finished': finished,
-        }
+        return OrderedDict(
+            {
+                'finished': finished,
+            }
+        )
 
 
 # Use class-var inject controllers types' class

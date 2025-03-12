@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
@@ -96,6 +97,7 @@ class AliengoRobot(BaseRobot):
         self._robot_base = RigidPrim(prim_path=config.prim_path + '/base', name=config.name + '_base')
 
         self._rigid_bodies = [self._robot_base]
+        self.obs_keys = ['position', 'orientation', 'controllers', 'sensors']
 
     def post_reset(self):
         super().post_reset()
@@ -123,7 +125,7 @@ class AliengoRobot(BaseRobot):
             control = controller.action_to_control(controller_action)
             self.isaac_robot.apply_action(control)
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self._robot_base.get_world_pose()
 
         # custom
@@ -139,4 +141,4 @@ class AliengoRobot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)

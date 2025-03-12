@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 from typing import List
 
 import numpy as np
@@ -311,6 +312,7 @@ class GR1Robot(BaseRobot):
         self._imu_in_torso = RigidPrim(prim_path=config.prim_path + '/imu_link', name=config.name + '_imu_in_torso')
 
         self._rigid_bodies = [self._robot_base, self._imu_in_torso]
+        self.obs_keys = ['position', 'orientation', 'joint_positions', 'joint_velocities', 'controllers', 'sensors']
 
     def get_rigid_bodies(self) -> List[RigidPrim]:
         return self._rigid_bodies
@@ -341,7 +343,7 @@ class GR1Robot(BaseRobot):
             control = controller.action_to_control(controller_action)
             self.isaac_robot.apply_action(control)
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self._robot_base.get_world_pose()
 
         # custom
@@ -359,4 +361,4 @@ class GR1Robot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)

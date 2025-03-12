@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import numpy as np
 from omni.isaac.core.scenes import Scene
 from omni.isaac.wheeled_robots.robots import WheeledRobot
@@ -37,6 +39,7 @@ class JetbotRobot(BaseRobot):
         if config.scale is not None:
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
+        self.obs_keys = ['position', 'orientation', 'joint_positions', 'joint_velocities', 'controllers', 'sensors']
 
     def get_robot_scale(self):
         return self._robot_scale
@@ -58,7 +61,7 @@ class JetbotRobot(BaseRobot):
             control = controller.action_to_control(controller_action)
             self.isaac_robot.apply_action(control)
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self.isaac_robot.get_world_pose()
 
         # custom
@@ -76,4 +79,4 @@ class JetbotRobot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)
