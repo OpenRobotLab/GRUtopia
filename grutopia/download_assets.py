@@ -8,6 +8,9 @@ import zipfile
 from grutopia.core.util import is_in_container
 from grutopia.macros import gm
 
+RED = '\033[31m'
+END = '\033[0m'
+
 # Default environment name
 DEFAULT_ENV_NAME = ''
 
@@ -37,7 +40,7 @@ def create_conda_env():
         print(f"Creating Conda environment '{DEFAULT_ENV_NAME}' for downloading dataset...")
         subprocess.check_call(['conda', 'create', '--name', DEFAULT_ENV_NAME, '--yes', 'python=3.10'])
     except subprocess.CalledProcessError as e:
-        print(f"Error creating Conda environment '{DEFAULT_ENV_NAME}': {e}")
+        print(f"{RED}ERROR{END}: Error creating Conda environment '{DEFAULT_ENV_NAME}': {e}")
         raise
 
 
@@ -186,7 +189,7 @@ def delete_conda_env():
         print(f"Deleting Conda environment '{DEFAULT_ENV_NAME}'...")
         subprocess.check_call(['conda', 'env', 'remove', '--name', DEFAULT_ENV_NAME, '--yes'])
     except subprocess.CalledProcessError as e:
-        print(f"Error deleting Conda environment '{DEFAULT_ENV_NAME}': {e}")
+        print(f"{RED}ERROR{END}: Error deleting Conda environment '{DEFAULT_ENV_NAME}': {e}")
 
 
 def unzip_all(dir_path):
@@ -237,6 +240,7 @@ def main():
     if dataset_src not in ['huggingface', 'modelscope', 'openxlab']:
         print("Invalid dataset source. Please choose 'huggingface' or 'modelscope' or 'openxlab'.")
         return
+    print(f'Dataset will be downloaded from {dataset_src}.')
 
     # Determine the target path
     target_path = gm.ASSET_PATH
@@ -269,13 +273,19 @@ Please choose (min/full): """
         with open(config_file, 'w') as f:
             f.write(f'DEFAULT_ASSETS_PATH = "{target_path}"')
         print(f'Assets will be installed under this location: {target_path}')
-    path_confirm = input('Do you want to continue? (Y/n): ').strip().lower()
-    if path_confirm not in ['y', 'yes']:
-        return
 
-    # Check if dataset already exists
+    # Check if target path already exists
     if os.path.exists(target_path):
-        print(f'Dataset already exists at {target_path}. No need to download again.')
+        if os.path.isdir(target_path):
+            resume = input(f'Directory {target_path} already exists. Resume last download? (Y/n): ').lower()
+            if resume not in ['y', 'yes', '']:
+                return
+        else:
+            print(f'{RED}ERROR{END}: {target_path} is not a directory.')
+            return
+
+    path_confirm = input('Do you want to continue? (Y/n): ').strip().lower()
+    if path_confirm not in ['y', 'yes', '']:
         return
 
     # Create a conda env for download
@@ -297,9 +307,7 @@ Please choose (min/full): """
         unzip_all(target_path)
 
     except Exception as e:
-        print(f'Error downloading assets: {e}')
-        print('Removing downloaded assets files...')
-        remove_dir(target_path)
+        print(f'{RED}ERROR{END}: Error downloading assets: {e}')
     except KeyboardInterrupt:
         if DEFAULT_ENV_NAME != '':
             cleanup_process(dataset_src)
