@@ -1,6 +1,7 @@
 import os
 
 from grutopia.download_assets import unzip_all
+from grutopia.macros import gm
 
 RED = '\033[31m'
 GREEN = '\033[32m'
@@ -10,9 +11,10 @@ END = '\033[0m'
 
 
 def main():
+    print(f'Current assets path: {gm.ASSET_PATH}')
     target_path = ''
     while True:
-        target_path = input('Please enter the target path (must be absolute path): ').strip()
+        target_path = input('Please enter the new assets path (must be absolute path): ').strip()
         if target_path.startswith('/'):
             break
         print('target path must be absolute path')
@@ -27,7 +29,7 @@ def main():
         f.write(f'DEFAULT_ASSETS_PATH = "{target_path}"')
     print(f'Assets path has been set to: {target_path}')
 
-    unzip = input('Need to unzip all the assets? (assets should only be unzipped once) (Y/N) ').strip().lower()
+    unzip = input('Need to unzip all the assets? (assets should only be unzipped once) (y/N) ').strip().lower()
     if unzip == 'y':
         unzip_all(target_path)
 

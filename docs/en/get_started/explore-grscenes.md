@@ -1,8 +1,8 @@
-# How to Use GRscenes
+# Explore GRscenes
 
 ## Download
 
-GRScenes has been publicly released on [**OpenXLab**](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes), [**ModelScope**](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/summary) and [**HuggingFace**](https://huggingface.co/datasets/OpenRobotLab/GRScenes).
+You can refer to the chapter [Prepare Assets](./installation.md#prepare-assets) in the installation doc to download the GRscenes.
 
 ## Overview of dataset
 

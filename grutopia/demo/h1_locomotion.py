@@ -29,7 +29,7 @@ h1_1 = H1RobotCfg(
         rotate_cfg,
     ],
     sensors=[
-        h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=True),
+        h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=False),
         h1_tp_camera_cfg.update(enable=False),
     ],
 )

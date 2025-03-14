@@ -20,7 +20,7 @@ Welcome to GRUtopia's documentation!
 
    get_started/installation.md
    get_started/wander-with-keyboard.md
-   get_started/how-to-use-grscenes.md
+   get_started/explore-grscenes.md
    get_started/teleoperating-with-mocap.md
    get_started/teleoperating-with-visionpro.md
    get_started/run-benchmark-baseline.md

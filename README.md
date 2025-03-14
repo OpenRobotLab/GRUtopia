@@ -65,7 +65,7 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 - [NVIDIA Omniverse Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html)
   - Ubuntu 20.04/22.04 Operating System
   - NVIDIA GPU (RTX 2070 or higher)
-  - NVIDIA GPU Driver (recommended version 535.129.03)
+  - NVIDIA GPU Driver (recommended version 535.216.01+)
   - Docker (Optional)
   - NVIDIA Container Toolkit (Optional)
 - Conda
@@ -80,8 +80,9 @@ We provide the installation guide [here](docs/en/get_started/installation.md). Y
 We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
 ## 🏙️ Assets
+First of all make sure you have completed the form in [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
 
-If `grutopia` is properly installed, you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script:
+Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [GRUtopia](https://grutopia.github.io/get_started/installation.html) installed:
 
 ```shell
 $ python -m grutopia.download_assets

@@ -2,34 +2,33 @@
 
 ## Prerequisites
 
-- OS: Ubuntu 20.04+
+- OS: Ubuntu 20.04/22.04
 - RAM: 32GB+
-- GPU: NVIDIA RTX 2070+
-- NVIDIA Driver: 525.85+
+- GPU: NVIDIA RTX 2070+ (must with RTX cores)
+- NVIDIA Driver: 535.216.01+
 
-> GRUtopia is built upon NVIDIA's [Omniverse](https://www.nvidia.com/en-us/omniverse/) and [Isaac Sim](https://developer.nvidia.com/isaac-sim) platforms, inheriting their dependencies. GRUtopia 2.0.0 specifically requires Isaac Sim 4.2.0. To ensure optimal performance and avoid any potential issues, it is essential to use this version rather than any earlier releases, such as 4.1.0. For more information, please see [Isaac Sim's Requirements](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html).
+> For complete requirements, please see [Isaac Sim's Requirements](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html).
+>
+> GRUtopia is built upon NVIDIA's [Omniverse](https://www.nvidia.com/en-us/omniverse/) and [Isaac Sim](https://developer.nvidia.com/isaac-sim) platforms, inheriting their dependencies. GRUtopia 2.0 specifically requires **Isaac Sim 4.2.0**. To ensure optimal performance and avoid any potential issues, it is essential to use this version rather than any other releases, such as 4.5.0 or 4.1.0.
 
-Two ways of installation are provided:
+## Installation
 
-- Install from source (Linux): [workstation installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) of Isaac Sim is required, and is recommended for users who wants to run Isaac Sim as a GUI application on Linux workstation with a GPU.
-- Install with Docker (Linux): [container installation](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html) of Isaac Sim is required, and is recommended for deployment on remote headless servers or the Cloud using a Docker container running Linux.
+Three ways of installation are provided:
+
+- [Install from source (Linux)](#install-from-source-linux): recommended for users who wants to thoroughly explore GRUtopia with Isaac Sim as a GUI application on Linux workstation with a GPU.
+- [Install from PyPI (Linux)](#install-from-pypi-linux): recommended for users who wants to use GRUtopia as a handy toolbox with Isaac Sim as a GUI application on Linux workstation with a GPU.
+- [Install with Docker (Linux)](#install-with-docker-linux): recommended for deployment on remote servers or the Cloud using a Docker container.
 
 See more: [Differences Between Workstation And Docker](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_faq.html#isaac-sim-setup-differences).
 
 Windows support is in our roadmap. Contributions are welcome!
 
 
-## Install from source (Linux)
-There are two methods provided to install GRUtopia:
- - Installation from GitHub
- - Installation from PyPI
-
-In addition, the [dataset](./how-to-use-grscenes.md) is provided alongside with a download script that supports dataset download via OpenXLab and HuggingFace. You can also [Prepare Dataset Manually](#prepare-dataset-manually).
+### Install from source (Linux)
 
 Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) and [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
-### Install GRUtopia from GitHub
-1. Install GRUtopia
+1. Clone the GRUtopia repository with [git](https://git-scm.com).
    ```bash
    $ git clone git@github.com:OpenRobotLab/GRUtopia.git
    ```
@@ -44,26 +43,19 @@ Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](
 
    $ cd .. && conda activate grutopia  # or your conda env name
    ```
-3. Download dataset to the specified directory.
 
-   ```bash
-   $ python grutopia/download_assets.py
-   ```
+### Install from PyPI (Linux)
 
-2. Verify the Installation.
+Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html) and [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
-   ```bash
-   $ python grutopia/demo/h1_locomotion.py  # start simulation
-   ```
-
-   If properly installed, Isaac Sim GUI window should pop up and you can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
-
-### Install GRUtopia from PyPI
-1. Create conda env with `python=3.10` specified
+1. Create conda env with `python=3.10` specified.
     ```bash
    $ conda create -n <env> python=3.10
    ```
-2. Install GRUtopia
+2. Install GRUtopia through pip.
+
+   **NOTE**: Ensure you have [git](https://git-scm.com) installed.
+
    ```bash
    $ conda activate <env>
    $ pip install grutopia
@@ -75,19 +67,8 @@ Before proceeding with the installation, ensure that you have [Isaac Sim 4.2.0](
 
    $ conda deactivate && conda activate <env>
    ```
-4. Download dataset to the specified directory.
 
-   ```bash
-   $  python -m grutopia.download_assets
-   ```
-
-5. Verify the Installation.
-
-   ```bash
-   $ python -m grutopia.demo.h1_locomotion  # start simulation
-   ```
-
-## Install with Docker (Linux)
+### Install with Docker (Linux)
 
 Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-container-toolkit) installed. You can refer to the [container installation doc](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_container.html) of Isaac Sim for detailed instructions.
 
@@ -113,55 +94,61 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
 1. Start docker container, replacing <your tag> with the above tag:
 
    ```bash
-   $ cd PATH/TO/GRUTOPIA/ROOT
+   $ xhost +local:root # Allow the container to access the display
 
-   $ export CACHE_ROOT=$HOME/docker  # set cache root path
+   $ cd PATH/TO/GRUTOPIA/ROOT
 
    $ docker run --name grutopia -it --rm --gpus all --network host \
      -e "ACCEPT_EULA=Y" \
      -e "PRIVACY_CONSENT=Y" \
+     -e "DISPLAY=${DISPLAY}" \
+     -v /tmp/.X11-unix/:/tmp/.X11-unix \
      -v ${PWD}:/isaac-sim/GRUtopia \
-     -v ${CACHE_ROOT}/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
-     -v ${CACHE_ROOT}/isaac-sim/cache/ov:/root/.cache/ov:rw \
-     -v ${CACHE_ROOT}/isaac-sim/cache/pip:/root/.cache/pip:rw \
-     -v ${CACHE_ROOT}/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw \
-     -v ${CACHE_ROOT}/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw \
-     -v ${CACHE_ROOT}/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
-     -v ${CACHE_ROOT}/isaac-sim/data:/root/.local/share/ov/data:rw \
-     -v ${CACHE_ROOT}/isaac-sim/documents:/root/Documents:rw \
+     -v ${HOME}/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
+     -v ${HOME}/docker/isaac-sim/cache/ov:/root/.cache/ov:rw \
+     -v ${HOME}/docker/isaac-sim/cache/pip:/root/.cache/pip:rw \
+     -v ${HOME}/docker/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw \
+     -v ${HOME}/docker/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw \
+     -v ${HOME}/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
+     -v ${HOME}/docker/isaac-sim/data:/root/.local/share/ov/data:rw \
+     -v ${HOME}/docker/isaac-sim/documents:/root/Documents:rw \
      grutopia:<your tag>
    ```
 
+   You are now ready to use GRUtopia in this container.
 
-1. Download dataset to the specified directory.
+   **NOTE**: If you are using a remote server without display, you can use the [Omniverse Streaming Client](https://docs.omniverse.nvidia.com/extensions/latest/ext_livestream/native.html) to stream the simulation UI.
 
-   We recommend downloading the dataset to a location under `/isaac-sim/GRUtopia/` in container (which is mounted from a host path) so that it can be retained across container recreations.
+## Prepare Assets
 
-   ```bash
-   # run inside container
-   $ python -m grutopia.download_assets
-   ```
+First of all make sure you have completed the form in [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
 
-1. Verify the Installation.
+Then you can one of the following methods to get the assets:
 
-   Run inside container:
+- Download the assets automatically with [GRUtopia](#installation) installed:
 
-   ```bash
-   # run inside container
-   $ python -m grutopia.demo.h1_locomotion  # start simulation
-   ```
+  ```shell
+  $ python -m grutopia.download_assets
+  ```
 
-   If properly installed, observation from simulation will be displayed in the terminal every 100 steps, and you can access the Isaac Sim through Omniverse Streaming Client via `127.0.0.1`.
+  During the script execution, you can choose to download full assets (~80GB) or a minimum set (~500MB), and you will be asked to specify the local path to store the downloaded assets.
 
+  > **NOTE**: If GRUtopia is installed with Docker, We recommend downloading the assets to a location under `/isaac-sim/GRUtopia/` in container (which is mounted from a host path) so that it can be retained across container recreations.
 
-## Prepare Dataset Manually
+- Download the assets manually from [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes)/[ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/summary)/[OpenXLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes), and then use the following command to tell GRUtopia where the assets locate if you are meant to use it with GRUtopia:
 
-If you prefer the dataset manually, or you only want to download a subset of the dataset, you can refer to the [dataset chapter](./how-to-use-grscenes.md) to find the links and content description.
+  ```shell
+  $ python -m grutopia.set_assets_path
+  ```
 
-After downloading the dataset, you should use the following command to tell GRUtopia where the assets locate (with GRUtopia installed):
+## Verify Installation
 
-```bash
-$ python -m grutopia.set_assets_path
+```shell
+$ python -m grutopia.demo.h1_locomotion  # start simulation
 ```
 
-The command will prompt you to enter the path to the dataset.
+If properly installed, Isaac Sim GUI window would pop up and you can see a humanoid robot (Unitree H1) walking following a pre-defined trajectory in Isaac Sim.
+
+> **NOTE**: A slowdown is expected during first execution.
+> Isaac sim requires some one-time startup setup the first time you start it.
+> The process could take up to 5 minutes. This is expected behavior, and should only occur once!
