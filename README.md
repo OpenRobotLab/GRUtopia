@@ -111,9 +111,7 @@ If you want to separately download robots and policy weights, you can manually d
 
 ## 👥 Support
 
-Join our WeChat support group for any help.
-
-![](https://cdn.vansin.top/taoyuan.jpg)
+Join our [WeChat](https://cdn.vansin.top/taoyuan.jpg) support group for any help.
 
 ## 📝 TODO List
 
