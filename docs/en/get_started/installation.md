@@ -121,7 +121,9 @@ Make sure you have [Docker](https://docs.docker.com/get-docker/) and [NVIDIA Con
 
 ## Prepare Assets
 
-First of all make sure you have completed the form in [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
+<div style="border: 2px solid #0072ce; border-radius: 5px; background-color: #f6f8fa; padding: 10px;">
+<p>📝First of all you <strong>MUST</strong> complete the <a class="reference external" href="https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391">User Agreement for GRScenes-100 Dataset Access</a>.</p>
+</div>
 
 Then you can one of the following methods to get the assets:
 

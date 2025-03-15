@@ -80,7 +80,9 @@ We provide the installation guide [here](docs/en/get_started/installation.md). Y
 We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
 
 ## 🏙️ Assets
-First of all make sure you have completed the form in [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
+
+> [!NOTE]
+> 📝First of all you **MUST** complete the [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
 
 Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [GRUtopia](https://grutopia.github.io/get_started/installation.html) installed:
 
