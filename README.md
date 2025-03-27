@@ -25,7 +25,7 @@
 - [Benchmark and baseline](https://grutopia.github.io/get_started/run-benchmark-baseline.html#) for social navigation and mobile manipulation task.
 - Teleportation tools with [Mocap](https://grutopia.github.io/get_started/teleoperating-with-mocap.html) and [Apple VisionPro](https://grutopia.github.io/get_started/teleoperating-with-visionpro.html).
 - Physically accurate [interactive object assets](https://huggingface.co/datasets/OpenRobotLab/GRScenes) that are ready for simulation.
-- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/get_started/how-to-use-grscenes.html).
+- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/get_started/explore-grscenes.html).
 
 ## 📋 Contents
 - [🏠 About](#-about) <!-- omit in toc -->
@@ -97,10 +97,10 @@ The default path to store the downloaded assets is `${PATH/TO/GRUTOPIA/ROOT}/gru
 
 
 ### GRScenes-100
-If you want to separately download the `GRScenes-100` scene assets, you can manually download them from [OpenXLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100). Please refer to the [instructions](https://huggingface.co/datasets/OpenRobotLab/GRScenes#%F0%9F%93%9A-getting-started) for scene usage.
+If you want to separately download the `GRScenes-100` scene assets, you can manually download them from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100). Please refer to the [instructions](https://huggingface.co/datasets/OpenRobotLab/GRScenes#%F0%9F%93%9A-getting-started) for scene usage.
 
 ### Robots & Weights
-If you want to separately download robots and policy weights, you can manually download the `robot` directory from from [OpenXLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/robots), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/robots) and move it to the root of the asset path.
+If you want to separately download robots and policy weights, you can manually download the `robot` directory from from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/robots), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/robots) and move it to the root of the asset path.
 
 ## 📦 Benchmark & Method
 <p align="center">
