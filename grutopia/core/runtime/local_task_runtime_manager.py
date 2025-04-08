@@ -57,7 +57,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         Set new task runtime to active_runtimes.
 
         Args:
-            last_env (Env): Env of last episode.
+            last_env (Env):  Env of last episode.
 
         Returns:
             TaskRuntime: TaskRuntime for next task.

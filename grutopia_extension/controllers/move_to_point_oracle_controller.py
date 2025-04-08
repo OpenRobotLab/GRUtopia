@@ -1,5 +1,4 @@
-from collections import OrderedDict
-from typing import Any, List
+from typing import Any, Dict, List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
@@ -26,7 +25,6 @@ class MoveToPointOracleController(BaseController):
         self.threshold = config.threshold if config.threshold is not None else 0.02
 
         super().__init__(config=config, robot=robot, scene=scene)
-        self.obs_keys = ['finished']
 
     @staticmethod
     def get_delta_z_rot(
@@ -126,15 +124,13 @@ class MoveToPointOracleController(BaseController):
             threshold=self.threshold * self.robot.get_robot_scale()[0],
         )
 
-    def get_obs(self) -> OrderedDict[str, Any]:
+    def get_obs(self) -> Dict[str, Any]:
         if self.goal_position is None or self.last_threshold is None:
-            return OrderedDict({})
+            return {}
         start_position = self.robot.get_world_pose()[0]
         start_position[-1] = 0
         dist_from_goal = np.linalg.norm(start_position[:2] - self.goal_position[:2])
         finished = True if dist_from_goal < self.last_threshold else False
-        return OrderedDict(
-            {
-                'finished': finished,
-            }
-        )
+        return {
+            'finished': finished,
+        }

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from collections import OrderedDict
 from functools import wraps
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
 
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
@@ -37,7 +36,6 @@ class BaseController(Base, ABC):
         self._robot = robot
         self.config = config
         self.sub_controllers: List[BaseController]
-        self.obs_keys = []
 
     @abstractmethod
     def action_to_control(self, action: Union[np.ndarray, List]) -> ArticulationAction:
@@ -51,13 +49,13 @@ class BaseController(Base, ABC):
         """
         raise NotImplementedError()
 
-    def get_obs(self) -> OrderedDict[str, Any]:
+    def get_obs(self) -> Dict[str, Any]:
         """Get observation of controller.
 
         Returns:
-            OrderedDict[str, Any]: observation key and value.
+            Dict[str, Any]: observation key and value.
         """
-        return OrderedDict()
+        return {}
 
     @classmethod
     def register(cls, name: str):
@@ -107,7 +105,7 @@ class BaseController(Base, ABC):
         return self.sub_controllers[0].get_joint_subset()
 
 
-def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> OrderedDict[str, BaseController]:
+def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:
@@ -121,7 +119,7 @@ def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> O
     controller_map = {}
 
     if robot_cfg.controllers is None:
-        return OrderedDict(controller_map)
+        return controller_map
     for controller_cfg in robot_cfg.controllers:
         controller_name = controller_cfg.name
         controller_cls = BaseController.controllers[controller_cfg.type]
@@ -137,9 +135,7 @@ def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> O
         controller_map[controller_name] = controller_ins
         log.debug(f'==================== {controller_name} loaded==========================')
 
-    return OrderedDict(
-        (controller_cfg.name, controller_map[controller_cfg.name]) for controller_cfg in robot_cfg.controllers
-    )
+    return controller_map
 
 
 def inject_sub_controllers(

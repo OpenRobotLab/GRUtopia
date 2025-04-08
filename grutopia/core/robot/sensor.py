@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from collections import OrderedDict
 from functools import wraps
+from typing import Dict
 
 from grutopia.core.config.robot import RobotCfg, SensorCfg
 from grutopia.core.robot.robot import BaseRobot, Scene
@@ -28,7 +28,7 @@ class BaseSensor(ABC):
         self._robot = robot
 
     @abstractmethod
-    def get_data(self) -> OrderedDict:
+    def get_data(self) -> Dict:
         """Get data from sensor.
 
         Returns:
@@ -66,7 +66,7 @@ class BaseSensor(ABC):
         return decorator
 
 
-def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> OrderedDict[str, BaseSensor]:
+def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:
@@ -85,4 +85,4 @@ def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Order
             sensor_map[sensor_cfg.name] = sensor_ins
             log.debug(f'==================== {sensor_cfg.name} loaded==========================')
 
-    return OrderedDict((sensor_cfg.name, sensor_map[sensor_cfg.name]) for sensor_cfg in robot_cfg.sensors)
+    return sensor_map

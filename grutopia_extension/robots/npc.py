@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from typing import Dict
 
 from omni.isaac.core.scenes import Scene
@@ -30,7 +29,7 @@ class NPC(BaseRobot):
         log.debug(f'Applying action for NPC {self.name}: {action}')
         pass
 
-    def get_obs(self) -> OrderedDict:
+    def get_obs(self) -> Dict:
         log.debug(f'Getting observation for NPC {self.name}')
         # npc can get all the robot obs in the scene, but this method return nothing.
-        return OrderedDict()
+        return {}

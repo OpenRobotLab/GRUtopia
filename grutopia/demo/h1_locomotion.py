@@ -69,6 +69,5 @@ while env.simulation_app.is_running():
     obs, _, terminated, _, _ = env.step(action=action)
     if i % 100 == 0:
         print(i)
-        print(obs)
 
 env.close()

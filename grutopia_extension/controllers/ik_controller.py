@@ -2,8 +2,7 @@
 # @License :  (C) Copyright 2023-2024, PJLAB
 # @Time :     2023/09/13 20:00:00
 # yapf: disable
-from collections import OrderedDict
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from omni.isaac.core.articulations import Articulation
@@ -55,12 +54,6 @@ class InverseKinematicsController(BaseController):
             # so the ik base pose returned by get_local_pose may change during simulation, which is unexpected.
             # So the initial local pose of ik base is saved at first and used during the whole simulation.
             self._ik_base_local_pose = self._ik_base.get_local_pose()
-        self.obs_keys = [
-            'eef_position',
-            'eef_orientation',
-            'success',
-            'finished',
-        ]
 
     def get_ik_base_world_pose(self) -> Tuple[np.ndarray, np.ndarray]:
         if self._reference == 'robot':
@@ -115,11 +108,11 @@ class InverseKinematicsController(BaseController):
         )
         return result
 
-    def get_obs(self) -> OrderedDict[str, np.ndarray]:
+    def get_obs(self) -> Dict[str, np.ndarray]:
         """Compute the pose of the robot end effector using the simulated robot's current joint positions
 
         Returns:
-            OrderedDict[str, np.ndarray]:
+            Dict[str, np.ndarray]:
             - eef_position: eef position
             - eef_orientation: eef orientation quats
             - success: if solver converged successfully
@@ -138,13 +131,12 @@ class InverseKinematicsController(BaseController):
                 if dist_from_goal < self.threshold * self.robot.get_robot_scale()[0]:
                     finished = True
 
-        obs = {
+        return {
             'eef_position': pos * self._robot_scale,
             'eef_orientation': rot_matrices_to_quats(ori),
             'success': self.success,
             'finished': finished,
         }
-        return OrderedDict((key, obs[key]) for key in self.obs_keys)
 
 
 class KinematicsSolver(ArticulationKinematicsSolver):

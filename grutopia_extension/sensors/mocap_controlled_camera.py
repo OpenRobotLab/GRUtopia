@@ -1,5 +1,5 @@
 import math
-from collections import OrderedDict
+from typing import Dict
 
 import numpy as np
 import omni.isaac.core.utils.numpy.rotations as rot_utils
@@ -25,7 +25,6 @@ class MocapControlledCamera(BaseSensor):
         super().__init__(config, robot, scene)
         self.name = name
         self.config = config
-        self.obs_keys = ['rgba', 'frame']
 
         self.camera_mover = CameraMover([0, 0, 0])
 
@@ -59,13 +58,12 @@ class MocapControlledCamera(BaseSensor):
             # self._camera.add_instance_id_segmentation_to_frame()
             self._camera.add_bounding_box_2d_tight_to_frame()
 
-    def get_data(self) -> OrderedDict:
+    def get_data(self) -> Dict:
         if self.config.enable:
             rgba = self._camera.get_rgba()
             frame = self._camera.get_current_frame()
-            vals = [rgba, frame]
-            return OrderedDict((self.obs_keys[i], vals[i]) for i in range(len(self.obs_keys)))
-        return OrderedDict()
+            return {'rgba': rgba, 'frame': frame}
+        return {}
 
     @property
     def camera(self):

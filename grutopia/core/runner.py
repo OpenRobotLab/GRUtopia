@@ -299,7 +299,7 @@ class SimulatorRunner:
         Switch to the next episode.
 
         This method cleanups a finished task specified by task name and then
-        switches to the next task if it exists.
+        switches to the next task if exists.
 
         Args:
              task_name (Optional[str]): The task name of the finished task.

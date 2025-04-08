@@ -1,5 +1,4 @@
-from collections import OrderedDict
-from typing import Any, List
+from typing import Any, Dict, List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
@@ -45,10 +44,6 @@ class PIDSpeedController(BaseController):
         self.integral_threshold = np.pi / 6  # Integral separation threshold
 
         super().__init__(config=config, robot=robot, scene=scene)
-        self.obs_keys = [
-            'distance_to_goal',
-            'finished',
-        ]
 
     @staticmethod
     def get_angle(start_position, start_orientation, goal_position):
@@ -179,13 +174,12 @@ class PIDSpeedController(BaseController):
             start_position=start_position, start_orientation=start_orientation, goal_position=np.array(action[0])
         )
 
-    def get_obs(self) -> OrderedDict[str, Any]:
+    def get_obs(self) -> Dict[str, Any]:
         """Gets controller status information."""
         if self.goal_position is None:
-            return OrderedDict()
+            return {}
         start_position = self.robot.get_world_pose()[0]
         start_position[-1] = 0
         dist_from_goal = np.linalg.norm(start_position - self.goal_position)
         finished = dist_from_goal < self.threshold
-        obs = {'finished': finished, 'distance_to_goal': dist_from_goal}
-        return OrderedDict((key, obs[key]) for key in self.obs_keys)
+        return {'finished': finished, 'distance_to_goal': dist_from_goal}
