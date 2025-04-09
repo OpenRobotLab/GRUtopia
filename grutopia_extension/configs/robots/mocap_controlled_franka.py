@@ -5,9 +5,13 @@ from grutopia.macros import gm
 from grutopia_extension.configs.controllers import (
     FrankaMocapTeleopControllerCfg,
     GripperControllerCfg,
+    LayoutEditMocapControllerCfg,
     RMPFlowControllerCfg,
 )
-from grutopia_extension.configs.sensors import MocapControlledCameraCfg
+from grutopia_extension.configs.sensors import (
+    LayoutEditMocapControlledCameraCfg,
+    MocapControlledCameraCfg,
+)
 
 rmpflow_controller_cfg = RMPFlowControllerCfg(
     name='rmpflow_controller',
@@ -30,6 +34,23 @@ teleop_cfg = FrankaMocapTeleopControllerCfg(
     sub_controllers=[rmpflow_controller_cfg, gripper_controller_cfg],
 )
 
+layout_cfg = LayoutEditMocapControllerCfg(
+    name='layout_edit_mocap_controller',
+    scale=(0.25, 0.75, 0.75),
+    hand_scale=[0.01, 0.01, 0.01],
+    target_position=(0.0, 0.0, 1.0),
+    rh_origin_xyz=(-0.38, -0.20, 1.2),
+    lh_origin_xyz=(-0.38, 0.10, 1.2),
+    origin_xyz_angle=(0, 0, 0),
+    right_hand_path=gm.ASSET_PATH + '/assets/hand/right_hand.usd',
+    left_hand_path=gm.ASSET_PATH + '/assets/hand/left_hand.usd',
+    left_hand_prim_path='/World/left_hand',
+    right_hand_prim_path='/World/right_hand',
+    save_asset_path='GRUtopia/out',
+    save_robot=False,
+    sub_controllers=[rmpflow_controller_cfg],
+)
+
 lh_controlled_camera_cfg = MocapControlledCameraCfg(
     name='lh_controlled_camera',
     prim_path='logo_link/lh_controlled_camera',
@@ -37,9 +58,15 @@ lh_controlled_camera_cfg = MocapControlledCameraCfg(
     orientation=(0.70710678, 0.0, 0.70710678, 0.0),
 )
 
+layout_controlled_camera_cfg = LayoutEditMocapControlledCameraCfg(
+    name='layout_controlled_camera',
+    prim_path='Camera/layout_controlled_camera',
+    translation=(0.11, -0.04, 6.5),
+    orientation=(0.70710678, 0.0, 0.70710678, 0.0),
+)
+
 
 class MocapControlledFrankaRobotCfg(RobotCfg):
-    # meta info
     name: Optional[str] = 'mocap_controlled_franka'
     type: Optional[str] = 'MocapControlledFrankaRobot'
     prim_path: Optional[str] = '/mocap_controlled_franka'

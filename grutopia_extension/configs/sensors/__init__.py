@@ -25,3 +25,11 @@ class MocapControlledCameraCfg(SensorCfg):
     resolution: Optional[Tuple[int, int]] = None  # Camera only
     translation: Optional[Tuple[float, float, float]] = None
     orientation: Optional[Tuple[float, float, float, float]] = None  # Quaternion in local frame
+
+
+class LayoutEditMocapControlledCameraCfg(SensorCfg):
+    type: Optional[str] = 'LayoutEditMocapControlledCamera'
+    enable: Optional[bool] = True
+    resolution: Optional[Tuple[int, int]] = None  # Camera only
+    translation: Optional[Tuple[float, float, float]] = None
+    orientation: Optional[Tuple[float, float, float, float]] = None  # Quaternion in local frame

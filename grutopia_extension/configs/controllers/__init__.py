@@ -26,6 +26,9 @@ from grutopia_extension.configs.controllers.ik_controller import (
     InverseKinematicsControllerCfg,
 )
 from grutopia_extension.configs.controllers.joint_controller import JointControllerCfg
+from grutopia_extension.configs.controllers.layout_edit_mocap_controller import (
+    LayoutEditMocapControllerCfg,
+)
 from grutopia_extension.configs.controllers.move_along_path_points_controller import (
     MoveAlongPathPointsControllerCfg,
 )
