@@ -1,3 +1,4 @@
+import json
 import time
 
 from grutopia.core.config import Config, SimConfig
@@ -82,6 +83,15 @@ while env.simulation_app.is_running():
         assert pos[0] < 5.0 and pos[1] < 5.0 and pos[2] < 2.0, 'out of range'
     if i == 2000:
         t5 = time.perf_counter()
+        run_result = {
+            'start_sim_app': t1 - t0,
+            'import_ext': t2 - t1,
+            'create_env': t3 - t2,
+            'reset_env': t4 - t3,
+            '2k_step': t5 - t4,
+        }
+        with open('./test_result.json', 'w', encoding='utf-8') as f:
+            json.dump(run_result, f, ensure_ascii=False, indent=4)
         print(f'times: {t1-t0}, {t2-t1}, {t3-t2}, {t4-t3}, {t5-t4}')
         break
 

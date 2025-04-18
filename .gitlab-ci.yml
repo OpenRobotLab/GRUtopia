@@ -1,5 +1,10 @@
+include:
+  - local: tests/e2e_test.yaml
+
+
 stages:
   - code_check
+  - e2e_test
   - build
 
 
