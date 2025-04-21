@@ -1,0 +1,39 @@
+name: "🚀 Enhancement"
+description: Suggest a new feature request or improvement on the project
+title: '[Enhancement]: '
+labels:
+  - type/enhancement
+  - triage-needed
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A clear and concise description of what new feature or behavior you would like to see. If applicable, please describe the current behavior as well.
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What feature or enhancement are you proposing?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: What is your motivation for adding / enhancing this feature, optimally described in the form of a concrete user story or use case.
+      value: |
+        <!--  Please outline the motivation for the proposal. Summarize the core use cases and user problems and needs you are trying to solve.
+
+        Is your feature request related to a problem? e.g.,"I'm always frustrated when [...]".
+
+        If this is related to another GitHub issue, please link here too. -->
+    validations:
+      required: false
+
+  - type: textarea
+    id: additionalinfo
+    attributes:
+      label: Additional information
+      description: If you think that any additional information would be useful please provide them here.

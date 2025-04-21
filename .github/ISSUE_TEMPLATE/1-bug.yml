@@ -1,0 +1,96 @@
+name: "🐛 Bug report"
+description: Report errors or unexpected behavior
+title: "[Bug]: "
+labels: ["type/bug", "triage-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report, please make sure to [search for existing issues](https://github.com/OpenRobotLab/GRUtopia/issues) before filing a new one!
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      placeholder: |
+        A clear and concise description of what the bug is.
+        Try to isolate the issue to help the community to reproduce it easily and increase chances for a fast fix.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        Please try to provide a minimal example to reproduce the bug. Error messages and stack traces are also helpful.
+
+        <!-- Please post terminal logs, minimal example to reproduce, or command to run under three backticks (```) to allow code formatting.
+
+        ```
+        Paste your error here
+        ```
+
+        For more information on this, check: https://www.markdownguide.org/extended-syntax/#fenced-code-blocks
+
+        -->
+      value: |
+        Please try to provide a minimal example to reproduce the bug. Error messages and stack traces are also helpful.
+
+        <!-- Please post terminal logs, minimal example to reproduce, or command to run under three backticks (```) to allow code formatting.
+
+        ```
+        Paste your error here
+        ```
+
+        For more information on this, check: https://www.markdownguide.org/extended-syntax/#fenced-code-blocks
+
+        -->
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      placeholder: "A clear and concise description of what you expected to happen."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots-videos
+    attributes:
+      label: Screenshots/Videos
+      placeholder: "If applicable, add screenshots and/or a video to help explain your problem."
+
+  - type: textarea
+    id: desktop-device
+    attributes:
+      label: Environment
+      placeholder: |
+        - OS: [e.g. Ubuntu 22.04]
+        - GPU/CPU [e.g. A100, RTX 4090, i9-14900K]
+        - GPU-driver version
+      value: |
+        - OS: [e.g. Ubuntu 22.04]
+        - GPU/CPU [e.g. A100, RTX 4090, i9-14900K]
+        - GPU-driver version
+    validations:
+      required: true
+
+  - type: textarea
+    id: version
+    attributes:
+      label: Release version or Commit ID
+      placeholder: |
+        Please provide:
+         - a) **version number** of the release causing the issue, OR
+         - b) **SHA/hash** of the latest commit if working from git. You can get this by running the `git rev-parse HEAD` command on your current branch.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      placeholder: "Add any other context about the problem here."
