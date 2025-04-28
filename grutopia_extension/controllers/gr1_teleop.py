@@ -72,9 +72,9 @@ class GR1T2TeleOpHandler:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--urdf_path', type=str, default='../../assets/robots/gr1/urdf/robot.urdf')
+    parser.add_argument('--urdf_path', type=str, default='../../grutopia/assets/robots/gr1/urdf/robot.urdf')
     parser.add_argument(
-        '--retargeting_config_path', type=str, default='../../assets/robots/gr1/inspire_hand/inspire_hand.yml'
+        '--retargeting_config_path', type=str, default='../../grutopia/assets/robots/gr1/inspire_hand/inspire_hand.yml'
     )
 
     try:
