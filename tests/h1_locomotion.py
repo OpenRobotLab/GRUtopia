@@ -41,7 +41,7 @@ def main():
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
+        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
         task_config=SingleInferenceTaskCfg(
             episodes=[
                 SingleInferenceEpisodeCfg(
@@ -93,7 +93,7 @@ def main():
             }
             with open('./test_result.json', 'w', encoding='utf-8') as f:
                 json.dump(run_result, f, ensure_ascii=False, indent=4)
-            print(f'times: {t1-t0}, {t2-t1}, {t3-t2}, {t4-t3}, {t5-t4}')
+            print(f'times: {run_result}')
             break
 
     env.close()

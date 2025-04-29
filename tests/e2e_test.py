@@ -47,3 +47,9 @@ def teardown_function(function):
 def test_h1_locomotion():
     start_command = 'python ./tests/h1_locomotion.py'
     common_body(start_command)
+
+
+@pytest.mark.P0
+def test_rep_camera_pointcloud():
+    start_command = 'python ./tests/rep_camera_pointcloud.py'
+    common_body(start_command)

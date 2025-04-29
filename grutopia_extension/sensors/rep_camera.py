@@ -3,7 +3,7 @@ from typing import Dict
 
 import numpy as np
 import omni.replicator.core as rep
-from pxr import Usd, UsdGeom
+import torch
 
 from grutopia.core.robot.robot import BaseRobot, Scene
 from grutopia.core.robot.sensor import BaseSensor
@@ -100,95 +100,13 @@ class RepCamera(BaseSensor):
 
         if self.depth:
             try:
-                output_data['pointcloud'] = self.get_pointcloud(output_data['depth'], output_data['camera_params'])
+                output_data['pointcloud'] = self.get_pointcloud_gpu(output_data['depth'], output_data['camera_params'])
             except Exception:
                 output_data['pointcloud'] = None
 
         return output_data
 
     # ============================================================================================================
-    @staticmethod
-    def as_type(data, dtype):
-        if dtype == 'float32':
-            return data.astype(np.float32)
-        elif dtype == 'bool':
-            return data.astype(bool)
-        elif dtype == 'int32':
-            return data.astype(np.int32)
-        elif dtype == 'int64':
-            return data.astype(np.int64)
-        elif dtype == 'long':
-            return data.astype(np.long)
-        elif dtype == 'uint8':
-            return data.astype(np.uint8)
-        else:
-            print(f'Type {dtype} not supported.')
-
-    def convert(self, data, device=None, dtype='float32', indexed=None):
-        return self.as_type(np.asarray(data), dtype)
-
-    @staticmethod
-    def pad(data, pad_width, mode='constant', value=None):
-        if mode == 'constant' and value is not None:
-            return np.pad(data, pad_width, mode, constant_values=value)
-        if mode == 'linear_ramp' and value is not None:
-            return np.pad(data, pad_width, mode, end_values=value)
-        return np.pad(data, pad_width, mode)
-
-    @staticmethod
-    def matmul(matrix_a, matrix_b):
-        return np.matmul(matrix_a, matrix_b)
-
-    @staticmethod
-    def transpose_2d(data):
-        return np.transpose(data)
-
-    @staticmethod
-    def expand_dims(data, axis):
-        return np.expand_dims(data, axis)
-
-    @staticmethod
-    def inverse(data):
-        return np.linalg.inv(data)
-
-    def create_tensor_from_list(self, data, dtype):
-        return self.as_type(np.array(data), dtype)
-
-    @staticmethod
-    def get_camera_pointcloud(depth_image: np.ndarray, mask: np.ndarray, intrinsic_matrix: np.ndarray) -> np.ndarray:
-        """Calculates the 3D coordinates (x, y, z) of points in the depth image based on
-        the horizontal field of view (HFOV), the image width and height, the depth values,
-        and the pixel x and y coordinates.
-
-        Args:
-            depth_image (np.ndarray): 2D depth image.
-            mask (np.ndarray): 2D binary mask identifying relevant pixels.
-            fx (float): Focal length in the x direction.
-            fy (float): Focal length in the y direction.
-
-        Returns:
-            np.ndarray: Array of 3D coordinates (x, y, z) of the points in the image plane.
-        """
-        v, u = np.where(mask)
-        depth = depth_image[v, u]
-        points_2d = np.hstack((u.reshape(-1, 1), v.reshape(-1, 1)))
-        homogeneous = np.pad(points_2d, ((0, 0), (0, 1)), constant_values=1.0)
-
-        intrinsics_matrix_inv = np.linalg.inv(intrinsic_matrix)
-
-        points_in_camera_axes = np.dot(intrinsics_matrix_inv, homogeneous.T * np.expand_dims(depth, 0))
-
-        return points_in_camera_axes
-
-    @staticmethod
-    def cam2world(cam_pointcloud: np.ndarray, extrinsic_matrix: np.ndarray):
-        view_matrix_ros_inv = np.linalg.inv(extrinsic_matrix)
-        points_in_camera_axes_homogenous = np.pad(cam_pointcloud, ((0, 1), (0, 0)), constant_values=1.0)
-        points_in_world_frame_homogenous = np.dot(view_matrix_ros_inv, points_in_camera_axes_homogenous)
-        points_in_world_frame = points_in_world_frame_homogenous[:3, :].T
-
-        return points_in_world_frame
-
     @staticmethod
     def get_intrinsic_matrix(camera_params: dict):
         width, height = camera_params['renderProductResolution']
@@ -201,76 +119,65 @@ class RepCamera(BaseSensor):
         cy = height * 0.5
         return np.array([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]])
 
-    @staticmethod
-    def get_extrinsic_matrix(view_transform: np.ndarray):
-        view_transform = np.linalg.inv(view_transform)
-        extrinsic_matrix = np.dot(
-            np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]]), np.linalg.inv(view_transform.T)
-        )
-        return extrinsic_matrix
-
-    def get_view_matrix_ros(self, camera_params):
-        """3D points in World Frame -> 3D points in Camera Ros Frame
-
-        Returns:
-            np.ndarray: the view matrix that transforms 3d points in the world frame to 3d points in the camera axes
-                        with ros camera convention.
+    def get_pointcloud_gpu(self, depth, camera_params) -> np.ndarray:
         """
-        R_U_TRANSFORM = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
-        try:
-            world_w_cam_u_T = self.transpose_2d(
-                self.convert(
-                    np.linalg.inv(camera_params['cameraViewTransform'].reshape(4, 4)),
-                    dtype='float32',
-                    indexed=True,
-                )
-            )
-        except np.linalg.LinAlgError:
-            world_w_cam_u_T = self.transpose_2d(
-                self.convert(
-                    UsdGeom.Imageable(self.camera_prim_path).ComputeLocalToWorldTransform(Usd.TimeCode.Default()),
-                    dtype='float32',
-                    indexed=True,
-                )
-            )
-        r_u_transform_converted = self.convert(R_U_TRANSFORM, dtype='float32', indexed=True)
-        return self.matmul(r_u_transform_converted, self.inverse(world_w_cam_u_T))
-
-    def get_world_points_from_image_coords(
-        self, depth: np.ndarray, mask: np.ndarray, extrinsic_matrix, intrinsic_matrix: np.ndarray
-    ):
-        """Using pinhole perspective projection, this method does the inverse projection given the depth of the
-            pixels
+        Converts a depth image to a point cloud using GPU acceleration.
 
         Args:
-            extrinsic_matrix ():
-            mask ():
-            intrinsic_matrix ():
-            depth (np.ndarray): depth corresponds to each of the pixel coords. shape is (n,)
+            depth (np.ndarray): The depth image as a 2D numpy array.
+            camera_params (dict): The camera parameters, including intrinsic and extrinsic matrices.
 
         Returns:
-            np.ndarray: (n, 3) 3d points (X, Y, Z) in world frame. shape is (n, 3) where n is the number of points.
+            np.ndarray: The point cloud as a 2D numpy array with shape (N, 3), where N is the number of points.
         """
-        points_in_camera_axes = self.get_camera_pointcloud(depth, mask, intrinsic_matrix)
-        points_in_world_frame = self.cam2world(points_in_camera_axes, extrinsic_matrix)
-        return points_in_world_frame
+        # Convert the depth image to a GPU tensor.
+        depth_tensor = torch.as_tensor(depth, device='cuda', dtype=torch.float32)
 
-    def get_pointcloud(self, depth, camera_params) -> np.ndarray:
-        """
-        Returns:
-            pointcloud (np.ndarray):  (N x 3) 3d points (X, Y, Z) in camera frame. Shape is (N x 3) where N is the number of points.
-        Note:
-            This currently uses the depth annotator to generate the pointcloud. In the future, this will be switched to use
-            the pointcloud annotator.
-        """
-        camera_in = self.get_intrinsic_matrix(camera_params)
-        camera_transform = camera_params['cameraViewTransform'].reshape(4, 4)
-        camera_ex = self.get_extrinsic_matrix(camera_transform)
-        # mask = (depth < max_depth) * (depth > min_depth)
-        mask = (depth < 10000) * (depth > 0.01)
-        pointcloud = self.get_world_points_from_image_coords(depth, mask, camera_ex, camera_in)
+        # Create a mask for valid depth values.
+        mask = (depth_tensor < 10000) & (depth_tensor > 0.01)
 
-        return pointcloud
+        # Get the indices of valid depth values.
+        v, u = torch.where(mask)
+        # If no valid depth values, return an empty array.
+        if v.shape[0] == 0:
+            return np.empty((0, 3), dtype=np.float32)
+
+        # Extract depth values at valid indices.
+        depth_values = depth_tensor[v, u]
+
+        # Convert 2D indices to 2D points.
+        points_2d = torch.stack([u, v], dim=1).float()  # (N, 2)
+        # Convert 2D points to homogeneous coordinates.
+        homogeneous = torch.cat([points_2d, torch.ones_like(points_2d[:, :1])], dim=1)  # (N, 3)
+
+        # Get the inverse of the intrinsic matrix.
+        intrinsic_matrix = self.get_intrinsic_matrix(camera_params)
+        K_inv = torch.inverse(torch.tensor(intrinsic_matrix, device='cuda', dtype=torch.float32))
+        # Get points in camera local frame.
+        points_camera = (K_inv @ (homogeneous.T * depth_values).T[:, :, None]).squeeze()
+
+        # Get the extrinsic matrix.
+        camera_transform = torch.tensor(
+            camera_params['cameraViewTransform'].reshape(4, 4), device='cuda', dtype=torch.float32
+        )
+        extrinsic_matrix = self.get_extrinsic_matrix_gpu(camera_transform)
+        view_matrix_ros_inv = torch.inverse(extrinsic_matrix)
+
+        # Convert points in camera frame to homogeneous coordinates.
+        ones = torch.ones(points_camera.shape[0], 1, device='cuda')
+        points_camera_homo = torch.cat([points_camera, ones], dim=1)  # (N, 4)
+        # Translate points to world frame.
+        points_world_homo = points_camera_homo @ view_matrix_ros_inv.T
+        points_world = points_world_homo[:, :3].cpu().numpy()
+
+        return points_world
+
+    def get_extrinsic_matrix_gpu(self, view_transform: torch.Tensor) -> torch.Tensor:
+        R_U_TRANSFORM = torch.tensor(
+            [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]], device='cuda', dtype=torch.float32
+        )
+
+        return R_U_TRANSFORM @ view_transform.T
 
     # ====================================================================================
 
