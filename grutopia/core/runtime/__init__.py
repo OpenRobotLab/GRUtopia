@@ -51,6 +51,7 @@ class SimulatorRuntime:
         self._simulation_app = SimulationApp(
             {'headless': self.headless, 'anti_aliasing': 0, 'hide_ui': False, 'multi_gpu': False}
         )
+        self._simulation_app._carb_settings.set('/physics/cooking/ujitsoCollisionCooking', False)
         log.debug('SimulationApp init done')
 
         if webrtc:
