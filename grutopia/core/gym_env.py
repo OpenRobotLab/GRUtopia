@@ -46,6 +46,8 @@ class Env(gym.Env):
         log.debug(f'================ len(episodes): {len(episodes)} ==================')
 
         for runtime in self._runtime.task_runtime_manager.episodes:
+            if len(runtime.robots) == 0:
+                return
             if len(runtime.robots) != 1:
                 raise ValueError(f'Only support single agent now, but episode requires {len(runtime.robots)} agents')
             if robot_name is None:
@@ -76,6 +78,7 @@ class Env(gym.Env):
             info (dictionary):  Contains the key `task_runtime` if there is an unfinished task
         """
         info = {}
+        obs = {}
 
         origin_obs, task_runtime = self.runner.reset(self._current_task_name)
         if task_runtime is None:
@@ -84,7 +87,8 @@ class Env(gym.Env):
 
         self._current_task_name = task_runtime.name
         info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime
-        obs = origin_obs[task_runtime.name][self._robot_name]
+        if self._robot_name:
+            obs = origin_obs[task_runtime.name][self._robot_name]
 
         return obs, info
 
@@ -124,7 +128,8 @@ class Env(gym.Env):
         if rewards[self._current_task_name] != -1:
             reward = rewards[self._current_task_name]
 
-        obs = origin_obs[self._current_task_name][self._robot_name]
+        if self._robot_name:
+            obs = origin_obs[self._current_task_name][self._robot_name]
         terminated = terminated_status[self._current_task_name]
 
         return obs, reward, terminated, truncated, info
@@ -160,6 +165,8 @@ class Env(gym.Env):
             return {}
 
         _obs = self._runner.get_obs()
+        if self._robot_name is None:
+            return {}
         return _obs[self._current_task_name][self._robot_name]
 
     def render(self, mode='human'):

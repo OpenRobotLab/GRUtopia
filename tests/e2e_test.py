@@ -50,6 +50,12 @@ def test_h1_locomotion():
 
 
 @pytest.mark.P0
+def test_load_scene_without_robot():
+    start_command = 'python ./tests/load_scene_without_robot.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
 def test_rep_camera_pointcloud():
     start_command = 'python ./tests/rep_camera_pointcloud.py'
     common_body(start_command)
