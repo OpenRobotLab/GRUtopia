@@ -46,7 +46,8 @@ class Env(gym.Env):
         log.debug(f'================ len(episodes): {len(episodes)} ==================')
 
         for runtime in self._runtime.task_runtime_manager.episodes:
-            if len(runtime.robots) == 0:
+            # TODO: this needs to be modified when enabling multiple episodes
+            if len(runtime.robots) == 0:  # for one episode only.
                 return
             if len(runtime.robots) != 1:
                 raise ValueError(f'Only support single agent now, but episode requires {len(runtime.robots)} agents')
@@ -75,7 +76,7 @@ class Env(gym.Env):
 
         Returns:
             observation (ObsType): Observation of the initial state.
-            info (dictionary):  Contains the key `task_runtime` if there is an unfinished task
+            info (dictionary): Contains the key `task_runtime` if there is an unfinished task
         """
         info = {}
         obs = {}
