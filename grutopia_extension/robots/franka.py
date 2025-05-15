@@ -1,4 +1,6 @@
 import os
+from collections import OrderedDict
+from typing import Any
 
 import numpy as np
 from omni.isaac.core.prims import RigidPrim
@@ -82,7 +84,7 @@ class FrankaRobot(BaseRobot):
     def get_last_action(self):
         return self.last_action
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict[str, Any]:
         position, orientation = self.isaac_robot.get_world_pose()
 
         # custom
@@ -103,4 +105,4 @@ class FrankaRobot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return self._make_ordered(obs)

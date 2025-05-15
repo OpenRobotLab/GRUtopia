@@ -1,5 +1,4 @@
-from collections import defaultdict
-from typing import Dict
+from collections import OrderedDict, defaultdict
 
 import numpy as np
 import omni.replicator.core as rep
@@ -53,7 +52,7 @@ class RepCamera(BaseSensor):
         log.debug(f'resolution      : {self.resolution}')
         return prim_path
 
-    def get_camera_data(self, data_names):
+    def get_camera_data(self, data_names=('landmarks', 'rgba', 'depth', 'pointcloud', 'camera_params')) -> OrderedDict:
         """
         Get specified data from a camera.
 
@@ -74,7 +73,7 @@ class RepCamera(BaseSensor):
             ldr_color.attach(self.rp)
             self.rp_annotators['rgba'] = ldr_color
 
-        if 'depth' in data_names and 'depth' not in self.rp_annotators and self.depth:
+        if self.depth and 'depth' in data_names and 'depth' not in self.rp_annotators:
             distance_to_image_plane = rep.AnnotatorRegistry.get_annotator('distance_to_image_plane')
             distance_to_image_plane.attach(self.rp)
             self.rp_annotators['depth'] = distance_to_image_plane
@@ -103,8 +102,7 @@ class RepCamera(BaseSensor):
                 output_data['pointcloud'] = self.get_pointcloud_gpu(output_data['depth'], output_data['camera_params'])
             except Exception:
                 output_data['pointcloud'] = None
-
-        return output_data
+        return self._make_ordered(output_data)
 
     # ============================================================================================================
     @staticmethod
@@ -181,10 +179,10 @@ class RepCamera(BaseSensor):
 
     # ====================================================================================
 
-    def get_data(self) -> Dict:
+    def get_data(self) -> OrderedDict:
         if self.config.enable:
-            return self.get_camera_data(['landmarks', 'rgba', 'depth', 'camera_params', 'pointcloud'])
-        return {}
+            return self.get_camera_data()
+        return self._make_ordered()
 
     def cleanup(self) -> None:
         if self.rp is not None:

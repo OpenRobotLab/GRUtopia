@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 from typing import List
 
 import numpy as np
@@ -163,7 +164,7 @@ class H1WithHandRobot(BaseRobot):
             control = controller.action_to_control(controller_action)
             self.isaac_robot.apply_action(control)
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self._robot_base.get_world_pose()
 
         # custom
@@ -179,4 +180,4 @@ class H1WithHandRobot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return self._make_ordered(obs)

@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from collections import OrderedDict
 from functools import wraps
 from typing import Dict
 
@@ -26,15 +27,7 @@ class BaseSensor(ABC):
         self.config = config
         self._scene = scene
         self._robot = robot
-
-    @abstractmethod
-    def get_data(self) -> Dict:
-        """Get data from sensor.
-
-        Returns:
-            Dict: data dict of sensor.
-        """
-        raise NotImplementedError()
+        self.obs_keys = []
 
     def post_reset(self):
         """Post reset operations."""
@@ -45,6 +38,13 @@ class BaseSensor(ABC):
         Operations that need to be cleaned up before switching scenes (or resetting)
         """
         pass
+
+    def _make_ordered(self, obs: Dict = None) -> OrderedDict:
+        if obs is None:
+            return OrderedDict()
+        if not self.obs_keys:
+            self.obs_keys = [i for i in obs.keys()]
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)
 
     @classmethod
     def register(cls, name: str):
@@ -66,7 +66,7 @@ class BaseSensor(ABC):
         return decorator
 
 
-def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[str, BaseSensor]:
+def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> OrderedDict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:
@@ -85,4 +85,4 @@ def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Dict[
             sensor_map[sensor_cfg.name] = sensor_ins
             log.debug(f'==================== {sensor_cfg.name} loaded==========================')
 
-    return sensor_map
+    return OrderedDict((sensor_cfg.name, sensor_map[sensor_cfg.name]) for sensor_cfg in robot_cfg.sensors)

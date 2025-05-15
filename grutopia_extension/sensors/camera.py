@@ -1,4 +1,4 @@
-from typing import Dict
+from collections import OrderedDict
 
 from omni.isaac.sensor import Camera as i_Camera
 
@@ -50,9 +50,12 @@ class Camera(BaseSensor):
         log.debug(f'resolution      : {resolution}')
         return i_Camera(prim_path=prim_path, resolution=resolution)
 
-    def get_data(self) -> Dict:
-        if self.config.enable:
-            rgba = self._camera.get_rgba()
-            frame = self._camera.get_current_frame()
-            return {'rgba': rgba, 'frame': frame}
-        return {}
+    def get_data(self) -> OrderedDict:
+        if not self.config.enable:
+            return self._make_ordered()
+
+        rgba = self._camera.get_rgba()
+        frame = self._camera.get_current_frame()
+
+        obs = {'rgba': rgba, 'frame': frame}
+        return self._make_ordered(obs)

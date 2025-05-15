@@ -1,5 +1,6 @@
+from collections import OrderedDict
 from functools import wraps
-from typing import Dict, List
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from omni.isaac.core.prims import RigidPrim
@@ -23,6 +24,7 @@ class BaseRobot:
         self.controllers = {}
         self.sensors = {}
         self._scene = None
+        self.obs_keys = []
 
     def set_up_to_scene(self, scene: Scene):
         """Set up robot in the scene.
@@ -40,8 +42,8 @@ class BaseRobot:
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 
-        self.controllers: Dict[str, BaseController] = create_controllers(robot_cfg, self, scene)
-        self.sensors: Dict[str, BaseSensor] = create_sensors(robot_cfg, self, scene)
+        self.controllers: OrderedDict[str, BaseController] = create_controllers(robot_cfg, self, scene)
+        self.sensors: OrderedDict[str, BaseSensor] = create_sensors(robot_cfg, self, scene)
 
     def post_reset(self):
         """Set up things that happen after the world resets."""
@@ -68,7 +70,7 @@ class BaseRobot:
         """
         raise NotImplementedError()
 
-    def get_obs(self) -> dict:
+    def get_obs(self) -> OrderedDict:
         """Get observation of robot, including controllers, sensors, and world pose.
 
         Raises:
@@ -76,12 +78,28 @@ class BaseRobot:
         """
         raise NotImplementedError()
 
-    def get_robot_base(self) -> RigidPrim:
+    def _get_controllers_and_sensors_obs(self) -> Tuple[OrderedDict[str, Any], OrderedDict[str, Any]]:
         """
-        Get base link of robot.
+        Retrieves the observations from all controllers and sensors, returning them as two separate ordered dictionaries.
 
         Returns:
-            RigidPrim: rigid prim of robot base link.
+            Tuple[OrderedDict[str, Any], OrderedDict[str, Any]]: A tuple containing two ordered dictionaries. The first
+            dictionary contains the observations from the controllers, and the second contains the data from the sensors.
+        """
+        controllers_obs = OrderedDict()
+        sensors_obs = OrderedDict()
+        for c_obs_name, controller_obs in self.controllers.items():
+            controllers_obs[c_obs_name] = controller_obs.get_obs()
+        for sensor_name, sensor_obs in self.sensors.items():
+            sensors_obs[sensor_name] = sensor_obs.get_data()
+        return controllers_obs, sensors_obs
+
+    def get_robot_base(self) -> RigidPrim:
+        """
+        Get the base link of this robot.
+
+        Returns:
+            RigidPrim: rigid prim of the robot base link.
         """
         raise NotImplementedError()
 
@@ -107,6 +125,13 @@ class BaseRobot:
     def get_rigid_bodies(self) -> List[RigidPrim]:
         return []
 
+    def _make_ordered(self, obs: Dict = None) -> OrderedDict:
+        if obs is None:
+            return OrderedDict()
+        if not self.obs_keys:
+            self.obs_keys = [i for i in obs.keys()]
+        return OrderedDict((key, obs[key]) for key in self.obs_keys)
+
     @classmethod
     def register(cls, name: str):
         """Register a robot class with its name(decorator).
@@ -127,7 +152,7 @@ class BaseRobot:
         return decorator
 
 
-def create_robots(runtime: TaskRuntime, scene: Scene) -> Dict[str, BaseRobot]:
+def create_robots(runtime: TaskRuntime, scene: Scene) -> OrderedDict[str, BaseRobot]:
     """Create robot instances in runtime.
 
     Args:
@@ -135,9 +160,9 @@ def create_robots(runtime: TaskRuntime, scene: Scene) -> Dict[str, BaseRobot]:
         scene (Scene): isaac scene.
 
     Returns:
-        Dict[str, BaseRobot]: robot instances dictionary.
+        OrderedDict[str, BaseRobot]: robot instances dictionary.
     """
-    robot_map = {}
+    robot_map = OrderedDict()
     for robot in runtime.robots:
         if robot.type not in BaseRobot.robots:
             raise KeyError(f'unknown robot type "{robot.type}"')

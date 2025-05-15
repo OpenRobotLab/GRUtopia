@@ -2,7 +2,8 @@
 # @License :  (C) Copyright 2023-2024, PJLAB
 # @Time :     2023/09/13 20:00:00
 # yapf: disable
-from typing import Dict, List, Tuple
+from collections import OrderedDict
+from typing import List, Tuple
 
 import numpy as np
 from omni.isaac.core.articulations import Articulation
@@ -108,11 +109,11 @@ class InverseKinematicsController(BaseController):
         )
         return result
 
-    def get_obs(self) -> Dict[str, np.ndarray]:
+    def get_obs(self) -> OrderedDict[str, np.ndarray]:
         """Compute the pose of the robot end effector using the simulated robot's current joint positions
 
         Returns:
-            Dict[str, np.ndarray]:
+            OrderedDict[str, np.ndarray]:
             - eef_position: eef position
             - eef_orientation: eef orientation quats
             - success: if solver converged successfully
@@ -131,12 +132,13 @@ class InverseKinematicsController(BaseController):
                 if dist_from_goal < self.threshold * self.robot.get_robot_scale()[0]:
                     finished = True
 
-        return {
+        obs = {
             'eef_position': pos * self._robot_scale,
             'eef_orientation': rot_matrices_to_quats(ori),
             'success': self.success,
             'finished': finished,
         }
+        return self._make_ordered(obs)
 
 
 class KinematicsSolver(ArticulationKinematicsSolver):

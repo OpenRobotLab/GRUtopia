@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 
 import numpy as np
 from omni.isaac.core.prims.xform_prim import XFormPrim
@@ -79,7 +80,7 @@ class CameraRobot(BaseRobot):
             # with rep.get.camera(self.camera_prim_path):
             #     rep.modify.pose(position=control['pos'], rotation=control['rot'], rotation_order='XYZ')
 
-    def get_obs(self):
+    def get_obs(self) -> OrderedDict:
         position, orientation = self.get_world_pose()
 
         # custom
@@ -95,4 +96,4 @@ class CameraRobot(BaseRobot):
             obs['controllers'][c_obs_name] = controller_obs.get_obs()
         for sensor_name, sensor_obs in self.sensors.items():
             obs['sensors'][sensor_name] = sensor_obs.get_data()
-        return obs
+        return self._make_ordered(obs)

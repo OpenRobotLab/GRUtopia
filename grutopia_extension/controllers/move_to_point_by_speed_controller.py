@@ -1,4 +1,5 @@
-from typing import Any, Dict, List
+from collections import OrderedDict
+from typing import Any, List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
@@ -122,13 +123,14 @@ class MoveToPointBySpeedController(BaseController):
             threshold=self.threshold,
         )
 
-    def get_obs(self) -> Dict[str, Any]:
+    def get_obs(self) -> OrderedDict[str, Any]:
         if self.goal_position is None or self.last_threshold is None:
-            return {}
+            return self._make_ordered()
         start_position = self.robot.get_world_pose()[0]
         start_position[-1] = 0
         dist_from_goal = np.linalg.norm(start_position - self.goal_position)
         finished = True if dist_from_goal < self.last_threshold else False
-        return {
+        obs = {
             'finished': finished,
         }
+        return self._make_ordered(obs)

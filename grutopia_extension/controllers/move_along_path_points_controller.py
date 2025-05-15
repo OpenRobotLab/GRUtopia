@@ -1,5 +1,6 @@
+from collections import OrderedDict
 from copy import deepcopy
-from typing import Any, Dict, List
+from typing import Any, List
 
 import numpy as np
 from omni.isaac.core.scenes import Scene
@@ -85,15 +86,16 @@ class MoveAlongPathPointsController(BaseController):
             threshold=self.threshold,
         )
 
-    def get_obs(self) -> Dict[str, Any]:
+    def get_obs(self) -> OrderedDict[str, Any]:
         finished = False
         total_points = len(self.path_points)
         if total_points > 0 and self.path_point_idx == total_points - 1:
             finished = self.sub_controllers[0].get_obs().get('finished', False)
 
-        return {
+        obs = {
             'current_index': self.path_point_idx,
             'current_point': self.current_path_point,
             'total_points': total_points,
             'finished': finished,
         }
+        return self._make_ordered(obs)

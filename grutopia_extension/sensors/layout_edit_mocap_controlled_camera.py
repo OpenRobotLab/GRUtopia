@@ -1,5 +1,5 @@
 import math
-from typing import Dict
+from typing import OrderedDict
 
 from omni.isaac.sensor import Camera as i_Camera
 
@@ -49,12 +49,15 @@ class LayoutEditMocapControlledCamera(BaseSensor):
             self._camera.initialize()
             self._camera.add_bounding_box_2d_tight_to_frame()
 
-    def get_data(self) -> Dict:
-        if self.config.enable:
-            rgba = self._camera.get_rgba()
-            frame = self._camera.get_current_frame()
-            return {'rgba': rgba, 'frame': frame}
-        return {}
+    def get_data(self) -> OrderedDict:
+        if not self.config.enable:
+            return self._make_ordered()
+
+        rgba = self._camera.get_rgba()
+        frame = self._camera.get_current_frame()
+
+        obs = {'rgba': rgba, 'frame': frame}
+        return self._make_ordered(obs)
 
     @property
     def camera(self):
