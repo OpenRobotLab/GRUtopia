@@ -61,7 +61,7 @@ def setup_offset_for_assets(
         r.name = f'{r.name}_{env_id}'
         r.prim_path = root_path + robots_root_path + r.prim_path
         r.position = [offset[idx] + pos for idx, pos in enumerate(r.position)]
-    if 'objects' in episode and episode.objects is not None:
+    if episode.objects is not None:
         for o in episode.objects:
             o.name = f'{o.name}_{env_id}'
             o.prim_path = root_path + objects_root_path + o.prim_path
