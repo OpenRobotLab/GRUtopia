@@ -59,3 +59,9 @@ def test_load_scene_without_robot():
 def test_rep_camera_pointcloud():
     start_command = 'python ./tests/rep_camera_pointcloud.py'
     common_body(start_command)
+
+
+@pytest.mark.P0
+def test_robots():
+    start_command = 'ls ./tests/robots/*.py | grep -v test_ | while read f; do echo "run $f" && python $f; done'
+    common_body(start_command)
