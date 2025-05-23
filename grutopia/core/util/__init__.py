@@ -20,8 +20,10 @@ def is_in_container() -> bool:
 
 def has_display() -> bool:
     try:
-        os.environ['DISPLAY']
-        return True
+        display = os.environ['DISPLAY']
+        if display is not None and display != '':
+            return True
+        return False
     except KeyError:
         return False
     except Exception as e:
