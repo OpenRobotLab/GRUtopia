@@ -7,7 +7,7 @@ Please refer to the `Implementation Guide` Step1 and Step2 content [here](teleop
 
 Then start the task in GRUtopia:
 
-Update the `mocap_url` parameter in [`GRUtopia/toolkits/layout_edit/layout_edit.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/toolkits/layout_edit/layout_edit.py) with the Hamer server URL obtained in Step 2 (e.g., `http://127.0.0.1:5001`). After that, start the task by running the following command:
+Update the `mocap_url` parameter in [`GRUtopia/toolkits/layout_edit/layout_edit.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/toolkits/layout_edit/layout_edit.py) with the Hamer server URL obtained in Step 2 (e.g., `http://127.0.0.1:5001`). After that, start the task by running the following command:
 
 ```
 python -m toolkits.layout_edit.layout_edit
