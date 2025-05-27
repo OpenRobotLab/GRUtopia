@@ -28,7 +28,7 @@ move_along_path_cfg = MoveAlongPathPointsControllerCfg(
 )
 
 
-camera = CameraCfg(
+camera_cfg = CameraCfg(
     name='camera',
     prim_path='chassis/rgb_camera/jetbot_camera',
     resolution=(640, 360),

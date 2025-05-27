@@ -1,5 +1,4 @@
 -r requirements/runtime.txt
 -r requirements/contribute.txt
 -r requirements/test.txt
--r requirements/doc.txt
 -r requirements/webui.txt

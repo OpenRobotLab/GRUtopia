@@ -9,7 +9,6 @@ simulation_app = SimulationApp({'headless': True})
 import os
 import sys
 
-import pytorch_sphinx_theme
 from sphinx.builders.html import StandaloneHTMLBuilder
 
 sys.path.insert(0, os.path.abspath('../..'))
@@ -63,8 +62,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = 'pytorch_sphinx_theme'
-html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
+html_theme = 'pydata_sphinx_theme'
+html_logo = '_static/image/logo.png'
+html_favicon = '_static/image/logo192.png'
+
+# Define the json_url for our version switcher.
+json_url = 'https://pydata-sphinx-theme.readthedocs.io/en/latest/_static/switcher.json'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -72,12 +75,33 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
 html_theme_options = {
-    'menu': [
-        {'name': 'GitHub', 'url': 'https://github.com/OpenRobotLab/GRUtopia.git'},
+    'navbar_start': ['navbar-logo'],
+    'navbar_end': ['theme-switcher', 'navbar-icon-links'],
+    'navbar_center': ['navbar-nav'],
+    'secondary_sidebar_items': ['page-toc', 'edit-this-page', 'sourcelink'],
+    'footer_items': ['copyright', 'sphinx-version'],
+    'default_mode': 'auto',
+    'switcher': {
+        'json_url': 'https://pydata-sphinx-theme.readthedocs.io/en/latest/_static/switcher.json',
+        'version_match': 'latest',
+    },
+    'icon_links': [
+        {
+            'name': 'GitHub',
+            'url': 'https://github.com/OpenRobotLab/GRUtopia.git',
+            'icon': 'fab fa-github-square',
+        },
     ],
-    # Specify the language of shared menu
-    'menu_lang': 'en',
+    'show_nav_level': 2,
+    'navigation_depth': 4,
+    # 'collapse_navigation': True,
+    'show_toc_level': 2,
 }
+
+# html_sidebars = {
+#     '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']
+# }
+
 
 html_css_files = ['css/readthedocs.css']
 

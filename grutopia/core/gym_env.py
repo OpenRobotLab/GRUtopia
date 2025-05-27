@@ -9,7 +9,6 @@ from grutopia.core.util import log
 class Env(gym.Env):
     """
     Gym Env for a single environment with a single learning agent.
-    ----------------------------------------------------------------------
     """
 
     RESET_INFO_TASK_RUNTIME = 'task_runtime'
