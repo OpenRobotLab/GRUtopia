@@ -9,6 +9,7 @@
 [![video-cn](https://img.shields.io/badge/Bilibili-00A1D6?logo=bilibili&logoColor=white)](https://www.bilibili.com/video/BV1JUbxeMEsL/?buvid=XU42709457560E0722A8AA591EE792A3DAE59&from_spmid=search.search-result.0.0&is_story_h5=false&mid=vxiHfNKVdk6fb8fduRusuX8FTQ%2FSZMtL1rElX6M3iMo%3D&p=1&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=e78b4bb6-087b-4a72-817b-b06ef91167f3&share_source=COPY&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1720788955&unique_k=CeKgxGI&up_id=3546722198358311&vd_source=7f685cd616faf836ed7469749c100410)
 [![PyPI Downloads](https://static.pepy.tech/badge/grutopia)](https://pepy.tech/projects/grutopia)
 [![GitHub Issues](https://img.shields.io/github/issues/OpenRobotLab/GRUtopia)](https://github.com/OpenRobotLab/GRUtopia/issues)
+<a href="https://cdn.vansin.top/taoyuan.jpg"><img src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white" height="20" style="display:inline"></a>
 </div>
 
 # GRUtopia
@@ -20,12 +21,12 @@
 
 ## 🚀 New Features in 2.0 release
 - Gym compatible env implementation.
-- Easy-to-use pythonic config system to use out-of-the-box [sensors](https://grutopia.github.io/tutorials/how-to-use-sensor.html), [controllers](https://grutopia.github.io/tutorials/how-to-use-controller.html), [robots](https://grutopia.github.io/tutorials/how-to-use-robot.html) and [tasks](https://grutopia.github.io/tutorials/how-to-use-task.html).
-- Examples of driving [diverse robots](https://grutopia.github.io/tutorials/how-to-use-robot.html) and the corresponding policies.
-- [Benchmark and baseline](https://grutopia.github.io/get_started/run-benchmark-baseline.html#) for social navigation and mobile manipulation task.
-- Teleportation tools with [Mocap](https://grutopia.github.io/get_started/teleoperating-with-mocap.html) and [Apple VisionPro](https://grutopia.github.io/get_started/teleoperating-with-visionpro.html).
+- Easy-to-use pythonic config system to use out-of-the-box [sensors](https://grutopia.github.io/usage/tutorials/how-to-use-sensor.html), [controllers](https://grutopia.github.io/usage/tutorials/how-to-use-controller.html), [robots](https://grutopia.github.io/usage/tutorials/how-to-use-robot.html) and [tasks](https://grutopia.github.io/usage/tutorials/how-to-use-task.html).
+- Examples of driving [diverse robots](https://grutopia.github.io/usage/tutorials/how-to-use-robot.html) and the corresponding policies.
+- [Benchmark and baseline](https://grutopia.github.io/usage/get_started/run-benchmark-baseline.html) for social navigation and mobile manipulation task.
+- Teleportation tools with [Mocap](https://grutopia.github.io/usage/get_started/teleoperating-with-mocap.html) and [Apple VisionPro](https://grutopia.github.io/usage/get_started/teleoperating-with-visionpro.html).
 - Physically accurate [interactive object assets](https://huggingface.co/datasets/OpenRobotLab/GRScenes) that are ready for simulation.
-- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/get_started/explore-grscenes.html).
+- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/usage/get_started/explore-grscenes.html).
 
 ## 📋 Contents
 - [🏠 About](#-about) <!-- omit in toc -->
@@ -84,7 +85,7 @@ We provide detailed [docs](https://grutopia.github.io) for the basic usage of di
 > [!NOTE]
 > 📝First of all you **MUST** complete the [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
 
-Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [GRUtopia](https://grutopia.github.io/get_started/installation.html) installed:
+Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [GRUtopia](https://grutopia.github.io/usage/get_started/installation.html) installed:
 
 ```shell
 $ python -m grutopia.download_assets
@@ -107,7 +108,7 @@ If you want to separately download robots and policy weights, you can manually d
   <img src="docs/en/_static/image/benchmark.png" align="center" width="100%">
 </p>
 
- We preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. Please refer to the [documentation](https://grutopia.github.io/get_started/run-benchmark-baseline.html) for running the benchmarks.
+ We preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. Please refer to the [documentation](https://grutopia.github.io/usage/get_started/run-benchmark-baseline.html) for running the benchmarks.
 
 ## 👥 Support
 
