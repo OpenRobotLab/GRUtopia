@@ -75,7 +75,7 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 
 ### Installation
 
-We provide the installation guide [here](docs/en/get_started/installation.md). You can install locally or use docker and verify the installation easily.
+We provide the installation guide [here](https://grutopia.github.io/usage/get_started/installation.html). You can install locally or use docker and verify the installation easily.
 
 ### Documentation \& Tutorial
 
