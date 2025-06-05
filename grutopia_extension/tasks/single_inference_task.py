@@ -14,7 +14,3 @@ class SimpleInferenceTask(BaseTask):
 
     def is_done(self) -> bool:
         return False
-
-    def individual_reset(self):
-        for name, metric in self.metrics.items():
-            metric.reset()

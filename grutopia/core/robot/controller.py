@@ -142,7 +142,7 @@ def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> O
             )
 
         controller_map[controller_name] = controller_ins
-        log.debug(f'==================== {controller_name} loaded==========================')
+        log.debug(f'[create_controllers] {controller_name} loaded')
 
     return OrderedDict(
         (controller_cfg.name, controller_map[controller_cfg.name]) for controller_cfg in robot_cfg.controllers

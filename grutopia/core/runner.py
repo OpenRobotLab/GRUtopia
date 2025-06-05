@@ -1,6 +1,7 @@
 import json
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
+from isaacsim.core.simulation_manager import SimulationManager
 from omni.isaac.core import World
 from omni.isaac.core.loggers import DataLogger
 from omni.isaac.core.prims.xform_prim import XFormPrim
@@ -61,7 +62,8 @@ class SimulatorRunner:
         self._stage = self._world.stage
 
         # Map task_name -> env_id:
-        self.task_name_to_env_map = {}
+        self.task_name_to_env_id_map = {}
+        self.env_id_to_task_name_map = {}
 
         # finished_tasks contains all the finished tasks in current tasks dict
         self.finished_tasks = set()
@@ -84,19 +86,9 @@ class SimulatorRunner:
         for _ in range(steps):
             self._world.step(render=render)
 
-    def reload(self):
-        self._world.reset()
-        self._world.clear()
-        self._world.stop()
-        del self._world
-        self._world = World(physics_dt=self.dt, rendering_dt=self.rendering_dt, stage_units_in_meters=1.0)
-        self._scene = self._world.scene
-        self._stage = self._world.stage
-        self.reset()
-
     def step(
-        self, actions: Union[Dict, None] = None, render: bool = True
-    ) -> Tuple[Dict, Dict[str, bool], Dict[str, float]]:
+        self, actions: Union[List[Dict], None] = None, render: bool = True
+    ) -> Tuple[List[Dict], List[bool], List[float]]:
         """
         Step function to advance the simulation environment by one time step.
 
@@ -105,7 +97,7 @@ class SimulatorRunner:
         handles rendering based on specified intervals.
 
         Args:
-            actions (Union[Dict, None], optional): A dictionary mapping task names to
+            actions (Union[List[Dict], None], optional): A dictionary mapping task names to
                 another dictionary of robot names and their respective actions. If None,
                 no actions are applied. Defaults to None.
             render (bool, optional): Flag indicating whether to render the simulation
@@ -137,19 +129,18 @@ class SimulatorRunner:
               which seems to indicate normal termination of the task.
             - The function also manages a mechanism to prevent further action application
               and metric updates for tasks that have been marked as finished.
-
-        Caution:
-            The snippet contains a `TODO` comment suggesting there's an aspect requiring
-            attention related to "Key optimization interval," which isn't addressed in
-            the docstring or the code shown.
         """
         """ ================ TODO: Key optimization interval ================= """
-        terminated_status = {}
-        reward = {}
-        obs = {}
+        terminated_status = []
+        reward = []
 
-        for task_name, action_dict in actions.items():
+        for env_id, action_dict in enumerate(actions):
             # terminated tasks will no longer apply action
+            if env_id not in self.env_id_to_task_name_map:
+                continue
+
+            task_name = self.env_id_to_task_name_map[env_id]
+
             if task_name in self.finished_tasks:
                 continue
 
@@ -197,25 +188,34 @@ class SimulatorRunner:
             # finished tasks will no longer update metrics
             if task.name not in self.finished_tasks:
                 for metric in task.metrics.values():
-                    metric.update(obs[task.name])
+                    metric.update(obs[self.task_name_to_env_id_map[task.name]])
 
         # update terminated_status and rewards
-        for task_name in self.current_tasks.keys():
-            terminated_status[task_name] = False
+        for env_id in range(self.task_runtime_manager.env_num):
+            # terminated tasks will no longer apply action
+
+            if env_id not in self.env_id_to_task_name_map:
+                terminated_status.append(True)
+                reward.append(-1)
+                continue
+
+            task_name = self.env_id_to_task_name_map[env_id]
+
             if task_name in self.finished_tasks:
-                terminated_status[task_name] = True
-                reward[task_name] = -1
+                terminated_status.append(True)
+                reward.append(-1)
             else:
+                terminated_status.append(False)
                 r = self.current_tasks[task_name].reward
-                reward[task_name] = r.calc() if r is not None else -1
+                reward.append(r.calc() if r is not None else -1)
 
         return obs, terminated_status, reward
 
-    def get_obs(self) -> Dict:
+    def get_obs(self) -> List[Dict]:
         """
         Get obs
         Returns:
-            Dict: obs from isaac sim.
+            List[Dict]: obs from isaac sim.
         """
         obs = {}
         for task_name, task in self.current_tasks.items():
@@ -224,7 +224,14 @@ class SimulatorRunner:
         for task_name, task_obs in obs.items():
             for robot_name, robot_obs in task_obs.items():
                 obs[task_name][robot_name]['render'] = self._render
-        return obs
+
+        _obs = []
+        for env_id in range(self._simulator_runtime.env_num):
+            if env_id in self.env_id_to_task_name_map:
+                _obs.append(obs[self.env_id_to_task_name_map[env_id]])
+            else:
+                _obs.append({})
+        return _obs
 
     def stop(self):
         """
@@ -237,34 +244,64 @@ class SimulatorRunner:
     def get_current_time_step_index(self) -> int:
         return self._world.current_time_step_index
 
-    def reset(self, task: Optional[str] = None) -> Tuple[Dict, Union[TaskRuntime, None]]:
+    def reset(self, env_ids: Optional[List[int]] = None) -> Tuple[List, List]:
         """
-        Reset the task.
+        Resets the environment for the given environment IDs or initializes it if no IDs are provided.
+        This method handles resetting the simulation context, generating new task runtimes, and finalizing
+        tasks when necessary. It supports partial resets for specific environments and ensures proper
+        handling of task transitions.
 
         Args:
-            task (str): A task name to reset. if task is None, it always means the reset is invoked for the first time
-            before agents invoke step().
+            env_ids (Optional[List[int]]): A list of environment IDs to reset. If None, all environments
+                are reset or initialized based on the current state.
 
         Returns:
-            Tuple[Dict, TaskRuntime]: A tuple of two values. The first is a dict of observations.  The second is a
-            TaskRuntime object representing the new task runtime.
+            Tuple[List, List]: A tuple containing two lists. The first list contains observations for
+                the reset environments, and the second list contains the new task runtimes.
+
+        Raises:
+            ValueError: If the provided `env_ids` are invalid or don't correspond to any existing tasks.
+            RuntimeError: If the simulation context fails to reset or initialize properly.
+
+        Notes:
+            - If `env_ids` is None and there are current tasks, all environments are reset.
+            - If `env_ids` is None and there are no current tasks, the simulation context is initialized.
+            - Observations are collected only for environments that are reset or initialized.
+            - Tasks corresponding to the reset environments are transitioned to new episodes.
         """
-        obs = self.get_obs()
-        new_task_runtime: Union[TaskRuntime, None] = None
+        obs = []
+        new_task_runtimes: List[TaskRuntime] = []
 
-        if task is not None and task not in self.current_tasks:
-            return obs, new_task_runtime
+        if env_ids is None and self.current_tasks:
+            # reset
+            env_ids = [i for i in range(self._simulator_runtime.env_num)]
 
-        # switch to next episodes
-        new_task_runtime = self.next_episode(task)
-        self.finished_tasks.discard(task)
-        obs = self.get_obs()
+        if env_ids is None:
+            # init
+            SimulationContext.reset(self._world, soft=False)
+            new_task_runtimes = self._next_episodes()
+        else:
+            # switch to next episodes
+            env_to_reset = [env_id for env_id in env_ids if env_id in self.env_id_to_task_name_map]
+
+            if not env_to_reset:
+                log.warning(f'No env to reset: {env_ids}.')
+                return obs, new_task_runtimes
+
+            tasks = [self.env_id_to_task_name_map[env_id] for env_id in env_to_reset]
+            new_task_runtimes = self._next_episodes(tasks)
+            [self.finished_tasks.discard(task) for task in tasks]
+
+        if self.current_tasks:
+            all_obs = self.get_obs()
+            obs = [all_obs[i] for i in env_ids] if env_ids else all_obs
 
         # finalize tasks
-        if len(self.current_tasks) == 0:
+        else:
+            # finished
             self._finalize()
 
-        return obs, new_task_runtime
+        return obs, new_task_runtimes
 
     def _finalize(self):
         """
@@ -291,58 +328,98 @@ class SimulatorRunner:
         del self.current_tasks[task_name]
         self._world._task_scene_built = False
         self._world._data_logger = DataLogger()
-        log.info(f'Clear stage: /World/env_{self.task_name_to_env_map[task_name]}')
-        clear_stage_by_prim_path(f'/World/env_{self.task_name_to_env_map[task_name]}')
+        log.info(f'Clear stage: /World/env_{self.task_name_to_env_id_map[task_name]}')
+        clear_stage_by_prim_path(f'/World/env_{self.task_name_to_env_id_map[task_name]}')
 
-    def next_episode(self, task_name: Optional[str] = None) -> Union[TaskRuntime, None]:
+    def _next_episodes(self, reset_tasks: List[str] = None) -> List[TaskRuntime]:
         """
-        Switch to the next episode.
+        Switch tasks that need to be reset to the next episode.
 
-        This method cleanups a finished task specified by task name and then
-        switches to the next task if it exists.
+        This method handles cleaning-up tasks, resetting sim backend, creating new tasks, and
+        restoring states for non-reset environments.
 
         Args:
-             task_name (Optional[str]): The task name of the finished task.
+            reset_tasks (List[str]): a list of task names that need to be reset. If None, the method
+                initializes all environments without resetting specific tasks.
 
         Returns:
-            TaskRuntime: new task runtime.
+            List[TaskRuntime]: a list of TaskRuntime objects representing the next set of tasks to be
+                executed in the simulation.
 
         Raises:
-             RuntimeError: If the specified task_name is not found in the current tasks.
+            RuntimeError: If a task specified in `reset_tasks` isn't found in the current tasks.
         """
-        runtime_env = None
-        if task_name is not None:
-            if task_name not in self.current_tasks:
-                raise RuntimeError(f'Task with task_name {task_name} not in current task_runtime_manager.')
-            old_task = self.current_tasks[task_name]
-            old_task_runtime = old_task.runtime
-            self.clear_single_task(task_name)
-            runtime_env = old_task_runtime.env
+        runtime_envs: Union[None, TaskRuntime.env] = []
+        next_task_runtimes = []
 
-        next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
-        if next_task_runtime is None:
-            return next_task_runtime
+        if reset_tasks:
+            # recycling env_id
+            for task_name in reset_tasks:
+                if task_name not in self.current_tasks:
+                    raise RuntimeError(f'Task with task_name {task_name} not in `current_tasks`.')
+                old_task = self.current_tasks[task_name]
+                old_task_runtime: TaskRuntime = old_task.runtime
+                runtime_envs.append(old_task_runtime.env)
 
-        env_id = next_task_runtime.env.env_id
-        task = create_task(next_task_runtime, self._scene)
-        self._world.add_task(task)
-        task.set_up_scene(self._scene)
-        self._reset_sim_context()
-        task.post_reset()
-        new_task_name = f'{next_task_runtime.name}'
+            # save the state of envs that need to be kept
+            for _task_name, task in self.current_tasks.items():
+                if _task_name in reset_tasks:
+                    continue
+                task.save_info()
 
-        # Map task_name and env
-        self.task_name_to_env_map[new_task_name] = str(env_id)
+            # clean up tasks that need to reset
+            for task_name in reset_tasks:
+                self.clear_single_task(task_name)
 
-        # Log
-        log.info('===================== episode ========================')
-        log.info(f'Next episode: {new_task_name} at {str(env_id)}')
-        log.info('======================================================')
-        return next_task_runtime
+            # clear all rigid bodies in scene register and physics backend
+            for task in self.current_tasks.values():
+                task.clear_rigid_bodies()
 
-    def _reset_sim_context(self):
-        SimulationContext.reset(self._world, soft=False)
+            SimulationManager._on_stop('reset')
+            SimulationManager._create_simulation_view('reset')
+        else:
+            # init
+            runtime_envs = [None for _ in range(self._simulator_runtime.env_num)]
+
+        # get next_task_runtimes
+        for runtime_env in runtime_envs:
+            next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
+
+            if next_task_runtime is None:
+                del self.env_id_to_task_name_map[runtime_env.env_id]
+            next_task_runtimes.append(next_task_runtime)
+
+        # restore the state of envs that haven't been reset
+        if reset_tasks:
+            for t in self.current_tasks.values():
+                t.restore_info()
+
+        # create tasks with next_task_runtimes
+        for next_task_runtime in next_task_runtimes:
+            if next_task_runtime is None:
+                continue
+            task = create_task(next_task_runtime, self._scene)
+            self._world.add_task(task)
+            task.set_up_scene(self._scene)
+            task.post_reset()
+
         self._world.scene._finalize(self._world.physics_sim_view)  # noqa
+
+        # map task_name and env_id of new tasks
+        for next_task_runtime in next_task_runtimes:
+            if next_task_runtime is None:
+                continue
+            self.task_name_to_env_id_map[next_task_runtime.name] = next_task_runtime.env.env_id
+            self.env_id_to_task_name_map[next_task_runtime.env.env_id] = next_task_runtime.name
+
+        # log new episodes
+        log.info('===================== episodes ========================')
+        for next_task_runtime in next_task_runtimes:
+            if next_task_runtime is None:
+                continue
+            log.info(f'Next episode: {next_task_runtime.name} at {str(next_task_runtime.env.env_id)}')
+        log.info('======================================================')
+        return next_task_runtimes
 
     def get_obj(self, name: str) -> XFormPrim:
         return self._world.scene.get_object(name)

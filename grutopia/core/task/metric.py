@@ -15,10 +15,6 @@ class BaseMetric(ABC):
         self.metric_config = config.metric_config
 
     @abstractmethod
-    def reset(self):
-        raise NotImplementedError(f'`reset` function of {self.name} is not implemented')
-
-    @abstractmethod
     def update(self, *args):
         """
         This function is called at each world step.

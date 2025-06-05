@@ -11,6 +11,7 @@ from grutopia.core.runtime.task_runtime import (
     TaskRuntime,
     setup_offset_for_assets,
 )
+from grutopia.core.util import log
 
 
 @BaseTaskRuntimeManager.register('LocalTaskRuntimeManager')
@@ -37,7 +38,6 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         super().__init__(task_user_config=task_user_config)
         self._current_env_id = 0
         self._column_length = int(np.sqrt(self.env_num))
-        self._loop = False
 
     def _pop_next_episode(self) -> Union[EpisodeCfg, None]:
         """
@@ -65,18 +65,15 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         Raises:
             ValueError: If too many sub envs have been created.
         """
-        if self._loop:
-            print('===================== loop =====================')
-            return [i for i in self.active_runtimes.values()][0]
-
         if last_env is None and self._current_env_id >= self.env_num:
+            log.error(f'self._current_env_id is {self._current_env_id}')
+            log.error(f'self.env_num is {self.env_num}')
             raise ValueError('Too many sub envs have been created.')
 
         next_episode: EpisodeCfg = self._pop_next_episode()
-        print(f'next episode is {next_episode}')
         if next_episode is None:
             if last_env is not None:
-                del self.active_runtimes[str(last_env.env_id)]
+                del self.active_runtimes[last_env.env_id]
             self.all_allocated = True
             return None
 
@@ -106,13 +103,9 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         for k, v in next_episode.__dict__.items():
             task_runtime.__dict__.update({k: v})
 
-        if str(last_env.env_id) in self.active_runtimes:
-            del self.active_runtimes[str(last_env.env_id)]
-        self.active_runtimes[str(last_env.env_id)] = task_runtime
-
-        # Change _loop param after the first reset
-        # TODO: Make it more elegant.
-        self._loop = self.loop
+        if last_env.env_id in self.active_runtimes:
+            del self.active_runtimes[last_env.env_id]
+        self.active_runtimes[last_env.env_id] = task_runtime
 
         return task_runtime
 
@@ -132,7 +125,7 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
             offset = [row * self.offset_size, column * self.offset_size, 0]
             new_env = {'env_id': env_id, 'offset': offset}
             task_runtime = self.get_next_task_runtime(Env(**new_env))
-            self.active_runtimes[str(env_id)] = task_runtime
+            self.active_runtimes[env_id] = task_runtime
 
     def _create_env(self) -> Env:
         row = int(self._current_env_id // self._column_length)

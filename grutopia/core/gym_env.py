@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, OrderedDict
 
 import gymnasium as gym
 
@@ -40,23 +40,18 @@ class Env(gym.Env):
         if self._runtime.env_num > 1:
             raise ValueError(f'Only support single env now, but env num is {self._runtime.env_num}')
 
-        robot_name = None
         episodes = self._runtime.task_runtime_manager.episodes
         log.debug(f'================ len(episodes): {len(episodes)} ==================')
 
-        for runtime in self._runtime.task_runtime_manager.episodes:
-            # TODO: this needs to be modified when enabling multiple episodes
-            if len(runtime.robots) == 0:  # for one episode only.
-                return
-            if len(runtime.robots) != 1:
-                raise ValueError(f'Only support single agent now, but episode requires {len(runtime.robots)} agents')
-            if robot_name is None:
-                robot_name = runtime.robots[0].name
-            else:
-                if robot_name != runtime.robots[0].name:
-                    raise ValueError('Only support single agent now, but episode requires multiple agents')
+        _episode_sample = self._runtime.task_runtime_manager.episodes[0]
 
-        self._robot_name = f'{robot_name}_{0}'
+        if len(_episode_sample.robots) == 0:
+            return
+        if len(_episode_sample.robots) != 1:
+            raise ValueError(
+                f'Only support single agent now, but episode requires {len(_episode_sample.robots)} agents'
+            )
+        self._robot_name = f'{_episode_sample.robots[0].name}'
 
     def _get_action_space(self) -> gym.Space:
         print(self._runtime)
@@ -65,7 +60,7 @@ class Env(gym.Env):
     def _get_observation_space(self) -> gym.Space:
         return self._space.get_observation_space_by_task(self._runtime.config['task_config']['type'])
 
-    def reset(self, *, seed=None, options=None) -> tuple[gym.Space, dict[str, Any]]:
+    def reset(self, *, seed=None, options=None) -> tuple[OrderedDict, dict]:
         """Resets the environment to an initial internal state, returning an initial observation and info.
 
         Args:
@@ -74,21 +69,21 @@ class Env(gym.Env):
                 depending on the specific environment)
 
         Returns:
-            observation (ObsType): Observation of the initial state.
-            info (dictionary): Contains the key `task_runtime` if there is an unfinished task
+            observation (OrderedDict): Observation of the initial state.
+            info (dict): Contains the key `task_runtime` if there is an unfinished task
         """
         info = {}
-        obs = {}
+        obs = OrderedDict()
 
-        origin_obs, task_runtime = self.runner.reset(self._current_task_name)
-        if task_runtime is None:
+        origin_obs, task_runtime = self.runner.reset(None if self._current_task_name is None else [0])
+        if None in task_runtime:
             log.info('All episodes have finished.')
-            return {}, {}
+            return obs, info
 
-        self._current_task_name = task_runtime.name
-        info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime
+        self._current_task_name = task_runtime[0].name
+        info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime[0]
         if self._robot_name:
-            obs = origin_obs[task_runtime.name][self._robot_name]
+            obs = origin_obs[0][self._robot_name]
 
         return obs, info
 
@@ -122,15 +117,15 @@ class Env(gym.Env):
         if self._current_task_name is None:
             return obs, reward, terminated, truncated, info
 
-        _actions = {self._current_task_name: {self._robot_name: action}}
+        _actions = [{self._robot_name: action}]
         origin_obs, terminated_status, rewards = self._runner.step(_actions)
 
-        if rewards[self._current_task_name] != -1:
-            reward = rewards[self._current_task_name]
+        if rewards[0] != -1:
+            reward = rewards[0]
 
         if self._robot_name:
-            obs = origin_obs[self._current_task_name][self._robot_name]
-        terminated = terminated_status[self._current_task_name]
+            obs = origin_obs[0][self._robot_name]
+        terminated = terminated_status[0]
 
         return obs, reward, terminated, truncated, info
 
@@ -167,7 +162,7 @@ class Env(gym.Env):
         _obs = self._runner.get_obs()
         if self._robot_name is None:
             return {}
-        return _obs[self._current_task_name][self._robot_name]
+        return _obs[0][self._robot_name]
 
     def render(self, mode='human'):
         pass

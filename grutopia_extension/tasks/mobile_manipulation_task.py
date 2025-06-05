@@ -58,7 +58,3 @@ class MobileManipulationTask(BaseTask):
     def is_done(self) -> bool:
         self.step_counter = self.step_counter + 1
         return DataHub.get_episode_finished(self.runtime.name) or self.step_counter > self.settings.max_step
-
-    def individual_reset(self):
-        for name, metric in self.metrics.items():
-            metric.reset()

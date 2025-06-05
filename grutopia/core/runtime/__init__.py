@@ -127,10 +127,6 @@ class SimulatorRuntime:
             episodes_dict = self.read_yaml_file(config.task_config.episodes)
             config.task_config.episodes = EpisodeConfigFile(**episodes_dict).episodes
 
-        # TO DELETE: Multiple episodes are not supported yet. Coming soon.
-        if len(config.task_config.episodes) > 1:
-            raise ValueError('multiple episodes are not supported yet !')
-
         # Init Datahub
         DataHub.datahub_init()
 

@@ -4,9 +4,11 @@ from abc import ABC
 from functools import wraps
 from typing import Any, Dict, Union
 
+from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.scenes.scene import Scene
 from omni.isaac.core.tasks import BaseTask as OmniBaseTask
 from omni.isaac.core.utils.prims import create_prim
+from pxr import Usd
 
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.robot import BaseRobot
@@ -14,6 +16,10 @@ from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import create_object, create_scene
 from grutopia.core.task.metric import BaseMetric, create_metric
 from grutopia.core.util import log
+from grutopia.core.util.physics_status_util import (
+    get_rigidbody_status,
+    set_rigidbody_status,
+)
 
 
 class BaseTask(OmniBaseTask, ABC):
@@ -27,12 +33,15 @@ class BaseTask(OmniBaseTask, ABC):
     tasks = {}
 
     def __init__(self, runtime: TaskRuntime, scene: Scene):
+        self.scene_prim = None
         self.objects = None
         self.robots: Union[Dict[str, BaseRobot], None] = None
         name = runtime.name
-        offset = runtime.env.offset
-        super().__init__(name=name, offset=offset)
+        self.env_id = runtime.env.env_id
+        self.offset = runtime.env.offset
+        super().__init__(name=name, offset=self.offset)
         self._scene = scene
+        self.scene_rigid_bodies = {}
         self.runtime = runtime
 
         self.metrics: Dict[str, BaseMetric] = {}
@@ -71,22 +80,65 @@ class BaseTask(OmniBaseTask, ABC):
                 os.path.abspath(self.runtime.scene_asset_path),
                 prim_path_root=f'World/env_{self.runtime.env.env_id}/scene',
             )
-            create_prim(
+            scene_prim = create_prim(
                 prim_path,
                 usd_path=source,
                 scale=self.runtime.scene_scale,
                 translation=[self.runtime.env.offset[idx] + i for idx, i in enumerate(self.runtime.scene_position)],
             )
+            self.scene_prim = scene_prim
+            for prim in Usd.PrimRange.AllPrims(scene_prim):
+                if prim.GetAttribute('physics:rigidBodyEnabled'):
+                    log.debug(f'[BaseTask.load] found rigid body at path: {prim.GetPath()}')
+                    _rb = RigidPrim(str(prim.GetPath()))
+                    self.scene_rigid_bodies[str(prim.GetPath())] = {'status': None, 'rigidbody': _rb}
+
         self.robots = init_robots(self.runtime, self._scene)
         self.objects = {}
         for obj in self.runtime.objects:
             _object = create_object(obj)
             _object.set_up_scene(self._scene)
             self.objects[obj.name] = _object
-
-        log.info(self.robots)
-        log.info(self.objects)
         self.loaded = True
+
+    def clear_rigid_bodies(self):
+        for rigid_body_name in self.scene_rigid_bodies.keys():
+            if self.scene.object_exists(rigid_body_name):
+                self.scene.remove_object(name=rigid_body_name)
+
+    def save_info(self):
+        """
+        Saves the robot information and rigidbody statuses.
+        """
+        self.save_robot_info()
+        self._save_rigidbody_statuses()
+
+    def _save_rigidbody_statuses(self):
+        """
+        Saves the current status of all rigid bodies in the scene by querying their physics properties excluding
+        those in the robot.
+
+        Note:
+            rigid prims within articulations aren't included since those RigidPrims' physical
+            status (transform, velocity, etc) can't be set individually.
+        """
+        for rigid_body_name, rigid_body in self.scene_rigid_bodies.items():
+            if not self.scene.object_exists(rigid_body_name):
+                log.error(f'[cache_info] {rigid_body_name} does not exist.')
+                continue
+            rigid_body['status'] = get_rigidbody_status(rigid_body['rigidbody'])
+
+    def _restore_rigidbody_statuses(self):
+        """
+        Restores the statuses of all rigid bodies in the scene based on their stored status data excluding
+        those in the robot.
+        """
+        for rigid_body_name, rigid_body in self.scene_rigid_bodies.items():
+            if rigid_body['status'] is None or not self.scene.object_exists(rigid_body_name):
+                continue
+            _rigid_body = RigidPrim(rigid_body_name)
+            rigid_body['rigidbody'] = _rigid_body
+            set_rigidbody_status(_rigid_body, rigid_body['status'])
 
     def set_up_scene(self, scene: Scene) -> None:
         """
@@ -145,7 +197,7 @@ class BaseTask(OmniBaseTask, ABC):
 
         This method iterates over the stored metrics, calling their respective `calc` methods to compute
         the metric values. The computed values are then compiled into a dictionary, where each key corresponds
-        to the metrics' name and each value is the result of the metric calculation.
+        to the metrics' name, and each value is the result of the metric calculation.
 
         Returns:
             dict: A dictionary containing the calculated results of all metrics, with metric names as keys.
@@ -173,14 +225,9 @@ class BaseTask(OmniBaseTask, ABC):
         """
         raise NotImplementedError
 
-    def individual_reset(self):
-        """
-        Reload this task individually without reloading whole world.
-        """
-        raise NotImplementedError
-
     def pre_step(self, time_step_index: int, simulation_time: float) -> None:
-        """called before stepping the physics simulation.
+        """
+        Called before stepping the physics simulation.
 
         Args:
             time_step_index (int): [description]
@@ -188,6 +235,21 @@ class BaseTask(OmniBaseTask, ABC):
         """
         self.steps += 1
         return
+
+    def save_robot_info(self):
+        """
+        Saves information of all robots in the task instance.
+        """
+        for robot in self.robots.values():
+            robot.save_robot_info()
+
+    def restore_info(self):
+        """
+        Restores the information and statuses of rigid bodies and robots.
+        """
+        self._restore_rigidbody_statuses()
+        for robot in self.robots.values():
+            robot.restore_robot_info()
 
     def post_reset(self) -> None:
         """Calls while doing a .reset() on the world."""
@@ -197,22 +259,23 @@ class BaseTask(OmniBaseTask, ABC):
         return
 
     def cleanup(self) -> None:
-        """Called before calling a reset() on the world to removed temporary objects that were added during
-        simulation for instance.
+        """
+        Used to clean up the resources loaded in the task.
         """
         for obj in self.objects.keys():
             # Using try here because we want to ignore all exceptions
             try:
                 self.scene.remove_object(obj)
             finally:
-                log.info('objs cleaned.')
-        for robot_name, robot in self.robots.items():
+                log.info('[cleanup] objs cleaned.')
+        for robot in self.robots.values():
             # Using try here because we want to ignore all exceptions
+            log.info(f'[cleanup] cleanup robot {robot.name}')
             try:
                 robot.cleanup()
-                self.scene.remove_object(robot_name)
+                self.scene.remove_object(robot.name)
             finally:
-                log.info('robots cleaned.')
+                log.info('[cleanup] robots cleaned.')
 
     @classmethod
     def register(cls, name: str):

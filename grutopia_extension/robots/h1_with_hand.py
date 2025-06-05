@@ -116,21 +116,16 @@ class H1WithHandRobot(BaseRobot):
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-        self._robot_ik_base = RigidPrim(config.prim_path + '/torso_link')
-
-        self._robot_base = RigidPrim(prim_path=config.prim_path + '/pelvis', name=config.name + '_base')
-        self._robot_right_ankle = RigidPrim(
-            prim_path=config.prim_path + '/right_ankle_link', name=config.name + 'right_ankle'
-        )
-        self._robot_left_ankle = RigidPrim(
-            prim_path=config.prim_path + '/left_ankle_link', name=config.name + 'left_ankle'
-        )
-        self._rigid_bodies = [self._robot_base, self._robot_right_ankle, self._robot_left_ankle]
-
         self.isaac_robot.set_enabled_self_collisions(False)
 
+    def _set_rigid_bodies(self):
+        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/torso_link']
+        self._robot_base = self._rigid_body_map[self.config.prim_path + '/pelvis']
+        self._robot_right_ankle = self._rigid_body_map[self.config.prim_path + '/right_ankle_link']
+        self._robot_left_ankle = self._rigid_body_map[self.config.prim_path + '/left_ankle_link']
+
     def get_rigid_bodies(self) -> List[RigidPrim]:
-        return self._rigid_bodies
+        return self._rigid_body_map.values()
 
     def post_reset(self):
         super().post_reset()

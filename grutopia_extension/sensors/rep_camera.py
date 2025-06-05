@@ -26,7 +26,9 @@ class RepCamera(BaseSensor):
         self.rp_annotators = {}
 
     def post_reset(self):
-        log.debug('reset camera')
+        self.restore_sensor_info()
+
+    def restore_sensor_info(self):
         self.cleanup()
         self.camera_prim_path = self.create_camera()
         if self.rp is None:
@@ -47,6 +49,7 @@ class RepCamera(BaseSensor):
             self.resolution = self.config.resolution
 
         prim_path = self._robot.config.prim_path + '/' + self.config.prim_path
+        log.debug('================ create camera ===============')
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
         log.debug(f'resolution      : {self.resolution}')
@@ -186,8 +189,10 @@ class RepCamera(BaseSensor):
 
     def cleanup(self) -> None:
         if self.rp is not None:
-            log.debug('================ destroy render product =============')
-            self.rp.destroy()
+            for anno in self.rp_annotators.values():
+                anno.detach(self.rp)
+            del self.rp_annotators
+            self.rp_annotators = {}
             self.rp = None
 
     def _get_face_to_instances(self, bbox: np.array, idToLabels):

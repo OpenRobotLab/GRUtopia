@@ -50,8 +50,32 @@ def test_h1_locomotion():
 
 
 @pytest.mark.P0
+def test_h1_locomotion_multi_env():
+    start_command = 'python ./tests/h1_locomotion_multi_env.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
+def test_h1_locomotion_multi_env_endless():
+    start_command = 'python ./tests/h1_locomotion_multi_env_endless.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
+def h1_locomotion_3_env_2_episodes():
+    start_command = 'python ./tests/h1_locomotion_3_env_2_episodes.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
 def test_load_scene_without_robot():
     start_command = 'python ./tests/load_scene_without_robot.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
+def load_scene_without_robot_multi_env():
+    start_command = 'python ./tests/load_scene_without_robot_multi_env.py'
     common_body(start_command)
 
 

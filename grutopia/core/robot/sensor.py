@@ -30,7 +30,15 @@ class BaseSensor(ABC):
         self.obs_keys = []
 
     def post_reset(self):
-        """Post reset operations."""
+        """
+        Post reset operations.
+        """
+        pass
+
+    def restore_sensor_info(self):
+        """
+        Restores the sensor information from a saved state or configuration.
+        """
         pass
 
     def cleanup(self):
@@ -78,11 +86,13 @@ def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Order
         Dict[str, BaseSensor]: dict of sensors with sensor name as key.
     """
     sensor_map = {}
+    if robot_cfg.sensors is None:
+        return OrderedDict()
     if robot_cfg.sensors is not None:
         for sensor_cfg in robot_cfg.sensors:
             sensor_cls = BaseSensor.sensors[sensor_cfg.type]
             sensor_ins = sensor_cls(sensor_cfg, robot=robot, name=sensor_cfg.name, scene=scene)
             sensor_map[sensor_cfg.name] = sensor_ins
-            log.debug(f'==================== {sensor_cfg.name} loaded==========================')
+            log.debug(f'[create_sensors] {sensor_cfg.name} loaded')
 
     return OrderedDict((sensor_cfg.name, sensor_map[sensor_cfg.name]) for sensor_cfg in robot_cfg.sensors)

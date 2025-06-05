@@ -20,6 +20,9 @@ class Camera(BaseSensor):
         self.config = config
 
     def post_reset(self):
+        self.restore_sensor_info()
+
+    def restore_sensor_info(self):
         if self.config.enable:
             self._camera = self.create_camera()
             self._camera.initialize()

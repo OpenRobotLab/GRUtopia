@@ -6,6 +6,7 @@ from pydantic import BaseModel, Extra
 from grutopia.core.config import EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
 from grutopia.core.config.metric import MetricCfg
 from grutopia.core.config.task.reward import RewardCfg
+from grutopia.core.util import log
 
 
 class Env(BaseModel):
@@ -48,7 +49,6 @@ class TaskRuntime(BaseModel, extra=Extra.allow):
     objects_root_path: Optional[str] = '/objects'
 
     # task extra info
-    loop: Optional[bool] = False
     extra: Optional[Any] = None
 
 
@@ -87,15 +87,37 @@ class BaseTaskRuntimeManager:
         Args:
             task_user_config (TaskConfig): Task config read from user input config file.
         """
-        self.env_num = task_user_config.env_num
         self.task_config: TaskCfg = task_user_config
         self.episodes: List[EpisodeCfg] = task_user_config.episodes
+
+        # validate env_num
+        if task_user_config.env_num <= 0:
+            raise RuntimeError('env_num must be greater than 0')
+        if len(self.episodes) == 0:
+            raise RuntimeError('len(episodes) must be greater than 0')
+        self.env_num = task_user_config.env_num
+        if task_user_config.env_num >= len(self.episodes):
+            log.info('env_num >= len(self.episodes), env_num will be reduced to len(self.episodes)')
+            self.env_num = len(self.episodes)
+
+        # validate episodes
+        self.validate_episodes()
+
         self.metrics_save_path = task_user_config.metrics_save_path
-        self.active_runtimes: Dict[str, TaskRuntime] = {}
+        self.active_runtimes: Dict[int, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()
         self.all_allocated = False
-        self.loop = task_user_config.loop
+
+    def validate_episodes(self):
+        _order = None
+        for episode in self.episodes:
+            robot_order = [robot.type for robot in episode.robots]
+            if _order is None:
+                _order = robot_order
+                continue
+            if robot_order != _order:
+                raise ValueError('robot types must be identical across all episodes')
 
     def gen_runtime_template(self):
         task_template = {}
@@ -108,9 +130,9 @@ class BaseTaskRuntimeManager:
         del task_template['metrics_save_path']
         return task_template
 
-    def active_runtime(self) -> Dict[str, TaskRuntime]:
+    def active_runtime(self) -> Dict[int, TaskRuntime]:
         """
-        Get active runtimes.
+        Get active runtimes with env id as key.
         """
         return self.active_runtimes
 

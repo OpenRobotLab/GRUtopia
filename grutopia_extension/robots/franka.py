@@ -3,7 +3,6 @@ from collections import OrderedDict
 from typing import Any
 
 import numpy as np
-from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.scenes import Scene
 from omni.isaac.franka import Franka
 
@@ -39,14 +38,10 @@ class FrankaRobot(BaseRobot):
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-        self._robot_ik_base = RigidPrim(
-            prim_path=config.prim_path + '/panda_link0',
-            name=f'{config.name}_base_link',
-        )
-
-        self._rigid_bodies = [self._robot_ik_base]
-
         self.last_action = []
+
+    def _set_rigid_bodies(self):
+        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
 
     def get_robot_scale(self):
         return self._robot_scale

@@ -41,7 +41,7 @@ config = Config(
             SingleInferenceEpisodeCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 scene_scale=(0.01, 0.01, 0.01),
-                robots=[h1_1],
+                robots=[h1_1.update()],
             ),
         ],
     ),

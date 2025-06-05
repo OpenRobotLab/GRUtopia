@@ -308,13 +308,12 @@ class GR1Robot(BaseRobot):
 
         self.isaac_robot.set_enabled_self_collisions(False)
 
-        self._robot_base = RigidPrim(prim_path=config.prim_path + '/torso_link', name=config.name + '_base')
-        self._imu_in_torso = RigidPrim(prim_path=config.prim_path + '/imu_link', name=config.name + '_imu_in_torso')
-
-        self._rigid_bodies = [self._robot_base, self._imu_in_torso]
+    def _set_rigid_bodies(self):
+        self._robot_base = self._rigid_body_map[self.config.prim_path + '/torso_link']
+        self._imu_in_torso = self._rigid_body_map[self.config.prim_path + '/imu_link']
 
     def get_rigid_bodies(self) -> List[RigidPrim]:
-        return self._rigid_bodies
+        return self._rigid_body_map.values()
 
     def post_reset(self):
         super().post_reset()
