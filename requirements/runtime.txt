@@ -1,5 +1,6 @@
 addict==2.4.0
 aiohttp_cors==0.7.0
+httpcore==1.0.8
 httpx==0.25.2
 inputs==0.5
 ipython==8.20.0

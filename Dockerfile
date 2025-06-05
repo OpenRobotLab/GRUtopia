@@ -10,6 +10,8 @@ WORKDIR /isaac-sim/GRUtopia
 
 RUN bash -c "cd ../ && \
     ./python.sh -m venv .venv && source .venv/bin/activate && \
+    pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+    export PYTHONPATH=/isaac-sim/.venv/lib/python3.10/site-packages && \
     chmod +x ./GRUtopia/requirements/docker_install_req.sh && \
     cp ./GRUtopia/requirements/docker_install_req.sh . && \
     bash ./docker_install_req.sh && \
