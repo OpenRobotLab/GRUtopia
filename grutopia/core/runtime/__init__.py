@@ -54,6 +54,20 @@ class SimulatorRuntime:
         self._simulation_app._carb_settings.set('/physics/cooking/ujitsoCollisionCooking', False)
         log.debug('SimulationApp init done')
 
+        # Determine streaming mode based on isaacsim version.
+        try:
+            from isaacsim import util
+        except ImportError:
+            # isaacsim 420 behavior
+            self.setup_streaming_420(native, webrtc)
+        else:
+            # isaac 450 behavior
+            if native:
+                log.warning('native streaming is DEPRECATED, webrtc streaming is used instead')
+            webrtc = native or webrtc
+            self.setup_streaming_450(webrtc)
+
+    def setup_streaming_420(self, native: bool, webrtc: bool):
         if webrtc:
             from omni.isaac.core.utils.extensions import enable_extension  # noqa
 
@@ -73,6 +87,13 @@ class SimulatorRuntime:
             enable_extension('omni.kit.streamsdk.plugins-3.2.1')
             enable_extension('omni.kit.livestream.core-3.2.0')
             enable_extension('omni.kit.livestream.native')
+
+    def setup_streaming_450(self, webrtc: bool):
+        if webrtc:
+            from omni.isaac.core.utils.extensions import enable_extension
+
+            self._simulation_app.set_setting('/app/window/drawMouse', True)
+            enable_extension('omni.kit.livestream.webrtc')
 
     @property
     def simulation_app(self):
