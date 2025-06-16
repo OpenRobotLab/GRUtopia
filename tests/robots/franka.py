@@ -1,6 +1,7 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.franka import (
@@ -12,6 +13,8 @@ from grutopia_extension.configs.tasks import (
     SingleInferenceEpisodeCfg,
     SingleInferenceTaskCfg,
 )
+
+headless = not has_display()
 
 franka = FrankaRobotCfg(
     position=[0, 0, 0],
@@ -33,7 +36,7 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=False, webrtc=False, native=True)
+sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
 
 import_extensions()
 import numpy as np

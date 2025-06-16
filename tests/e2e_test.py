@@ -63,5 +63,5 @@ def test_rep_camera_pointcloud():
 
 @pytest.mark.P0
 def test_robots():
-    start_command = 'ls ./tests/robots/*.py | grep -v test_ | while read f; do echo "run $f" && python $f; done'
+    start_command = 'set -e; ls ./tests/robots/*.py | grep -v test_ | while read f; do echo "run $f" && python $f; done'
     common_body(start_command)
