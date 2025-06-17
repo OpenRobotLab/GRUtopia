@@ -53,7 +53,6 @@ class H1WithHand(IsaacRobot):
         )
 
         joint_subset = ArticulationSubset(self, joint_names)  # noqa
-        print(f'joint_indices: {joint_subset.joint_indices}')
 
         kps = np.array(
             [

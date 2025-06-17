@@ -203,6 +203,7 @@ class G1Robot(BaseRobot):
 
     def post_reset(self):
         super().post_reset()
+        self._set_rigid_bodies()
         self.isaac_robot.set_gains()
 
     def get_rigid_bodies(self) -> List[RigidPrim]:

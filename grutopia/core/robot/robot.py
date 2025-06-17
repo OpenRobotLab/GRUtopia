@@ -67,7 +67,18 @@ class BaseRobot:
         """
         Create rigid bodies.
         """
-        for prim in Usd.PrimRange.AllPrims(self.isaac_robot.prim):
+        _prim = self.isaac_robot.prim
+
+        # articulation on rigid-body situation
+        if (
+            'PhysicsArticulationRootAPI' in self.isaac_robot.prim.GetAppliedSchemas()
+            and 'PhysicsRigidBodyAPI' in self.isaac_robot.prim.GetAppliedSchemas()
+        ):
+            parts = str(self.isaac_robot.prim.GetPath()).rstrip('/').split('/')
+            _root_prim_path = '/'.join(parts[:-1]) if len(parts) > 1 else ''
+            _prim = self._scene.stage.GetPrimAtPath(_root_prim_path)
+
+        for prim in Usd.PrimRange.AllPrims(_prim):
             if prim.GetAttribute('physics:rigidBodyEnabled'):
                 log.debug(f'[create_rigid_bodies] found rigid body at path: {prim.GetPath()}')
                 _rb = RigidPrim(str(prim.GetPath()), name=str(prim.GetPath()))

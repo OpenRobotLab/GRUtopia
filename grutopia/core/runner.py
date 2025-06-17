@@ -376,9 +376,9 @@ class SimulatorRunner:
                 task.clear_rigid_bodies()
 
             SimulationManager._on_stop('reset')
-            SimulationManager._create_simulation_view('reset')
         else:
             # init
+            SimulationManager._on_stop('reset')
             runtime_envs = [None for _ in range(self._simulator_runtime.env_num)]
 
         # get next_task_runtimes
@@ -389,21 +389,29 @@ class SimulatorRunner:
                 del self.env_id_to_task_name_map[runtime_env.env_id]
             next_task_runtimes.append(next_task_runtime)
 
-        # restore the state of envs that haven't been reset
-        if reset_tasks:
-            for t in self.current_tasks.values():
-                t.restore_info()
-
         # create tasks with next_task_runtimes
+        _new_tasks = []
         for next_task_runtime in next_task_runtimes:
             if next_task_runtime is None:
                 continue
             task = create_task(next_task_runtime, self._scene)
             self._world.add_task(task)
+            _new_tasks.append(task)
             task.set_up_scene(self._scene)
-            task.post_reset()
+
+        # create sim_view
+        SimulationManager._create_simulation_view('reset')
+
+        # restore the state of envs that haven't been reset
+        if reset_tasks:
+            for t in self.current_tasks.values():
+                t.restore_info()
 
         self._world.scene._finalize(self._world.physics_sim_view)  # noqa
+
+        # post_reset for new tasks
+        for task in _new_tasks:
+            task.post_reset()
 
         # map task_name and env_id of new tasks
         for next_task_runtime in next_task_runtimes:
