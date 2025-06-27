@@ -10,7 +10,7 @@
 [![PyPI Downloads](https://static.pepy.tech/badge/grutopia)](https://pepy.tech/projects/grutopia)
 [![GitHub Issues](https://img.shields.io/github/issues/OpenRobotLab/GRUtopia)](https://github.com/OpenRobotLab/GRUtopia/issues)
 <a href="https://cdn.vansin.top/taoyuan.jpg"><img src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white" height="20" style="display:inline"></a>
-[![Discord](https://img.shields.io/discord/1373946774439591996?logo=discord)](https://discord.gg/TpGTg6uA)
+[![Discord](https://img.shields.io/discord/1373946774439591996?logo=discord)](https://discord.gg/5jeaQHUj4B)
 </div>
 
 # GRUtopia
@@ -113,7 +113,7 @@ If you want to separately download robots and policy weights, you can manually d
 
 ## 👥 Support
 
-Join our [WeChat](https://cdn.vansin.top/taoyuan.jpg) support group or [Discord](https://discord.gg/TpGTg6uA) for any help.
+Join our [WeChat](https://cdn.vansin.top/taoyuan.jpg) support group or [Discord](https://discord.gg/5jeaQHUj4B) for any help.
 
 ## 📝 TODO List
 
