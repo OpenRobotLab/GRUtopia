@@ -1,8 +1,0 @@
-dashscope
-deepdiff
-git+https://github.com/naokiyokoyama/depth_camera_filtering
-git+https://github.com/naokiyokoyama/frontier_exploration.git
-open3d==0.18.0
-pathfinding
-shapely
-tiktoken
