@@ -8,7 +8,6 @@ def main():
     from grutopia_extension.configs.robots.h1 import (
         H1RobotCfg,
         h1_camera_cfg,
-        h1_tp_camera_cfg,
         move_along_path_cfg,
         move_by_speed_cfg,
         rotate_cfg,
@@ -30,13 +29,12 @@ def main():
             rotate_cfg,
         ],
         sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=False),
-            h1_tp_camera_cfg.update(enable=False),
+            h1_camera_cfg.update(name='camera', resolution=(64, 64), enable=True),
         ],
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
+        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20),
         task_config=FiniteStepTaskCfg(
             task_settings={'max_step': 501},
             episodes=[
@@ -59,16 +57,26 @@ def main():
     import_extensions()
     env = Env(sim_runtime)
     obs, _ = env.reset()
+
+    env.warm_up(5, physics=False)
+
     path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
     i = 0
     move_action = {move_along_path_cfg.name: [path]}
     while env.simulation_app.is_running():
         i += 1
         obs, _, terminated, _, _ = env.step(action=move_action)
+
+        if i == 1 or i == 101:
+            assert obs['sensors']['camera']['rgba'].shape == (64, 64, 4)
+
         if i % 100 == 0:
             print(i)
         if terminated:
             _, info = env.reset()
+
+            env.warm_up(5, physics=False)
+
             if not info:
                 break
     env.close()

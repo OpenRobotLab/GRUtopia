@@ -65,6 +65,17 @@ class Env:
 
         return obs, task_runtimes
 
+    def warm_up(self, steps: int = 10, render: bool = True, physics: bool = True):
+        """
+        Warm up the env by running a specified number of steps.
+
+        Args:
+            steps (int): The number of warm-up steps to perform. Defaults to 10.
+            render (bool): Whether to render the scene during warm-up. Defaults to True.
+            physics (bool): Whether to enable physics during warm-up. Defaults to True.
+        """
+        self.runner.warm_up(steps, render, physics)
+
     def step(self, action: List[Union[Dict, OrderedDict]]) -> Tuple[List, List, List, List, List]:
         """
         Perform a single step in the environment using the provided actions.

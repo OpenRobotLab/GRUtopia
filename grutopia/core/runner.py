@@ -82,9 +82,28 @@ class SimulatorRunner:
     def current_tasks(self) -> dict[str, BaseTask]:
         return self._world._current_tasks
 
-    def warm_up(self, steps=10, render=True):
-        for _ in range(steps):
-            self._world.step(render=render)
+    def warm_up(self, steps: int = 10, render: bool = True, physics: bool = True):
+        """
+        Warm up the simulation by running a specified number of steps.
+
+        Args:
+            steps (int): The number of warm-up steps to perform. Defaults to 10.
+            render (bool): Whether to render the scene during warm-up. Defaults to True.
+            physics (bool): Whether to enable physics during warm-up. Defaults to True.
+
+        Raises:
+            ValueError: If both `render` and `physics` are set to False, or if `steps` is less than or equal to 0.
+        """
+        if not render and not physics:
+            raise ValueError('both `render` and `physics` are set to False')
+        if steps <= 0:
+            raise ValueError('steps` is less than or equal to 0')
+        if physics:
+            for _ in range(steps):
+                self._world.step(render=render)
+        else:
+            for _ in range(steps):
+                SimulationContext.render(self._world)
 
     def step(
         self, actions: Union[List[Dict], None] = None, render: bool = True
