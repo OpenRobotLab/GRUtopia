@@ -3,12 +3,12 @@ from collections import OrderedDict
 
 import numpy as np
 import omni.isaac.core.utils.numpy.rotations as rot_utils
-from omni.isaac.sensor import Camera as i_Camera
 from scipy.spatial.transform import Rotation as R
 
 from grutopia.core.robot.robot import BaseRobot, Scene
 from grutopia.core.robot.sensor import BaseSensor
 from grutopia.core.util import log
+from grutopia.core.wrapper.isaac_camera import IsaacCamera as i_Camera
 from grutopia_extension.configs.sensors import MocapControlledCameraCfg
 
 DISPLACEMENT_THRESHOLD = 0.05
@@ -50,12 +50,6 @@ class MocapControlledCamera(BaseSensor):
         if self.config.enable:
             self._camera = self.create_camera()
             self._camera.initialize()
-            # self._camera.add_pointcloud_to_frame()
-            # self._camera.add_distance_to_image_plane_to_frame()
-            # self._camera.add_semantic_segmentation_to_frame()
-            # self._camera.add_instance_segmentation_to_frame()
-            # self._camera.add_instance_id_segmentation_to_frame()
-            self._camera.add_bounding_box_2d_tight_to_frame()
 
     def get_data(self) -> OrderedDict:
         if not self.config.enable:

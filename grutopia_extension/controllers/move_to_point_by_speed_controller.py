@@ -113,7 +113,7 @@ class MoveToPointBySpeedController(BaseController):
             ArticulationAction: joint signals to apply.
         """
         assert len(action) == 1, 'action must contain 1 elements'
-        start_position, start_orientation = self.robot.get_world_pose()
+        start_position, start_orientation = self.robot.get_pose()
         return self.forward(
             start_position=start_position,
             start_orientation=start_orientation,
@@ -126,7 +126,7 @@ class MoveToPointBySpeedController(BaseController):
     def get_obs(self) -> OrderedDict[str, Any]:
         if self.goal_position is None or self.last_threshold is None:
             return self._make_ordered()
-        start_position = self.robot.get_world_pose()[0]
+        start_position = self.robot.get_pose()[0]
         start_position[-1] = 0
         dist_from_goal = np.linalg.norm(start_position - self.goal_position)
         finished = True if dist_from_goal < self.last_threshold else False

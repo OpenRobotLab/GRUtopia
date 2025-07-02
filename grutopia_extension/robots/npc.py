@@ -32,5 +32,5 @@ class NPC(BaseRobot):
 
     def get_obs(self) -> OrderedDict:
         log.debug(f'Getting observation for NPC {self.name}')
-        # npc can get all the robot obs in the scene, but this method return nothing.
+        # npc can get all the robot obs in the scene, but this method returns nothing.
         return self._make_ordered()

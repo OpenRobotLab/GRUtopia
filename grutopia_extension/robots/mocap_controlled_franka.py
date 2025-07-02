@@ -91,7 +91,7 @@ class MocapControlledFrankaRobot(BaseRobot):
         return self.last_action
 
     def get_obs(self) -> OrderedDict:
-        position, orientation = self.isaac_robot.get_world_pose()
+        position, orientation = self.isaac_robot.get_pose()
 
         # custom
         obs = {
@@ -102,7 +102,7 @@ class MocapControlledFrankaRobot(BaseRobot):
             'sensors': {},
         }
 
-        eef_world_pose = self.isaac_robot.end_effector.get_world_pose()
+        eef_world_pose = self.isaac_robot.end_effector.get_pose()
         obs['eef_position'] = eef_world_pose[0]
         obs['eef_orientation'] = eef_world_pose[1]
 

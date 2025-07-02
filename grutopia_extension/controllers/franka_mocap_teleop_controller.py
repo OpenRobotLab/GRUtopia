@@ -68,9 +68,9 @@ class FrankaMocapTeleopController(BaseController):
             self.camera_mover = self.robot.sensors['lh_controlled_camera'].camera_mover
             self.camera_mover.set_target_position(self.config.target_position)
 
-        camera_position, camera_orientation = self.controlled_camera.get_world_pose()
+        camera_position, camera_orientation = self.controlled_camera.get_pose()
         new_camera_position, new_camera_orientation = self.camera_mover(camera_position, camera_orientation, mocap_info)
-        self.controlled_camera.set_world_pose(new_camera_position, new_camera_orientation)
+        self.controlled_camera.set_pose(new_camera_position, new_camera_orientation)
 
         # Get the current ee_pos and rot_mat
         rmp_controller = self.sub_controllers[0]

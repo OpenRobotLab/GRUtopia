@@ -6,17 +6,13 @@ from omni.isaac.core import World
 from omni.isaac.core.loggers import DataLogger
 from omni.isaac.core.prims.xform_prim import XFormPrim
 from omni.isaac.core.simulation_context import SimulationContext
-from omni.isaac.core.utils.stage import add_reference_to_stage  # noqa F401
 from omni.physx.scripts import utils
-from pxr import Usd  # noqa
 
 # Init
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.runtime.task_runtime import TaskRuntime
-from grutopia.core.scene import delete_prim_in_stage  # noqa F401
-from grutopia.core.scene import create_object, create_scene  # noqa F401
 from grutopia.core.task.task import BaseTask, create_task
-from grutopia.core.util import AsyncRequest, log  # noqa F401
+from grutopia.core.util import log
 from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
@@ -293,10 +289,12 @@ class SimulatorRunner:
 
         if env_ids is None and self.current_tasks:
             # reset
+            log.info('==================== reset all env ====================')
             env_ids = [i for i in range(self._simulator_runtime.env_num)]
 
         if env_ids is None:
             # init
+            log.info('===================== init reset =====================')
             SimulationContext.reset(self._world, soft=False)
             new_task_runtimes = self._next_episodes()
         else:

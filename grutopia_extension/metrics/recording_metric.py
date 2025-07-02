@@ -6,7 +6,7 @@ from grutopia_extension.configs.metrics.recording_metric import RecordingMetricC
 @BaseMetric.register('RecordingMetric')
 class RecordingMetric(BaseMetric):
     """
-    Record any controllers output or joint actions during playing or teleoperating
+    Record any controller's output or joint actions during playing or teleoperating
     """
 
     def __init__(self, config: RecordingMetricCfg, task_runtime: TaskRuntime):
@@ -30,7 +30,7 @@ class RecordingMetric(BaseMetric):
         if self.fields is None:
             self.obs[self.step] = task_obs
         else:
-            assert len(task_obs) == 1, 'only support one task currently.'
+            assert len(task_obs) == 1, f'only support one task currently. but len(task_obs) is : {len(task_obs)}'
             robot_name = list(task_obs.keys())[0]
             self.obs[self.step] = {robot_name: {}}
             for record_field in self.fields:

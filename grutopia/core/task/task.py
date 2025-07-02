@@ -4,7 +4,6 @@ from abc import ABC
 from functools import wraps
 from typing import Any, Dict, Union
 
-from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.scenes.scene import Scene
 from omni.isaac.core.tasks import BaseTask as OmniBaseTask
 from omni.isaac.core.utils.prims import create_prim
@@ -13,13 +12,11 @@ from pxr import Usd
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
-from grutopia.core.scene import create_object, create_scene
+from grutopia.core.scene import create_object, validate_scene_file
 from grutopia.core.task.metric import BaseMetric, create_metric
 from grutopia.core.util import log
-from grutopia.core.util.physics_status_util import (
-    get_rigidbody_status,
-    set_rigidbody_status,
-)
+from grutopia.core.wrapper.pose_mixin import PoseMixin
+from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
 
 class BaseTask(OmniBaseTask, ABC):
@@ -39,9 +36,14 @@ class BaseTask(OmniBaseTask, ABC):
         name = runtime.name
         self.env_id = runtime.env.env_id
         self.offset = runtime.env.offset
+
+        if runtime.env.env_id not in PoseMixin.env_offset_map:
+            PoseMixin.env_offset_map[str(runtime.env.env_id)] = runtime.env.offset
+            log.info(f'env {runtime.env.env_id} at {runtime.env.offset}')
+
         super().__init__(name=name, offset=self.offset)
         self._scene = scene
-        self.scene_rigid_bodies = {}
+        self.scene_rigid_bodies: Dict[str, RigidPrim] = {}
         self.runtime = runtime
 
         self.metrics: Dict[str, BaseMetric] = {}
@@ -76,7 +78,7 @@ class BaseTask(OmniBaseTask, ABC):
         - Information about the initialized robots and objects is logged using the `log.info` method after successful setup.
         """
         if self.runtime.scene_asset_path is not None:
-            source, prim_path = create_scene(
+            source, prim_path = validate_scene_file(
                 os.path.abspath(self.runtime.scene_asset_path),
                 prim_path_root=f'World/env_{self.runtime.env.env_id}/scene',
             )
@@ -91,8 +93,7 @@ class BaseTask(OmniBaseTask, ABC):
                 if prim.GetAttribute('physics:rigidBodyEnabled'):
                     log.debug(f'[BaseTask.load] found rigid body at path: {prim.GetPath()}')
                     _rb = RigidPrim(str(prim.GetPath()))
-                    self.scene_rigid_bodies[str(prim.GetPath())] = {'status': None, 'rigidbody': _rb}
-
+                    self.scene_rigid_bodies[str(prim.GetPath())] = _rb
         self.robots = init_robots(self.runtime, self._scene)
         self.objects = {}
         for obj in self.runtime.objects:
@@ -126,7 +127,7 @@ class BaseTask(OmniBaseTask, ABC):
             if not self.scene.object_exists(rigid_body_name):
                 log.error(f'[cache_info] {rigid_body_name} does not exist.')
                 continue
-            rigid_body['status'] = get_rigidbody_status(rigid_body['rigidbody'])
+            rigid_body.save_status()
 
     def _restore_rigidbody_statuses(self):
         """
@@ -134,11 +135,9 @@ class BaseTask(OmniBaseTask, ABC):
         those in the robot.
         """
         for rigid_body_name, rigid_body in self.scene_rigid_bodies.items():
-            if rigid_body['status'] is None or not self.scene.object_exists(rigid_body_name):
+            if rigid_body.status is None or not self.scene.object_exists(rigid_body_name):
                 continue
-            _rigid_body = RigidPrim(rigid_body_name)
-            rigid_body['rigidbody'] = _rigid_body
-            set_rigidbody_status(_rigid_body, rigid_body['status'])
+            rigid_body.restore_status()
 
     def set_up_scene(self, scene: Scene) -> None:
         """
@@ -256,6 +255,7 @@ class BaseTask(OmniBaseTask, ABC):
         self.steps = 0
         for robot in self.robots.values():
             robot.post_reset()
+        # TODO: Verify whether RigidPrims' post_reset need to be called
         return
 
     def cleanup(self) -> None:
@@ -273,7 +273,7 @@ class BaseTask(OmniBaseTask, ABC):
             log.info(f'[cleanup] cleanup robot {robot.name}')
             try:
                 robot.cleanup()
-                self.scene.remove_object(robot.name)
+                self.scene.remove_object(robot.name, registry_only=True)
             finally:
                 log.info('[cleanup] robots cleaned.')
 

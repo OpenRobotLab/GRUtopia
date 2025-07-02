@@ -1,20 +1,16 @@
 from collections import OrderedDict
 from functools import wraps
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from omni.isaac.core.prims import RigidPrim
-from omni.isaac.core.robots.robot import Robot as IsaacRobot
 from omni.isaac.core.scenes import Scene
 from pxr import Usd
 
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.util import log
-from grutopia.core.util.physics_status_util import (
-    get_articulation_status,
-    set_articulation_status,
-)
+from grutopia.core.wrapper.isaac_robot import IsaacRobot
+from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
 
 class BaseRobot:
@@ -30,7 +26,6 @@ class BaseRobot:
         self.sensors = {}
         self._scene = scene
         self.obs_keys = []
-        self.articulation_status: Union[Dict[str, Any], None] = None
         self._rigid_body_map = {}
 
     def set_up_to_scene(self, scene: Scene):
@@ -44,9 +39,13 @@ class BaseRobot:
         self._scene = scene
         robot_cfg = self.config
         if self.isaac_robot:
-            scene.add(self.isaac_robot)
+            # TODO： Implement initialize method in wrapper to make
+            #       'scene._scene_registry.add_articulated_system' -> 'scene.add'
+            scene._scene_registry.add_articulated_system(
+                name=self.isaac_robot.name, articulated_system=self.isaac_robot
+            )
         for rigid_body in self.get_rigid_bodies():
-            scene.add(rigid_body)
+            scene.add(rigid_body.prim_ins)
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.robot.sensor import BaseSensor, create_sensors
 
@@ -89,27 +88,14 @@ class BaseRobot:
         Saves the current state of the robot's articulation information.
         """
         log.info('saving robot info')
-        self.articulation_status = get_articulation_status(self.isaac_robot)
-
-    def restore_articulation(self, robot_status: Dict[str, Any] = None):
-        """
-        Restores the articulation of the robot based on the provided status or the internal state.
-        """
-        log.info('restoring articulation')
-        if robot_status is not None:
-            log.info('[restore_articulation] use external articulation status')
-            self.articulation_status = robot_status
-        if self.articulation_status:
-            set_articulation_status(self.isaac_robot, self.articulation_status)
+        self.isaac_robot.save_status()
 
     def restore_robot_info(self):
         """
         Restores the robot's information and its state within the simulation environment.
         """
-        if self.articulation_status is not None:
-            self.isaac_robot._articulation_view._is_initialized = False
-            self.isaac_robot._articulation_view._on_physics_ready('reset')
-            self.restore_articulation()
+        if self.isaac_robot.status is not None:
+            self.isaac_robot.restore_status()
             self.clean_stale_rigid_bodies()
             self.create_rigid_bodies()
 
@@ -118,6 +104,7 @@ class BaseRobot:
 
     def post_reset(self):
         """Set up things after the env resets."""
+        self.isaac_robot.post_reset()
         for sensor in self.sensors.values():
             sensor.post_reset()
 
@@ -134,7 +121,7 @@ class BaseRobot:
         for rigid_body in self.get_rigid_bodies():
             try:
                 if self._scene.object_exists(rigid_body.name):
-                    self._scene.remove_object(rigid_body.name)
+                    self._scene.remove_object(rigid_body.name, registry_only=True)
                     log.debug(f'[cleanup] rigid body {rigid_body.name} removed from scene')
             except RuntimeError as e:
                 log.error(e)

@@ -71,7 +71,7 @@ class RotateController(BaseController):
               0. goal_orientation in quat (np.ndarray)
         """
         assert len(action) == 1, 'action must contain 1 elements'
-        start_orientation = self.robot.get_world_pose()[1]
+        start_orientation = self.robot.get_pose()[1]
         return self.forward(
             start_orientation=start_orientation,
             goal_orientation=action[0],
@@ -82,7 +82,7 @@ class RotateController(BaseController):
     def get_obs(self) -> OrderedDict[str, Any]:
         if self.goal_orientation is None or self.threshold is None:
             return {}
-        start_orientation = self.robot.get_world_pose()[1]
+        start_orientation = self.robot.get_pose()[1]
         delta_z_rot = RotateController.get_delta_z_rot(
             start_orientation=start_orientation, goal_orientation=self.goal_orientation
         )

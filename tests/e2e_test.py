@@ -62,7 +62,7 @@ def test_h1_locomotion_multi_env_endless():
 
 
 @pytest.mark.P0
-def h1_locomotion_3_env_2_episodes():
+def test_h1_locomotion_3_env_2_episodes():
     start_command = 'python ./tests/h1_locomotion_3_env_2_episodes.py'
     common_body(start_command)
 
@@ -74,7 +74,7 @@ def test_load_scene_without_robot():
 
 
 @pytest.mark.P0
-def load_scene_without_robot_multi_env():
+def test_load_scene_without_robot_multi_env():
     start_command = 'python ./tests/load_scene_without_robot_multi_env.py'
     common_body(start_command)
 
@@ -82,6 +82,12 @@ def load_scene_without_robot_multi_env():
 @pytest.mark.P0
 def test_rep_camera_pointcloud():
     start_command = 'python ./tests/rep_camera_pointcloud.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
+def test_franka_manipulation_multi_env_with_reset():
+    start_command = 'python ./tests/franka_manipulation_multi_env_with_reset.py'
     common_body(start_command)
 
 

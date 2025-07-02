@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from functools import wraps
 from typing import Dict
@@ -28,6 +28,15 @@ class BaseSensor(ABC):
         self._scene = scene
         self._robot = robot
         self.obs_keys = []
+
+    @abstractmethod
+    def get_data(self) -> OrderedDict:
+        """Get data from sensor.
+
+        Returns:
+            Dict: data dict of sensor.
+        """
+        raise NotImplementedError()
 
     def post_reset(self):
         """

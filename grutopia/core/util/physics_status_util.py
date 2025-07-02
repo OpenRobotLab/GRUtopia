@@ -1,16 +1,15 @@
-from typing import Dict
+from typing import Any, Dict
 
 import numpy as np
 from omni.isaac.core.articulations import Articulation
 from omni.isaac.core.prims import RigidPrim
 
 
-def get_rigidbody_status(rigid_body: RigidPrim):
+def get_rigidbody_status(rigid_body: RigidPrim) -> Dict[str, Any]:
     """Get the current status of a RigidPrim"""
     return {
         'transforms': rigid_body._rigid_prim_view._physics_view.get_transforms(),
         'velocities': rigid_body._rigid_prim_view._physics_view.get_velocities(),
-        'accelerations': rigid_body._rigid_prim_view._physics_view.get_accelerations(),
         'masses': rigid_body._rigid_prim_view._physics_view.get_masses(),
         'coms': rigid_body._rigid_prim_view._physics_view.get_coms(),
         'inertias': rigid_body._rigid_prim_view._physics_view.get_inertias(),
@@ -24,9 +23,10 @@ def get_rigidbody_status(rigid_body: RigidPrim):
 
 def set_rigidbody_status(rigid_body: RigidPrim, status: Dict):
     """Set the current status of a RigidPrim"""
+    if not status:
+        return
     rigid_body._rigid_prim_view._physics_view.set_transforms(status['transforms'], indices=np.array([0]))
     rigid_body._rigid_prim_view._physics_view.set_velocities(status['velocities'], indices=np.array([0]))
-    rigid_body._rigid_prim_view._physics_view.set_accelerations(status['accelerations'], indices=np.array([0]))
     rigid_body._rigid_prim_view._physics_view.set_masses(status['masses'], indices=np.array([0]))
     rigid_body._rigid_prim_view._physics_view.set_coms(status['coms'], indices=np.array([0]))
     rigid_body._rigid_prim_view._physics_view.set_inertias(status['inertias'], indices=np.array([0]))
@@ -39,10 +39,9 @@ def set_rigidbody_status(rigid_body: RigidPrim, status: Dict):
     )
     rigid_body._rigid_prim_view._physics_view.set_contact_offsets(status['contact_offsets'], indices=np.array([0]))
     rigid_body._rigid_prim_view._physics_view.set_rest_offsets(status['rest_offsets'], indices=np.array([0]))
-    return rigid_body
 
 
-def get_articulation_status(articulation: Articulation):
+def get_articulation_status(articulation: Articulation) -> Dict[str, Any]:
     """Get the current status of an Articulation"""
     return {
         'dof_limits': articulation._articulation_view._physics_view.get_dof_limits(),

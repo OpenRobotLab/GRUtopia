@@ -162,9 +162,9 @@ class LayoutEditMocapController(BaseController):
             self.camera_mover = self.robot.sensors[camera].layout_camera_mover
             self.camera_mover.set_target_position(self.config.target_position)
 
-        camera_position, camera_orientation = self.controlled_camera.get_world_pose()
+        camera_position, camera_orientation = self.controlled_camera.get_pose()
         new_camera_position, new_camera_orientation = self.camera_mover(camera_position, camera_orientation, mocap_info)
-        self.controlled_camera.set_world_pose(new_camera_position, new_camera_orientation)
+        self.controlled_camera.set_pose(new_camera_position, new_camera_orientation)
 
         if rh_bones_kps is None and lh_bones_kps is None:
             return self.sub_controllers[0].forward(self.rh_exe_init_position, self.rh_exe_init_orientation)

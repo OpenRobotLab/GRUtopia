@@ -76,7 +76,7 @@ class MoveAlongPathPointsController(BaseController):
         """
         assert len(action) == 1, 'action must contain 1 elements'
         assert len(action[0]) > 0, 'path points cannot be empty'
-        start_position, start_orientation = self.robot.get_world_pose()
+        start_position, start_orientation = self.robot.get_pose()
         return self.forward(
             start_position=start_position,
             start_orientation=start_orientation,

@@ -1,11 +1,13 @@
+import os
+
 from grutopia.core.scene.scene.util import usd_op
 
 
-def create_scene(config_json_path: str, prim_path_root: str = 'background'):
+def validate_scene_file(file_path: str, prim_path_root: str = 'background'):
     """
-    Create a scene from config.(But just input usd file yet.)
+    Validate scene file.
     Args:
-        config_json_path (str): path to scene config file(use to be a .usd file)
+        file_path (str): path to scene config file(use to be a .usd file)
         prim_path_root (str): path to root prim
 
     Returns:
@@ -13,7 +15,9 @@ def create_scene(config_json_path: str, prim_path_root: str = 'background'):
         world_prim_path (str): path to world prim
     """
     world_prim_path = '/' + prim_path_root
-    if config_json_path.endswith('usd') or config_json_path.endswith('usda') or config_json_path.endswith('usdc'):
+    if file_path.endswith('usd') or file_path.endswith('usda') or file_path.endswith('usdc'):
+        if not os.path.exists(file_path):
+            raise FileNotFoundError('File not found: ' + file_path)
         # Add usd directly
-        return config_json_path, world_prim_path
+        return file_path, world_prim_path
     raise RuntimeError('Env file path needs to end with .usd, .usda or .usdc .')

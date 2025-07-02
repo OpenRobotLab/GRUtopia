@@ -128,7 +128,7 @@ class AliengoMoveBySpeedController(BaseController):
 
         # Get obs for policy.
         robot_base = self.robot.get_robot_base()
-        base_pose_w = robot_base.get_world_pose()
+        base_pose_w = robot_base.get_pose()
         base_quat_w = torch.tensor(base_pose_w[1]).reshape(1, -1)
         base_ang_vel_w = torch.tensor(robot_base.get_angular_velocity()[:]).reshape(1, -1)
         base_ang_vel = np.array(math_utils.quat_rotate_inverse(base_quat_w, base_ang_vel_w).reshape(-1))

@@ -137,7 +137,7 @@ class G1MoveBySpeedController(BaseController):
         )
 
         imu_link: RigidPrim = self.robot._imu_in_torso
-        imu_pose_w = imu_link.get_world_pose()
+        imu_pose_w = imu_link.get_pose()
         imu_quat_w = torch.tensor(imu_pose_w[1]).reshape(1, -1)
         imu_ang_vel_w = torch.tensor(imu_link.get_angular_velocity()[:]).reshape(1, -1)
         imu_ang_vel = np.array(math_utils.quat_rotate_inverse(imu_quat_w, imu_ang_vel_w).reshape(-1))

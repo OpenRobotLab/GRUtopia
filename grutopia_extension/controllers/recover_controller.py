@@ -26,9 +26,9 @@ class RecoverController(BaseController):
     ) -> ArticulationAction:
         if self.num_joints is None:
             self.num_joints = self.get_joint_subset().num_joints
-        current_position = self.robot.get_world_pose()[0]
+        current_position = self.robot.get_pose()[0]
         log.info(f'current pos is {current_position}, recovering to {target_position}')
-        self.robot.isaac_robot.set_world_pose(target_position, target_orientation)
+        self.robot.isaac_robot.set_pose(target_position, target_orientation)
         self.robot.isaac_robot.set_world_velocity(np.zeros(6))
 
         self.robot.isaac_robot.set_joint_velocities(np.zeros(len(self.robot.isaac_robot.dof_names)))

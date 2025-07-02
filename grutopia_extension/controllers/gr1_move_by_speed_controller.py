@@ -4,13 +4,13 @@ import numpy as np
 import onnxruntime as ort
 import torch
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.prims import RigidPrim
 from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 import grutopia.core.util.math as math_utils
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 from grutopia_extension.configs.controllers import GR1MoveBySpeedControllerCfg
 
 
@@ -127,7 +127,7 @@ class GR1MoveBySpeedController(BaseController):
         )
 
         imu_link: RigidPrim = self.robot._imu_in_torso
-        imu_pose_w = imu_link.get_world_pose()
+        imu_pose_w = imu_link.get_pose()
         imu_quat_w = torch.tensor(imu_pose_w[1]).reshape(1, -1)
         imu_ang_vel_w = torch.tensor(imu_link.get_angular_velocity()[:]).reshape(1, -1)
         imu_ang_vel = np.array(math_utils.quat_rotate_inverse(imu_quat_w, imu_ang_vel_w).reshape(-1))
