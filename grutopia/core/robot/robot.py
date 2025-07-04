@@ -35,7 +35,6 @@ class BaseRobot:
             scene (Scene): scene to set up.
         """
         self.create_rigid_bodies()
-        self._set_rigid_bodies()
         self._scene = scene
         robot_cfg = self.config
         if self.isaac_robot:
@@ -94,17 +93,15 @@ class BaseRobot:
         """
         Restores the robot's information and its state within the simulation environment.
         """
-        if self.isaac_robot.status is not None:
-            self.isaac_robot.restore_status()
-            self.clean_stale_rigid_bodies()
-            self.create_rigid_bodies()
-
-        for sensor in self.sensors.values():
-            sensor.restore_sensor_info()
+        self.isaac_robot._articulation_view._is_initialized = False
+        self.isaac_robot._articulation_view._on_physics_ready('reset')
+        self.clean_stale_rigid_bodies()
+        self.create_rigid_bodies()
+        self.post_reset()
+        self.isaac_robot.restore_status()
 
     def post_reset(self):
         """Set up things after the env resets."""
-        self.isaac_robot.post_reset()
         for sensor in self.sensors.values():
             sensor.post_reset()
 
@@ -189,9 +186,6 @@ class BaseRobot:
 
     def get_controllers(self):
         return self.controllers
-
-    def _set_rigid_bodies(self):
-        pass
 
     def get_rigid_bodies(self) -> List[RigidPrim]:
         return []

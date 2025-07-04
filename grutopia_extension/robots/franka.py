@@ -151,22 +151,15 @@ class FrankaRobot(BaseRobot):
 
         self.last_action = []
 
-    def _set_rigid_bodies(self):
-        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
-
     def get_robot_scale(self):
         return self._robot_scale
 
     def get_robot_ik_base(self):
         return self._robot_ik_base
 
-    def restore_robot_info(self):
-        super().restore_robot_info()
-        self._set_rigid_bodies()
-
     def post_reset(self):
         super().post_reset()
-        self._set_rigid_bodies()
+        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
 
     @staticmethod
     def action_to_dict(action):

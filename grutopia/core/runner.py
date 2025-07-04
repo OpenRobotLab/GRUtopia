@@ -408,12 +408,14 @@ class SimulatorRunner:
 
         # create tasks with next_task_runtimes
         _new_tasks = []
+        _new_tasks_names = []
         for next_task_runtime in next_task_runtimes:
             if next_task_runtime is None:
                 continue
             task = create_task(next_task_runtime, self._scene)
             self._world.add_task(task)
             _new_tasks.append(task)
+            _new_tasks_names.append(task.name)
             task.set_up_scene(self._scene)
 
         # create sim_view
@@ -422,9 +424,12 @@ class SimulatorRunner:
         # restore the state of envs that haven't been reset
         if reset_tasks:
             for t in self.current_tasks.values():
+                if t.name in _new_tasks_names:
+                    continue
                 t.restore_info()
 
-        self._world.scene._finalize(self._world.physics_sim_view)  # noqa
+        self._scene._finalize(self._world.physics_sim_view)  # noqa
+        self._scene.post_reset()
 
         # post_reset for new tasks
         for task in _new_tasks:

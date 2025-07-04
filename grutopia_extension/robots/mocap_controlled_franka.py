@@ -42,9 +42,6 @@ class MocapControlledFrankaRobot(BaseRobot):
 
         self.last_action = []
 
-    def _set_rigid_bodies(self):
-        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
-
     def get_robot_scale(self):
         return self._robot_scale
 
@@ -53,8 +50,8 @@ class MocapControlledFrankaRobot(BaseRobot):
 
     def post_reset(self):
         super().post_reset()
+        self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
         self.isaac_robot._articulation_view.set_max_joint_velocities([1.0] * 9)
-
         stiffnesses = np.array([1e7, 1e7, 1e7, 1e7, 1e7, 1e7, 1e7, 1e4, 0])
         dampings = np.array([1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e3, 0])
         self.isaac_robot._articulation_view.set_gains(kps=stiffnesses, kds=dampings)

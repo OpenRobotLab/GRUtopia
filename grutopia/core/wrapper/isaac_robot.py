@@ -45,8 +45,6 @@ class IsaacRobot(PoseMixin):
 
     def restore_status(self):
         log.info(f'=============== restore info of robot {self.name} ==============')
-        self._robot._articulation_view._is_initialized = False
-        self._robot._articulation_view._on_physics_ready('reset')
         if self.status:
             set_articulation_status(self._robot, self.status)
 
@@ -73,6 +71,9 @@ class IsaacRobot(PoseMixin):
     @property
     def handles_initialized(self):
         return self._robot.handles_initialized
+
+    def is_valid(self):
+        return self._robot.is_valid()
 
     def set_solver_position_iteration_count(self, count: int) -> None:
         self._robot.set_solver_position_iteration_count(count)

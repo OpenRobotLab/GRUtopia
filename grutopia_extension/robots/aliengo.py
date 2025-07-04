@@ -94,17 +94,9 @@ class AliengoRobot(BaseRobot):
             self._robot_scale = np.array(config.scale)
             self.isaac_robot.set_local_scale(self._robot_scale)
 
-    def _set_rigid_bodies(self):
-        self._robot_base = self._rigid_body_map[self.config.prim_path + '/base']
-
-    def restore_robot_info(self):
-        super().restore_robot_info()
-        self._set_rigid_bodies()
-        self.isaac_robot.set_gains()
-
     def post_reset(self):
         super().post_reset()
-        self._set_rigid_bodies()
+        self._robot_base = self._rigid_body_map[self.config.prim_path + '/base']
         self.isaac_robot.set_gains()
 
     def get_robot_scale(self):

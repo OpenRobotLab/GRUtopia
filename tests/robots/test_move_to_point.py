@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Any, Dict, Tuple
 
-from grutopia.core.config import Config, SimConfig
+from grutopia.core.config import Config, RobotCfg, SimConfig
 from grutopia.core.gym_env import Env
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
@@ -15,14 +15,22 @@ from grutopia_extension.configs.tasks import (
 headless = not has_display()
 
 
-def run(robot, action: Dict[str, Any], target: Tuple[float, float, float], max_steps=5000):
+def run(robot: RobotCfg, action: Dict[str, Any], target: Tuple[float, float, float], max_steps=5000):
     config = Config(
         simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
         task_config=SingleInferenceTaskCfg(
             episodes=[
                 SingleInferenceEpisodeCfg(
                     scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[robot],
+                    robots=[robot.update()],
+                ),
+                SingleInferenceEpisodeCfg(
+                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                    robots=[robot.update()],
+                ),
+                SingleInferenceEpisodeCfg(
+                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                    robots=[robot.update()],
                 ),
             ],
         ),
@@ -38,11 +46,12 @@ def run(robot, action: Dict[str, Any], target: Tuple[float, float, float], max_s
     obs, _ = env.reset()
 
     i = 0
+    episode_idx = 0
 
     env_action = action
 
     print(f'actions: {env_action}')
-    confirm = 0
+    solid = 0
 
     while env.simulation_app.is_running():
         i += 1
@@ -53,10 +62,17 @@ def run(robot, action: Dict[str, Any], target: Tuple[float, float, float], max_s
         error = np.linalg.norm(position - target)
 
         if error < 0.1:
-            confirm += 1
-            if confirm == 10:
-                print(f'step {i}: target={target} reached with position={position}')
-                break
+            solid += 1
+            if solid == 10:
+                print(f'episode {episode_idx} step {i}: target={target} reached with position={position}')
+                _, info = env.reset()
+                episode_idx += 1
+                if not info:  # No more episode
+                    break
+                else:  # Reset all counters before next episode starts
+                    i = 0
+                    solid = 0
+
         assert i < max_steps, f'max steps reached, position={position}, target={target}, error={error}'
 
     env.close()
