@@ -59,9 +59,8 @@ class Env:
         """
         obs, task_runtimes = self.runner.reset(env_ids=env_ids)
 
-        if not task_runtimes or all(task_runtime is None for task_runtime in task_runtimes):
-            log.info('All episodes have finished.')
-            task_runtimes = []
+        if all(task_runtime is None for task_runtime in task_runtimes):
+            log.info('no more episode left')
 
         return obs, task_runtimes
 
@@ -96,11 +95,11 @@ class Env:
                 - truncated (List): The truncation status of the environments.
                 - info (List): Additional information about the step execution.
         """
-        truncated = []
-        info = []
-
         assert isinstance(action, list)
         assert len(action) == self._runtime.env_num
+
+        truncated = [False for _ in action]
+        info = [None for _ in action]
 
         obs, terminated_status, reward = self._runner.step(action)
 

@@ -67,6 +67,7 @@ def main():
     ]
 
     i = 0
+    no_more_episode = False
     while env.simulation_app.is_running():
         i += 1
         if i % 400 == 0:
@@ -85,14 +86,18 @@ def main():
             env_actions = {}
 
         obs, _, terminated, _, _ = env.step(action=[{'franka': env_actions}, {'franka': env_actions}])
+
+        if all(terminated) and no_more_episode:
+            break
+
         if i == 350:
             assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - _robot.isaac_robot.get_pose()[0]) == 4
             assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - obs[1]['franka']['position']) == 4
         reset_list = [idx for idx, t in enumerate(terminated) if t]
         if reset_list:
             _, info = env.reset(env_ids=reset_list)
-            if not info:
-                break
+            if None in info:
+                no_more_episode = True
     env.close()
 
 

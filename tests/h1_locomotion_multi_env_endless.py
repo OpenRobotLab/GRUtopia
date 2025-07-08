@@ -73,9 +73,10 @@ def main():
 
         if i % 500 == 0:
             _, info = env.reset(env_ids=[0])
-            assert len(info) == 0
+            assert len(info) == 1
+            assert None in info
 
-        if i == 10000:
+        if i == 5000:
             break
     env.close()
 

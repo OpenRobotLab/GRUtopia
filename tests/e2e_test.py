@@ -56,6 +56,12 @@ def test_h1_locomotion_multi_env():
 
 
 @pytest.mark.P0
+def test_h1_locomotion_multi_env_no_remainder():
+    start_command = 'python ./tests/h1_locomotion_multi_env_no_remainder.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
 def test_h1_locomotion_multi_env_endless():
     start_command = 'python ./tests/h1_locomotion_multi_env_endless.py'
     common_body(start_command)

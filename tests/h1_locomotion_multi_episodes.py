@@ -77,7 +77,7 @@ def main():
 
             env.warm_up(5, physics=False)
 
-            if not info:
+            if info is None:
                 break
     env.close()
 

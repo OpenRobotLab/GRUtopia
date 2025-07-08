@@ -93,23 +93,25 @@ def main():
         action_3 = OrderedDict({'h1': move_action, 'h1_1': move_action})
         obs, _, terminated_status, _, _ = env.step(action=[action_0, action_1, action_2, action_3])
 
-        if False not in terminated_status and no_more_episode:
+        assert len(obs) == 4
+        assert len(terminated_status) == 4
+
+        if all(terminated_status) and no_more_episode:
             break
 
         if i % 100 == 0:
             print(i)
 
-        if i == 1300:
-            assert len(obs) == 4
-
-        if True in terminated_status and not no_more_episode:
+        if any(terminated_status) and not no_more_episode:
             obs, info = env.reset(env_ids=[idx for idx, term in enumerate(terminated_status) if term])
             assert len(obs) == 4
+            assert len(info) == 4
             if i < 700:
                 assert None not in info
-            if not info or None in info:
+            if None in info:
                 assert None in info
                 assert sum(1 for item in info if item is None) == 3
+                assert sum(1 for item in obs if item is None) == 3
                 no_more_episode = True
 
     env.close()

@@ -55,7 +55,7 @@ def main():
     config = Config(
         simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20),
         task_config=FiniteStepTaskCfg(
-            env_num=3,
+            env_num=4,
             offset_size=10,
             task_settings={'max_step': 500},
             episodes=[
@@ -63,12 +63,8 @@ def main():
                     scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                     scene_scale=(0.01, 0.01, 0.01),
                     robots=[h1_1.update(), h1.update()],
-                ),
-                FiniteStepTaskEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1_1.update(), h1.update()],
-                ),
+                )
+                for _ in range(8)
             ],
         ),
     )
@@ -81,8 +77,8 @@ def main():
     # import custom extensions here.
 
     env = Env(sim_runtime)
-    _, info = env.reset()
-    assert len(info) == 2
+    obs, _ = env.reset()
+    assert len(obs) == 4
 
     i = 0
 
@@ -93,7 +89,12 @@ def main():
         i += 1
         action_0 = OrderedDict({'h1': move_action, 'h1_1': move_action})
         action_1 = OrderedDict({'h1': move_action, 'h1_1': move_action})
-        obs, _, terminated_status, _, _ = env.step(action=[action_0, action_1])
+        action_2 = OrderedDict({'h1': move_action, 'h1_1': move_action})
+        action_3 = OrderedDict({'h1': move_action, 'h1_1': move_action})
+        obs, _, terminated_status, _, _ = env.step(action=[action_0, action_1, action_2, action_3])
+
+        assert len(obs) == 4
+        assert len(terminated_status) == 4
 
         if all(terminated_status) and no_more_episode:
             break
@@ -102,10 +103,14 @@ def main():
             print(i)
 
         if any(terminated_status) and not no_more_episode:
-            env_ids = [idx for idx, term in enumerate(terminated_status) if term]
-            _, info = env.reset(env_ids=env_ids)
-            assert len(info) == len(env_ids)
+            obs, info = env.reset(env_ids=[idx for idx, term in enumerate(terminated_status) if term])
+            assert len(obs) == 4
+            assert len(info) == 4
+            if i < 700:
+                assert all(info)
             if None in info:
+                assert not any(info)
+                assert not any(obs)
                 no_more_episode = True
 
     env.close()

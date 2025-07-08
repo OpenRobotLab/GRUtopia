@@ -226,7 +226,7 @@ class SimulatorRunner:
 
         return obs, terminated_status, reward
 
-    def get_obs(self) -> List[Dict]:
+    def get_obs(self) -> List[Dict | None]:
         """
         Get obs
         Returns:
@@ -245,7 +245,7 @@ class SimulatorRunner:
             if env_id in self.env_id_to_task_name_map:
                 _obs.append(obs[self.env_id_to_task_name_map[env_id]])
             else:
-                _obs.append({})
+                _obs.append(None)
         return _obs
 
     def stop(self):
@@ -284,8 +284,7 @@ class SimulatorRunner:
             - Observations are collected only for environments that are reset or initialized.
             - Tasks corresponding to the reset environments are transitioned to new episodes.
         """
-        obs = []
-        new_task_runtimes: List[TaskRuntime] = []
+        new_task_runtimes = []
 
         if env_ids is None and self.current_tasks:
             # reset
@@ -303,18 +302,21 @@ class SimulatorRunner:
 
             if not env_to_reset:
                 log.warning(f'No env to reset: {env_ids}.')
-                return obs, new_task_runtimes
+                return [None for _ in env_ids], [None for _ in env_ids]
 
             tasks = [self.env_id_to_task_name_map[env_id] for env_id in env_to_reset]
-            new_task_runtimes = self._next_episodes(tasks)
+            _task_runtimes = self._next_episodes(tasks)
+            for env_id in env_ids:
+                if env_id in self.env_id_to_task_name_map:
+                    new_task_runtimes.append(_task_runtimes.pop(0))
+                else:
+                    new_task_runtimes.append(None)
             [self.finished_tasks.discard(task) for task in tasks]
 
-        if self.current_tasks:
-            all_obs = self.get_obs()
-            obs = [all_obs[i] for i in env_ids] if env_ids else all_obs
+        all_obs = self.get_obs()
+        obs = [all_obs[i] for i in env_ids] if env_ids else all_obs
 
-        # finalize tasks
-        else:
+        if not self.current_tasks:
             # finished
             self._finalize()
 

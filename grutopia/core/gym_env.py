@@ -60,7 +60,7 @@ class Env(gym.Env):
     def _get_observation_space(self) -> gym.Space:
         return self._space.get_observation_space_by_task(self._runtime.config['task_config']['type'])
 
-    def reset(self, *, seed=None, options=None) -> tuple[OrderedDict, dict]:
+    def reset(self, *, seed=None, options=None) -> tuple[OrderedDict | None, dict | None]:
         """Resets the environment to an initial internal state, returning an initial observation and info.
 
         Args:
@@ -78,7 +78,7 @@ class Env(gym.Env):
         origin_obs, task_runtime = self.runner.reset(None if self._current_task_name is None else [0])
         if None in task_runtime:
             log.info('All episodes have finished.')
-            return obs, info
+            return None, None
 
         self._current_task_name = task_runtime[0].name
         info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime[0]
@@ -98,7 +98,7 @@ class Env(gym.Env):
         """
         self.runner.warm_up(steps, render, physics)
 
-    def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
+    def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any] | None]:
         """
         run step with given action(with isaac step)
 
@@ -121,9 +121,9 @@ class Env(gym.Env):
 
         obs = {}
         reward = 0.0
-        terminated = True
+        terminated = False
         truncated = False
-        info = {}
+        info = None
 
         if self._current_task_name is None:
             return obs, reward, terminated, truncated, info
