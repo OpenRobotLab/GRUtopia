@@ -44,7 +44,7 @@ def main():
                         episode_idx=0,
                     ),
                 )
-                for _ in range(6)
+                for _ in range(8)
             ],
             task_settings=ManipulationTaskSetting(max_step=500),
         ),
@@ -67,6 +67,9 @@ def main():
     ]
 
     i = 0
+    _init_gripper_pos = None
+    _350_gripper_pos = None
+
     no_more_episode = False
     while env.simulation_app.is_running():
         i += 1
@@ -90,11 +93,25 @@ def main():
         if all(terminated) and no_more_episode:
             break
 
+        if i == 250:
+            _init_gripper_pos = obs[1]['franka']['controllers']['gripper_controller']['gripper_pos']
+
         if i == 350:
             assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - _robot.isaac_robot.get_pose()[0]) == 4
             assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - obs[1]['franka']['position']) == 4
+            _350_gripper_pos = obs[1]['franka']['controllers']['gripper_controller']['gripper_pos']
+            _o, _ = env.reset([0])
+
+        if i == 351:
+            assert np.allclose(
+                obs[1]['franka']['controllers']['gripper_controller']['gripper_pos'], _350_gripper_pos, atol=0.01
+            )
+            assert not np.allclose(
+                obs[1]['franka']['controllers']['gripper_controller']['gripper_pos'], _init_gripper_pos, atol=0.01
+            )
+
         reset_list = [idx for idx, t in enumerate(terminated) if t]
-        if reset_list:
+        if reset_list and not no_more_episode:
             _, info = env.reset(env_ids=reset_list)
             if None in info:
                 no_more_episode = True

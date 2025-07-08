@@ -1,4 +1,6 @@
 def main():
+    import numpy as np
+
     from grutopia.core.config import Config, SimConfig
     from grutopia.core.runtime import SimulatorRuntime
     from grutopia.core.util import has_display
@@ -64,10 +66,14 @@ def main():
 
     i = 0
     move_action = {move_by_speed_cfg.name: [1, 0, 0]}
+    _pos = [0, 0, 1.05]
 
     while env.simulation_app.is_running():
         i += 1
         obs, reward, terminated, _, _ = env.step(action=[{'h1': move_action}, {'h1': move_action}])
+        if i == 1:
+            _pos = obs[1]['h1']['position']
+
         if i % 100 == 0:
             print(i)
 
@@ -75,6 +81,10 @@ def main():
             _, info = env.reset(env_ids=[0])
             assert len(info) == 1
             assert None in info
+
+        if i == 501:
+            _pos2 = obs[1]['h1']['position']
+            assert np.linalg.norm(_pos2 - _pos) > 1
 
         if i == 5000:
             break

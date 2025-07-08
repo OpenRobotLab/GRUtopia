@@ -301,7 +301,7 @@ class SimulatorRunner:
             env_to_reset = [env_id for env_id in env_ids if env_id in self.env_id_to_task_name_map]
 
             if not env_to_reset:
-                log.warning(f'No env to reset: {env_ids}.')
+                log.warning(f'Not reset empty envs: {env_ids}.')
                 return [None for _ in env_ids], [None for _ in env_ids]
 
             tasks = [self.env_id_to_task_name_map[env_id] for env_id in env_to_reset]
@@ -431,7 +431,6 @@ class SimulatorRunner:
                 t.restore_info()
 
         self._scene._finalize(self._world.physics_sim_view)  # noqa
-        self._scene.post_reset()
 
         # post_reset for new tasks
         for task in _new_tasks:
