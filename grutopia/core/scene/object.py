@@ -14,6 +14,7 @@ class ObjectCommon:
 
     def __init__(self, config: ObjectConfig):
         self._config = config
+        self.name = config.name
 
     def set_up_scene(self, scene: Scene):
         raise NotImplementedError

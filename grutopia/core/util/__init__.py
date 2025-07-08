@@ -29,3 +29,11 @@ def has_display() -> bool:
     except Exception as e:
         log.error(f'Error while checking if has display, assume False: {e}')
         return False
+
+
+def remove_suffix(name: str) -> str:
+    """Remove the suffix after the last underscore in the name, if exists."""
+    last_underscore_index = name.rfind('_')
+    if last_underscore_index > 0 and name[last_underscore_index + 1 :].isdigit():
+        return name[:last_underscore_index]
+    return name

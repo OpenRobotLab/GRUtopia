@@ -21,9 +21,8 @@ class MocapControlledCamera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, scene: Scene = None):
         super().__init__(config, robot, scene)
-        self.name = name
         self.config = config
         self.camera_mover = CameraMover([0, 0, 0])
 

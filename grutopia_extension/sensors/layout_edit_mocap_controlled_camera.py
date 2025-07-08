@@ -18,11 +18,8 @@ class LayoutEditMocapControlledCamera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(
-        self, config: LayoutEditMocapControlledCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None
-    ):
+    def __init__(self, config: LayoutEditMocapControlledCameraCfg, robot: BaseRobot, scene: Scene = None):
         super().__init__(config, robot, scene)
-        self.name = name
         self.config = config
 
         self.layout_camera_mover = LayoutCameraMover([0, 0, 0])

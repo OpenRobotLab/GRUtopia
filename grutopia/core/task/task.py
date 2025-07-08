@@ -14,7 +14,7 @@ from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import create_object, validate_scene_file
 from grutopia.core.task.metric import BaseMetric, create_metric
-from grutopia.core.util import log
+from grutopia.core.util import log, remove_suffix
 from grutopia.core.wrapper.pose_mixin import PoseMixin
 from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
@@ -99,7 +99,7 @@ class BaseTask(OmniBaseTask, ABC):
         for obj in self.runtime.objects:
             _object = create_object(obj)
             _object.set_up_scene(self._scene)
-            self.objects[obj.name] = _object
+            self.objects[remove_suffix(obj.name)] = _object
         self.loaded = True
 
     def clear_rigid_bodies(self):
@@ -262,18 +262,18 @@ class BaseTask(OmniBaseTask, ABC):
         """
         Used to clean up the resources loaded in the task.
         """
-        for obj in self.objects.keys():
+        for obj in self.objects.values():
             # Using try here because we want to ignore all exceptions
             try:
-                self.scene.remove_object(obj)
+                self.scene.remove_object(obj.name)
             finally:
                 log.info('[cleanup] objs cleaned.')
         for robot in self.robots.values():
             # Using try here because we want to ignore all exceptions
-            log.info(f'[cleanup] cleanup robot {robot.name}')
+            log.info(f'[cleanup] cleanup robot {robot.isaac_robot.name}')
             try:
                 robot.cleanup()
-                self.scene.remove_object(robot.name, registry_only=True)
+                self.scene.remove_object(robot.isaac_robot.name, registry_only=True)
             finally:
                 log.info('[cleanup] robots cleaned.')
 

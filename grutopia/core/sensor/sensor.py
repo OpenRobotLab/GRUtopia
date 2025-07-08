@@ -100,7 +100,7 @@ def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> Order
     if robot_cfg.sensors is not None:
         for sensor_cfg in robot_cfg.sensors:
             sensor_cls = BaseSensor.sensors[sensor_cfg.type]
-            sensor_ins = sensor_cls(sensor_cfg, robot=robot, name=sensor_cfg.name, scene=scene)
+            sensor_ins = sensor_cls(sensor_cfg, robot=robot, scene=scene)
             sensor_map[sensor_cfg.name] = sensor_ins
             log.debug(f'[create_sensors] {sensor_cfg.name} loaded')
 

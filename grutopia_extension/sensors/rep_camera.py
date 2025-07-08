@@ -16,10 +16,9 @@ class RepCamera(BaseSensor):
     wrap of replicator render_product
     """
 
-    def __init__(self, config: RepCameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: RepCameraCfg, robot: BaseRobot, scene: Scene = None):
         super().__init__(config, robot, scene)
         self.resolution = None
-        self.name = name
         self.config = config
         self.depth = config.depth
         self.rp = None

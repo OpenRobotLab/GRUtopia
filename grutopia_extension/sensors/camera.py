@@ -14,9 +14,8 @@ class Camera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(self, config: CameraCfg, robot: BaseRobot, name: str = None, scene: Scene = None):
+    def __init__(self, config: CameraCfg, robot: BaseRobot, scene: Scene = None):
         super().__init__(config, robot, scene)
-        self.name = name
         self.config = config
 
     def post_reset(self):

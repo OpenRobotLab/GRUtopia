@@ -8,7 +8,7 @@ from pxr import Usd
 
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
-from grutopia.core.util import log
+from grutopia.core.util import log, remove_suffix
 from grutopia.core.wrapper.isaac_robot import IsaacRobot
 from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
@@ -34,6 +34,8 @@ class BaseRobot:
         Args:
             scene (Scene): scene to set up.
         """
+        if self.isaac_robot is None:
+            raise RuntimeError('The attribute self.isaac_robot needs to be initialized in subclass(robot extensions)')
         self.create_rigid_bodies()
         self._scene = scene
         robot_cfg = self.config
@@ -217,14 +219,6 @@ class BaseRobot:
         return decorator
 
 
-def _remove_suffix(name: str) -> str:
-    """Remove the suffix after the last underscore in the name, if exists."""
-    last_underscore_index = name.rfind('_')
-    if last_underscore_index > 0 and name[last_underscore_index + 1 :].isdigit():
-        return name[:last_underscore_index]
-    return name
-
-
 def create_robots(runtime: TaskRuntime, scene: Scene) -> OrderedDict[str, BaseRobot]:
     """Create robot instances in runtime.
 
@@ -241,7 +235,7 @@ def create_robots(runtime: TaskRuntime, scene: Scene) -> OrderedDict[str, BaseRo
             raise KeyError(f'[create_robots] unknown robot type "{robot.type}"')
         robot_cls = BaseRobot.robots[robot.type]
         robot_ins: BaseRobot = robot_cls(robot, scene)
-        robot_map[_remove_suffix(robot.name)] = robot_ins
+        robot_map[remove_suffix(robot.name)] = robot_ins
         robot_ins.set_up_to_scene(scene)
         log.debug(f'[create_robots] {robot.name} loaded')
     return robot_map
