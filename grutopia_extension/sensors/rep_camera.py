@@ -1,10 +1,11 @@
 from collections import OrderedDict, defaultdict
 
 import numpy as np
-import omni.replicator.core as rep
 import torch
 
-from grutopia.core.robot.robot import BaseRobot, Scene
+from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
+from grutopia.core.sensor.camera import ICamera
 from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
 from grutopia_extension.configs.sensors import RepCameraCfg
@@ -16,13 +17,11 @@ class RepCamera(BaseSensor):
     wrap of replicator render_product
     """
 
-    def __init__(self, config: RepCameraCfg, robot: BaseRobot, scene: Scene = None):
+    def __init__(self, config: RepCameraCfg, robot: BaseRobot, scene: IScene = None):
         super().__init__(config, robot, scene)
         self.resolution = None
         self.config = config
-        self.depth = config.depth
-        self.rp = None
-        self.rp_annotators = {}
+        self._camera = None
 
     def post_reset(self):
         self.restore_sensor_info()
@@ -30,8 +29,16 @@ class RepCamera(BaseSensor):
     def restore_sensor_info(self):
         self.cleanup()
         self.camera_prim_path = self.create_camera()
-        if self.rp is None:
-            self.rp = rep.create.render_product(self.camera_prim_path, self.resolution)
+        _camera = ICamera.create(
+            name=self.name,
+            prim_path=self.camera_prim_path,
+            rgba=self.config.rgba,
+            bounding_box_2d_tight=self.config.landmarks,
+            distance_to_image_plane=self.config.depth or self.config.pointcloud,
+            camera_params=self.config.camera_params or self.config.pointcloud,
+            resolution=self.resolution,
+        )
+        self._camera: ICamera = _camera
 
     def create_camera(self) -> str:
         """Create an isaac-sim camera object.
@@ -54,7 +61,7 @@ class RepCamera(BaseSensor):
         log.debug(f'resolution      : {self.resolution}')
         return prim_path
 
-    def get_camera_data(self, data_names=('landmarks', 'rgba', 'depth', 'pointcloud', 'camera_params')) -> OrderedDict:
+    def get_camera_data(self) -> OrderedDict:
         """
         Get specified data from a camera.
 
@@ -65,41 +72,27 @@ class RepCamera(BaseSensor):
             output_data: dict, a dict of data corresponding to the requested data names
         """
         # ================== run once ================
-        if 'landmarks' in data_names and 'landmarks' not in self.rp_annotators:
-            bbox_2d_tight = rep.AnnotatorRegistry.get_annotator('bounding_box_2d_tight')
-            bbox_2d_tight.attach(self.rp)
-            self.rp_annotators['landmarks'] = bbox_2d_tight
-
-        if 'rgba' in data_names and 'rgba' not in self.rp_annotators:
-            ldr_color = rep.AnnotatorRegistry.get_annotator('LdrColor')
-            ldr_color.attach(self.rp)
-            self.rp_annotators['rgba'] = ldr_color
-
-        if self.depth and 'depth' in data_names and 'depth' not in self.rp_annotators:
-            distance_to_image_plane = rep.AnnotatorRegistry.get_annotator('distance_to_image_plane')
-            distance_to_image_plane.attach(self.rp)
-            self.rp_annotators['depth'] = distance_to_image_plane
-
-        if 'camera_params' in data_names and 'camera_params' not in self.rp_annotators:
-            camera_params = rep.annotators.get('CameraParams').attach(self.rp)
-            self.rp_annotators['camera_params'] = camera_params
-
         output_data = {}
+        if self.config.landmarks:
+            output_data['bounding_box_2d_tight'] = self._camera.get_bounding_box_2d_tight()
+            if len(output_data['bounding_box_2d_tight']['data']) > 0:
+                output_data['landmarks'] = self._get_face_to_instances(
+                    output_data['bounding_box_2d_tight']['data'],
+                    output_data['bounding_box_2d_tight']['info']['idToLabels'],
+                )
+            else:
+                output_data['landmarks'] = []
 
-        for name, annotator in self.rp_annotators.items():
-            if name == 'landmarks':
-                output_data['bounding_box_2d_tight'] = annotator.get_data()
-                if len(output_data['bounding_box_2d_tight']['data']) > 0:
-                    output_data['landmarks'] = self._get_face_to_instances(
-                        output_data['bounding_box_2d_tight']['data'],
-                        output_data['bounding_box_2d_tight']['info']['idToLabels'],
-                    )
-                else:
-                    output_data['landmarks'] = []
-                continue
-            output_data[name] = annotator.get_data()
+        if self.config.rgba:
+            output_data['rgba'] = self._camera.get_rgba()
 
-        if self.depth:
+        if (self.config.depth) or self.config.pointcloud:
+            output_data['depth'] = self._camera.get_distance_to_image_plane()
+
+        if (self.config.camera_params) or self.config.pointcloud:
+            output_data['camera_params'] = self._camera.get_camera_params()
+
+        if self.config.pointcloud:
             try:
                 output_data['pointcloud'] = self.get_pointcloud_gpu(output_data['depth'], output_data['camera_params'])
             except Exception:
@@ -187,12 +180,8 @@ class RepCamera(BaseSensor):
         return self._make_ordered()
 
     def cleanup(self) -> None:
-        if self.rp is not None:
-            for anno in self.rp_annotators.values():
-                anno.detach(self.rp)
-            del self.rp_annotators
-            self.rp_annotators = {}
-            self.rp = None
+        if self._camera is not None:
+            self._camera.cleanup()
 
     def _get_face_to_instances(self, bbox: np.array, idToLabels):
         bbox = self._merge_tuples(bbox)
@@ -237,3 +226,12 @@ class RepCamera(BaseSensor):
             result.append((semantic_id, total_area, weighted_average_occlusion_ratio))
 
         return result
+
+    def set_world_pose(self, *args, **kwargs):
+        self._camera.set_world_pose(*args, **kwargs)
+
+    def get_world_pose(self):
+        return self._camera.get_world_pose()
+
+    def get_pose(self):
+        return self._camera.get_pose()

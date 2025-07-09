@@ -3,15 +3,15 @@ from collections import OrderedDict
 from typing import List
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.stage import add_reference_to_stage
 
 import grutopia.core.util.gym as gymutil
 from grutopia.core.config.robot import RobotCfg
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 from grutopia.core.wrapper.isaac_robot import IsaacRobot
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
 
 class G1(IsaacRobot):
@@ -171,7 +171,7 @@ class G1(IsaacRobot):
 
 @BaseRobot.register('G1Robot')
 class G1Robot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: Scene):
+    def __init__(self, config: RobotCfg, scene: IScene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
@@ -203,13 +203,13 @@ class G1Robot(BaseRobot):
         self._imu_in_torso = self._rigid_body_map[self.config.prim_path + '/imu_link']
         self.isaac_robot.set_gains()
 
-    def get_rigid_bodies(self) -> List[RigidPrim]:
+    def get_rigid_bodies(self) -> List[IRigidBody]:
         return self._rigid_body_map.values()
 
     def get_robot_scale(self):
         return self._robot_scale
 
-    def get_robot_base(self) -> RigidPrim:
+    def get_robot_base(self) -> IRigidBody:
         return self._robot_base
 
     def get_pose(self):

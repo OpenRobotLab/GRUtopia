@@ -4,13 +4,13 @@ import numpy as np
 import onnxruntime as ort
 import torch
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 import grutopia.core.util.math as math_utils
 from grutopia.core.robot.controller import BaseController
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import GR1MoveBySpeedControllerCfg
 
 
@@ -34,7 +34,7 @@ default_upper_pose[27] = -1.25
 class GR1MoveBySpeedController(BaseController):
     """Controller class converting locomotion action to joint positions for GR1 robot."""
 
-    def __init__(self, config: GR1MoveBySpeedControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: GR1MoveBySpeedControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
         print(f'config is {config.policy_weights_path}')
         self._policy = load_onnx_policy(path=config.policy_weights_path)
@@ -126,7 +126,7 @@ class GR1MoveBySpeedController(BaseController):
             ]
         )
 
-        imu_link: RigidPrim = self.robot._imu_in_torso
+        imu_link: IRigidBody = self.robot._imu_in_torso
         imu_pose_w = imu_link.get_pose()
         imu_quat_w = torch.tensor(imu_pose_w[1]).reshape(1, -1)
         imu_ang_vel_w = torch.tensor(imu_link.get_angular_velocity()[:]).reshape(1, -1)

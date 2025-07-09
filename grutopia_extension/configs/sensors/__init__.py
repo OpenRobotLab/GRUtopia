@@ -3,19 +3,16 @@ from typing import Optional, Tuple
 from grutopia.core.config.robot import SensorCfg
 
 
-class CameraCfg(SensorCfg):
-    # Fields from params.
-    type: Optional[str] = 'Camera'
-    enable: Optional[bool] = True
-    resolution: Optional[Tuple[int, int]] = None
-
-
 class RepCameraCfg(SensorCfg):
     # Fields from params.
     type: Optional[str] = 'RepCamera'
     enable: Optional[bool] = True
     resolution: Optional[Tuple[int, int]] = None  # Camera only
+    rgba: Optional[bool] = True
+    landmarks: Optional[bool] = False
     depth: Optional[bool] = False
+    pointcloud: Optional[bool] = False
+    camera_params: Optional[bool] = False
 
 
 class MocapControlledCameraCfg(SensorCfg):

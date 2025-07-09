@@ -3,7 +3,6 @@ from typing import List
 import numpy as np
 import torch
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 from rsl_rl.algorithms import PPO
 
@@ -11,6 +10,7 @@ import grutopia.core.util.gym as gymutil
 import grutopia.core.util.math as math_utils
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import AliengoMoveBySpeedControllerCfg
 from grutopia_extension.controllers.models.aliengo.actor_critic import ActorCritic
 
@@ -96,7 +96,7 @@ class AliengoMoveBySpeedController(BaseController):
         'RR_calf_joint',
     ]
 
-    def __init__(self, config: AliengoMoveBySpeedControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: AliengoMoveBySpeedControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
         self._policy = RLPolicy(path=config.policy_weights_path).get_inference_policy(device='cpu')

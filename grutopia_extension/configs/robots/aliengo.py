@@ -8,7 +8,7 @@ from grutopia_extension.configs.controllers import (
     MoveToPointBySpeedControllerCfg,
     RotateControllerCfg,
 )
-from grutopia_extension.configs.sensors import CameraCfg
+from grutopia_extension.configs.sensors import RepCameraCfg
 
 move_by_speed_cfg = AliengoMoveBySpeedControllerCfg(
     name='move_by_speed',
@@ -52,7 +52,7 @@ rotate_cfg = RotateControllerCfg(
     sub_controllers=[move_by_speed_cfg],
 )
 
-camera_cfg = CameraCfg(
+camera_cfg = RepCameraCfg(
     name='camera',
     prim_path='trunk/Camera',
 )

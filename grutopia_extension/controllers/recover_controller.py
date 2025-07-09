@@ -1,11 +1,11 @@
 from typing import List
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 from grutopia_extension.configs.controllers import RecoverControllerCfg
 
@@ -14,7 +14,7 @@ from grutopia_extension.configs.controllers import RecoverControllerCfg
 class RecoverController(BaseController):
     """Controller for recovering from pose failure."""
 
-    def __init__(self, config: RecoverControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: RecoverControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
         self.recover_height = config.recover_height

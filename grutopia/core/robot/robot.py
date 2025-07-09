@@ -3,14 +3,14 @@ from functools import wraps
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from pxr import Usd
 
 from grutopia.core.config.robot import RobotCfg
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log, remove_suffix
 from grutopia.core.wrapper.isaac_robot import IsaacRobot
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
 
 class BaseRobot:
@@ -18,7 +18,7 @@ class BaseRobot:
 
     robots = {}
 
-    def __init__(self, config: RobotCfg, scene: Scene):
+    def __init__(self, config: RobotCfg, scene: IScene):
         self.name = config.name
         self.config = config
         self.isaac_robot: IsaacRobot | None = None
@@ -28,7 +28,7 @@ class BaseRobot:
         self.obs_keys = []
         self._rigid_body_map = {}
 
-    def set_up_to_scene(self, scene: Scene):
+    def set_up_to_scene(self, scene: IScene):
         """Set up robot in the scene.
 
         Args:
@@ -42,11 +42,11 @@ class BaseRobot:
         if self.isaac_robot:
             # TODO： Implement initialize method in wrapper to make
             #       'scene._scene_registry.add_articulated_system' -> 'scene.add'
-            scene._scene_registry.add_articulated_system(
+            scene._scene._scene_registry.add_articulated_system(
                 name=self.isaac_robot.name, articulated_system=self.isaac_robot
             )
         for rigid_body in self.get_rigid_bodies():
-            scene.add(rigid_body.prim_ins)
+            scene.add(rigid_body)
         from grutopia.core.robot.controller import BaseController, create_controllers
         from grutopia.core.sensor.sensor import BaseSensor, create_sensors
 
@@ -60,7 +60,7 @@ class BaseRobot:
         if self._rigid_body_map:
             for rb in self._rigid_body_map.values():
                 if self._scene.object_exists(rb.name):
-                    self._scene.remove_object(rb.name)
+                    self._scene.remove(rb.name)
                     log.debug(f'[clean_stale_rigid_body] stale rigid body {rb.name} removed')
 
     def create_rigid_bodies(self):
@@ -76,12 +76,12 @@ class BaseRobot:
         ):
             parts = str(self.isaac_robot.prim.GetPath()).rstrip('/').split('/')
             _root_prim_path = '/'.join(parts[:-1]) if len(parts) > 1 else ''
-            _prim = self._scene.stage.GetPrimAtPath(_root_prim_path)
+            _prim = self._scene.unwrap().stage.GetPrimAtPath(_root_prim_path)
 
         for prim in Usd.PrimRange.AllPrims(_prim):
             if prim.GetAttribute('physics:rigidBodyEnabled'):
                 log.debug(f'[create_rigid_bodies] found rigid body at path: {prim.GetPath()}')
-                _rb = RigidPrim(str(prim.GetPath()), name=str(prim.GetPath()))
+                _rb = IRigidBody.create(prim_path=str(prim.GetPath()), name=str(prim.GetPath()))
                 self._rigid_body_map[str(prim.GetPath())] = _rb
 
     def save_robot_info(self):
@@ -120,7 +120,7 @@ class BaseRobot:
         for rigid_body in self.get_rigid_bodies():
             try:
                 if self._scene.object_exists(rigid_body.name):
-                    self._scene.remove_object(rigid_body.name, registry_only=True)
+                    self._scene.remove(rigid_body.name, registry_only=True)
                     log.debug(f'[cleanup] rigid body {rigid_body.name} removed from scene')
             except RuntimeError as e:
                 log.error(e)
@@ -161,12 +161,12 @@ class BaseRobot:
             sensors_obs[sensor_name] = sensor_obs.get_data()
         return controllers_obs, sensors_obs
 
-    def get_robot_base(self) -> RigidPrim:
+    def get_robot_base(self) -> IRigidBody:
         """
         Get the base link of this robot.
 
         Returns:
-            RigidPrim: rigid prim of the robot base link.
+            IRigidBody: rigid prim of the robot base link.
         """
         raise NotImplementedError()
 
@@ -189,7 +189,7 @@ class BaseRobot:
     def get_controllers(self):
         return self.controllers
 
-    def get_rigid_bodies(self) -> List[RigidPrim]:
+    def get_rigid_bodies(self) -> List[IRigidBody]:
         return []
 
     def _make_ordered(self, obs: Dict = None) -> OrderedDict:
@@ -219,7 +219,7 @@ class BaseRobot:
         return decorator
 
 
-def create_robots(runtime: TaskRuntime, scene: Scene) -> OrderedDict[str, BaseRobot]:
+def create_robots(runtime: TaskRuntime, scene: IScene) -> OrderedDict[str, BaseRobot]:
     """Create robot instances in runtime.
 
     Args:

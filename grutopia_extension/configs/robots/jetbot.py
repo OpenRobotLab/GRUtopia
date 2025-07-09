@@ -7,7 +7,7 @@ from grutopia_extension.configs.controllers import (
     MoveAlongPathPointsControllerCfg,
     MoveToPointBySpeedControllerCfg,
 )
-from grutopia_extension.configs.sensors import CameraCfg
+from grutopia_extension.configs.sensors import RepCameraCfg
 
 move_by_speed_cfg = DifferentialDriveControllerCfg(name='move_by_speed', wheel_base=0.1125, wheel_radius=0.03)
 
@@ -28,7 +28,7 @@ move_along_path_cfg = MoveAlongPathPointsControllerCfg(
 )
 
 
-camera_cfg = CameraCfg(
+camera_cfg = RepCameraCfg(
     name='camera',
     prim_path='chassis/rgb_camera/jetbot_camera',
     resolution=(640, 360),

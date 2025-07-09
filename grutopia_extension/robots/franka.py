@@ -16,12 +16,12 @@ from isaacsim.core.utils.prims import get_prim_at_path
 from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
 from isaacsim.robot.manipulators.grippers.parallel_gripper import ParallelGripper
 from isaacsim.storage.native import get_assets_root_path
-from omni.isaac.core.scenes import Scene
 
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot, RobotCfg
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 from grutopia.core.wrapper.isaac_robot import IsaacRobot as Robot
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as SingleRigidPrim
 
 
 class Franka(Robot):
@@ -88,7 +88,7 @@ class Franka(Robot):
         return
 
     @property
-    def end_effector(self) -> SingleRigidPrim:
+    def end_effector(self) -> IRigidBody:
         return self._end_effector
 
     @property
@@ -97,7 +97,7 @@ class Franka(Robot):
 
     def initialize(self, physics_sim_view=None) -> None:
         super().initialize(physics_sim_view)
-        self._end_effector = SingleRigidPrim(prim_path=self._end_effector_prim_path, name=self.name + '_end_effector')
+        self._end_effector = IRigidBody.create(prim_path=self._end_effector_prim_path, name=self.name + '_end_effector')
         self._end_effector.initialize(physics_sim_view)
         self._gripper.initialize(
             physics_sim_view=physics_sim_view,
@@ -122,7 +122,7 @@ class Franka(Robot):
 
 @BaseRobot.register('FrankaRobot')
 class FrankaRobot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: Scene):
+    def __init__(self, config: RobotCfg, scene: IScene):
         super().__init__(config, scene)
         self._robot_ik_base = None
         self._sensor_config = config.sensors

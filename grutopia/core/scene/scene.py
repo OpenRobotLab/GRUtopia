@@ -30,6 +30,11 @@ class IScene(ABC):
         """Check if an object exists in the scene registry."""
         raise NotImplementedError
 
+    @abstractmethod
+    def unwrap(self):
+        """Unwraps the scene to its base form."""
+        raise NotImplementedError('need to implement this method ')
+
     @classmethod
     def create(cls, simulator_type: str = Simulator.ISAACSIM.value) -> 'IScene':
         """Factory method to create IScene instances based on simulator_type."""

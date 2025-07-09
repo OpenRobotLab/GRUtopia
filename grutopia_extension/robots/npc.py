@@ -1,16 +1,15 @@
 from collections import OrderedDict
 from typing import Dict
 
-from omni.isaac.core.scenes import Scene
-
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 
 
 @BaseRobot.register('NPC')
 class NPC(BaseRobot):
-    def __init__(self, robot_model: RobotCfg, scene: Scene):
+    def __init__(self, robot_model: RobotCfg, scene: IScene):
         super().__init__(robot_model, scene)
         self.name_of_robots_in_scene = []
         if robot_model.prim_path is not None:
@@ -18,7 +17,7 @@ class NPC(BaseRobot):
             log.info('NPC has a body, but this is not implemented yet.')
         log.debug(f'NPC {self.name} initialized')
 
-    def set_up_to_scene(self, scene: Scene):
+    def set_up_to_scene(self, scene: IScene):
         # No need to add to scene as this is a non-prim robot
         pass
 

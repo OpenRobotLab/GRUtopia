@@ -3,14 +3,14 @@ from collections import OrderedDict
 
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.stage import add_reference_to_stage
 
 from grutopia.core.config.robot import RobotCfg
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 from grutopia.core.wrapper.isaac_robot import IsaacRobot
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
 
 
 class Aliengo(IsaacRobot):
@@ -68,7 +68,7 @@ class Aliengo(IsaacRobot):
 
 @BaseRobot.register('AliengoRobot')
 class AliengoRobot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: Scene):
+    def __init__(self, config: RobotCfg, scene: IScene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
@@ -102,7 +102,7 @@ class AliengoRobot(BaseRobot):
     def get_robot_scale(self):
         return self._robot_scale
 
-    def get_robot_base(self) -> RigidPrim:
+    def get_robot_base(self) -> IRigidBody:
         return self._robot_base
 
     def get_pose(self):

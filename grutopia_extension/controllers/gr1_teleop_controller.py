@@ -3,11 +3,11 @@ from typing import List
 import lcm
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import GR1TeleOpControllerCfg
 from grutopia_extension.controllers.lcmtypes.teleop import action, joints
 
@@ -16,7 +16,7 @@ from grutopia_extension.controllers.lcmtypes.teleop import action, joints
 class GR1TeleOpController(BaseController):
     """TeleOp controller for GR1."""
 
-    def __init__(self, config: GR1TeleOpControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: GR1TeleOpControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
         self.joint_names = config.joint_names

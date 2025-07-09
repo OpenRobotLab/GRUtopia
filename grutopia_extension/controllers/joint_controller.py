@@ -2,11 +2,11 @@ from typing import List
 
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import JointControllerCfg
 
 
@@ -14,7 +14,7 @@ from grutopia_extension.configs.controllers import JointControllerCfg
 class JointController(BaseController):
     """Controller for direct joint control."""
 
-    def __init__(self, config: JointControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: JointControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
 
         self.joint_subset = None

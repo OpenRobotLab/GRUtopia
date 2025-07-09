@@ -1,17 +1,17 @@
 from typing import List
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from omni.isaac.motion_generation import ArticulationMotionPolicy, RmpFlow
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import RMPFlowControllerCfg
 
 
 @BaseController.register('RMPFlowController')
 class RMPFlowController(BaseController):
-    def __init__(self, config: RMPFlowControllerCfg, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: RMPFlowControllerCfg, robot: BaseRobot, scene: IScene):
         super().__init__(config=config, robot=robot, scene=scene)
         self.rmpflow = RmpFlow(
             robot_description_path=config.robot_description_path,

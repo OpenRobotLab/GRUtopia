@@ -1,12 +1,11 @@
-from omni.isaac.core.scenes import Scene
-
 from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.scene.scene import IScene
 from grutopia.core.task import BaseTask
 
 
 @BaseTask.register('FiniteStepTask')
 class FiniteStepTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: Scene):
+    def __init__(self, runtime: TaskRuntime, scene: IScene):
         super().__init__(runtime, scene)
         self.stop_count = 0
         self.max_step = 500

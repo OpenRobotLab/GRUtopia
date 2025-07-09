@@ -1,7 +1,8 @@
 import numpy as np
 from omni.isaac.core.objects import DynamicCuboid
 
-from grutopia.core.scene.object import ObjectCommon, Scene
+from grutopia.core.scene.object import ObjectCommon
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.objects import DynamicCubeCfg
 
 
@@ -11,7 +12,7 @@ class DynamicCube(ObjectCommon):
         super().__init__(config=config)
         self._config = config
 
-    def set_up_scene(self, scene: Scene):
+    def set_up_scene(self, scene: IScene):
         scene.add(
             DynamicCuboid(
                 prim_path=self._config.prim_path,

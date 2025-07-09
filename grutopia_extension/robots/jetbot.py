@@ -14,9 +14,9 @@ import carb
 import numpy as np
 from isaacsim.core.utils.prims import define_prim, get_prim_at_path
 from isaacsim.core.utils.types import ArticulationAction
-from omni.isaac.core.scenes import Scene
 
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 from grutopia.core.wrapper.isaac_robot import IsaacRobot
 from grutopia_extension.configs.robots.jetbot import JetbotRobotCfg
@@ -132,7 +132,7 @@ class WheeledRobot(IsaacRobot):
 
 @BaseRobot.register('JetbotRobot')
 class JetbotRobot(BaseRobot):
-    def __init__(self, config: JetbotRobotCfg, scene: Scene):
+    def __init__(self, config: JetbotRobotCfg, scene: IScene):
         super().__init__(config, scene)
         self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None

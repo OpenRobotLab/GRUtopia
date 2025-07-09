@@ -2,10 +2,11 @@ from typing import Any, Dict
 
 import numpy as np
 from omni.isaac.core.articulations import Articulation
-from omni.isaac.core.prims import RigidPrim
+
+from grutopia.core.robot.rigid_body import IRigidBody
 
 
-def get_rigidbody_status(rigid_body: RigidPrim) -> Dict[str, Any]:
+def get_rigidbody_status(rigid_body: IRigidBody) -> Dict[str, Any]:
     """Get the current status of a RigidPrim"""
     return {
         'transforms': rigid_body._rigid_prim_view._physics_view.get_transforms(),
@@ -21,7 +22,7 @@ def get_rigidbody_status(rigid_body: RigidPrim) -> Dict[str, Any]:
     }
 
 
-def set_rigidbody_status(rigid_body: RigidPrim, status: Dict):
+def set_rigidbody_status(rigid_body: IRigidBody, status: Dict):
     """Set the current status of a RigidPrim"""
     if not status:
         return

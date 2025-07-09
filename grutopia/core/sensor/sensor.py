@@ -4,7 +4,8 @@ from functools import wraps
 from typing import Dict
 
 from grutopia.core.config.robot import RobotCfg, SensorCfg
-from grutopia.core.robot.robot import BaseRobot, Scene
+from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 
 
@@ -13,7 +14,7 @@ class BaseSensor(ABC):
 
     sensors = {}
 
-    def __init__(self, config: SensorCfg, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: SensorCfg, robot: BaseRobot, scene: IScene):
         """Initialize the sensor.
 
         Args:
@@ -83,7 +84,7 @@ class BaseSensor(ABC):
         return decorator
 
 
-def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> OrderedDict[str, BaseSensor]:
+def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: IScene) -> OrderedDict[str, BaseSensor]:
     """Create all sensors of one robot.
 
     Args:

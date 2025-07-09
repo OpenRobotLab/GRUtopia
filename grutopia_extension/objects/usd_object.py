@@ -7,7 +7,8 @@ from omni.isaac.core.utils.prims import is_prim_path_valid
 from omni.isaac.core.utils.stage import add_reference_to_stage
 from omni.physx.scripts import utils
 
-from grutopia.core.scene.object import ObjectCommon, Scene
+from grutopia.core.scene.object import ObjectCommon
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.objects import UsdObjCfg
 
 
@@ -17,7 +18,7 @@ class UsdObject(ObjectCommon):
         super().__init__(config=config)
         self._config = config
 
-    def set_up_scene(self, scene: Scene):
+    def set_up_scene(self, scene: IScene):
         if self._config.collider:
             scene.add(
                 RigidObject(

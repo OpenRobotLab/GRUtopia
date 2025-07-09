@@ -9,7 +9,7 @@ from grutopia.core.util.physics_status_util import (
     get_articulation_status,
     set_articulation_status,
 )
-from grutopia.core.wrapper.pose_mixin import PoseMixin
+from grutopia.core.util.pose_mixin import PoseMixin
 
 
 class IsaacRobot(PoseMixin):

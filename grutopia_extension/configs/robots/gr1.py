@@ -9,7 +9,7 @@ from grutopia_extension.configs.controllers import (
     MoveToPointBySpeedControllerCfg,
     RotateControllerCfg,
 )
-from grutopia_extension.configs.sensors import CameraCfg
+from grutopia_extension.configs.sensors import RepCameraCfg
 
 # controllers
 
@@ -161,16 +161,14 @@ rotate_cfg = RotateControllerCfg(
 )
 
 # sensors
-camera_left_cfg = CameraCfg(
+camera_left_cfg = RepCameraCfg(
     name='camera_left',
-    type='Camera',
     prim_path='head_yaw_link/CameraLeft',
     resolution=(1280, 720),
 )
 
-camera_right_cfg = CameraCfg(
+camera_right_cfg = RepCameraCfg(
     name='camera_right',
-    type='Camera',
     prim_path='head_yaw_link/CameraRight',
     resolution=(1280, 720),
 )

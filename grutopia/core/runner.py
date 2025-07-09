@@ -11,6 +11,7 @@ from omni.physx.scripts import utils
 # Init
 from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.scene.scene import IScene
 from grutopia.core.task.task import BaseTask, create_task
 from grutopia.core.util import log
 from grutopia.core.util.clear_task import clear_stage_by_prim_path
@@ -54,7 +55,7 @@ class SimulatorRunner:
             stage_units_in_meters=1.0,
             sim_params={'use_fabric': self.use_fabric},
         )
-        self._scene = self._world.scene
+        self._scene = IScene.create()
         self._stage = self._world.stage
 
         # Map task_name -> env_id:
@@ -430,7 +431,7 @@ class SimulatorRunner:
                     continue
                 t.restore_info()
 
-        self._scene._finalize(self._world.physics_sim_view)  # noqa
+        self._scene.unwrap()._finalize(self._world.physics_sim_view)  # noqa
 
         # post_reset for new tasks
         for task in _new_tasks:

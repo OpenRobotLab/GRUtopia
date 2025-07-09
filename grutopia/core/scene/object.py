@@ -1,8 +1,7 @@
 from functools import wraps
 
-from omni.isaac.core.scenes import Scene
-
 from grutopia.core.config import ObjectCfg as ObjectConfig
+from grutopia.core.scene.scene import IScene
 
 
 class ObjectCommon:
@@ -16,7 +15,7 @@ class ObjectCommon:
         self._config = config
         self.name = config.name
 
-    def set_up_scene(self, scene: Scene):
+    def set_up_scene(self, scene: IScene):
         raise NotImplementedError
 
     @classmethod

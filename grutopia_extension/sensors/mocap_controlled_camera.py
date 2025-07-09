@@ -5,10 +5,11 @@ import numpy as np
 import omni.isaac.core.utils.numpy.rotations as rot_utils
 from scipy.spatial.transform import Rotation as R
 
-from grutopia.core.robot.robot import BaseRobot, Scene
+from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
+from grutopia.core.sensor.camera import ICamera
 from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
-from grutopia.core.wrapper.isaac_camera import IsaacCamera as i_Camera
 from grutopia_extension.configs.sensors import MocapControlledCameraCfg
 
 DISPLACEMENT_THRESHOLD = 0.05
@@ -21,18 +22,18 @@ class MocapControlledCamera(BaseSensor):
     wrap of isaac sim's Camera class
     """
 
-    def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, scene: Scene = None):
+    def __init__(self, config: MocapControlledCameraCfg, robot: BaseRobot, scene: IScene = None):
         super().__init__(config, robot, scene)
         self.config = config
         self.camera_mover = CameraMover([0, 0, 0])
 
-    def create_camera(self) -> i_Camera:
+    def create_camera(self) -> ICamera:
         """Create an isaac-sim camera object.
 
         Initializes the camera's resolution and prim path based on configuration.
 
         Returns:
-            i_Camera: The initialized camera object.
+            ICamera: The initialized camera object.
         """
         # Initialize the params for the camera
         resolution = self.config.resolution if self.config.resolution else (320, 240)
@@ -43,26 +44,37 @@ class MocapControlledCamera(BaseSensor):
         log.debug('camera_prim_path: ' + prim_path)
         log.debug('name            : ' + self.config.name)
         log.debug(f'resolution      : {resolution}')
-        return i_Camera(prim_path=prim_path, resolution=resolution, translation=translation, orientation=orientation)
+        camera = ICamera.create(
+            name=self.name,
+            prim_path=prim_path,
+            rgba=True,
+            bounding_box_2d_tight=True,
+            resolution=resolution,
+            translation=translation,
+            orientation=orientation,
+        )
+        return camera
 
     def post_reset(self):
         if self.config.enable:
-            self._camera = self.create_camera()
-            self._camera.initialize()
+            self._camera: ICamera = self.create_camera()
 
     def get_data(self) -> OrderedDict:
         if not self.config.enable:
             return self._make_ordered()
 
         rgba = self._camera.get_rgba()
-        frame = self._camera.get_current_frame()
+        bounding_box_2d_tight = self._camera.get_bounding_box_2d_tight()
 
-        obs = {'rgba': rgba, 'frame': frame}
+        obs = {'rgba': rgba, 'bounding_box_2d_tight': bounding_box_2d_tight}
         return self._make_ordered(obs)
 
     @property
     def camera(self):
         return self._camera
+
+    def get_pose(self):
+        return self._camera.get_pose()
 
 
 class CameraMover(object):

@@ -1,17 +1,17 @@
 from typing import List
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import DifferentialDriveControllerCfg
 
 
 @BaseController.register('DifferentialDriveController')
 class DifferentialDriveController(BaseController):
-    def __init__(self, config: DifferentialDriveControllerCfg, robot: BaseRobot, scene: Scene) -> None:
+    def __init__(self, config: DifferentialDriveControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         super().__init__(config=config, robot=robot, scene=scene)
         self._robot_scale = self.robot.get_robot_scale()[0]
         self._wheel_base = config.wheel_base * self._robot_scale

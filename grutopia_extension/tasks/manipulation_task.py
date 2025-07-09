@@ -1,7 +1,6 @@
-from omni.isaac.core.scenes import Scene
-
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.scene.scene import IScene
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
 from grutopia_extension.configs.tasks.manipulation_task import (
@@ -12,7 +11,7 @@ from grutopia_extension.configs.tasks.manipulation_task import (
 
 @BaseTask.register('ManipulationTask')
 class ManipulationTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: Scene):
+    def __init__(self, runtime: TaskRuntime, scene: IScene):
         super().__init__(runtime, scene)
         self.step_counter = 0
         if isinstance(runtime.task_settings, TaskSettingCfg):

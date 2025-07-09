@@ -54,3 +54,7 @@ class IsaacsimScene(IScene):
     def object_exists(self, target: any) -> bool:
         """See `IScene.object_exists` for documentation."""
         return self._scene.object_exists(target)
+
+    def unwrap(self):
+        """See `IScene.unwrap` for documentation."""
+        return self._scene

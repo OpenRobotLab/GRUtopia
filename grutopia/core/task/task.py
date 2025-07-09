@@ -1,22 +1,20 @@
-import os
 import traceback
 from abc import ABC
 from functools import wraps
 from typing import Any, Dict, Union
 
-from omni.isaac.core.scenes.scene import Scene
 from omni.isaac.core.tasks import BaseTask as OmniBaseTask
-from omni.isaac.core.utils.prims import create_prim
 from pxr import Usd
 
 from grutopia.core.robot import init_robots
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
-from grutopia.core.scene import create_object, validate_scene_file
+from grutopia.core.scene import create_object
+from grutopia.core.scene.scene import IScene
 from grutopia.core.task.metric import BaseMetric, create_metric
 from grutopia.core.util import log, remove_suffix
-from grutopia.core.wrapper.pose_mixin import PoseMixin
-from grutopia.core.wrapper.rigid_body_prim import IsaacRigidBodyPrim as RigidPrim
+from grutopia.core.util.pose_mixin import PoseMixin
 
 
 class BaseTask(OmniBaseTask, ABC):
@@ -29,7 +27,7 @@ class BaseTask(OmniBaseTask, ABC):
 
     tasks = {}
 
-    def __init__(self, runtime: TaskRuntime, scene: Scene):
+    def __init__(self, runtime: TaskRuntime, scene: IScene):
         self.scene_prim = None
         self.objects = None
         self.robots: Union[Dict[str, BaseRobot], None] = None
@@ -43,7 +41,7 @@ class BaseTask(OmniBaseTask, ABC):
 
         super().__init__(name=name, offset=self.offset)
         self._scene = scene
-        self.scene_rigid_bodies: Dict[str, RigidPrim] = {}
+        self.scene_rigid_bodies: Dict[str, IRigidBody] = {}
         self.runtime = runtime
 
         self.metrics: Dict[str, BaseMetric] = {}
@@ -77,23 +75,15 @@ class BaseTask(OmniBaseTask, ABC):
         Logs:
         - Information about the initialized robots and objects is logged using the `log.info` method after successful setup.
         """
+
         if self.runtime.scene_asset_path is not None:
-            source, prim_path = validate_scene_file(
-                os.path.abspath(self.runtime.scene_asset_path),
-                prim_path_root=f'World/env_{self.runtime.env.env_id}/scene',
-            )
-            scene_prim = create_prim(
-                prim_path,
-                usd_path=source,
-                scale=self.runtime.scene_scale,
-                translation=[self.runtime.env.offset[idx] + i for idx, i in enumerate(self.runtime.scene_position)],
-            )
-            self.scene_prim = scene_prim
-            for prim in Usd.PrimRange.AllPrims(scene_prim):
+            self._scene.load(self.runtime)
+            for prim in Usd.PrimRange.AllPrims(self._scene.scene_prim):
                 if prim.GetAttribute('physics:rigidBodyEnabled'):
                     log.debug(f'[BaseTask.load] found rigid body at path: {prim.GetPath()}')
-                    _rb = RigidPrim(str(prim.GetPath()))
+                    _rb = IRigidBody.create(prim_path=str(prim.GetPath()), name=str(prim.GetPath()))
                     self.scene_rigid_bodies[str(prim.GetPath())] = _rb
+
         self.robots = init_robots(self.runtime, self._scene)
         self.objects = {}
         for obj in self.runtime.objects:
@@ -104,8 +94,8 @@ class BaseTask(OmniBaseTask, ABC):
 
     def clear_rigid_bodies(self):
         for rigid_body_name in self.scene_rigid_bodies.keys():
-            if self.scene.object_exists(rigid_body_name):
-                self.scene.remove_object(name=rigid_body_name)
+            if self._scene.object_exists(rigid_body_name):
+                self._scene.remove(name=rigid_body_name)
 
     def save_info(self):
         """
@@ -120,11 +110,11 @@ class BaseTask(OmniBaseTask, ABC):
         those in the robot.
 
         Note:
-            rigid prims within articulations aren't included since those RigidPrims' physical
+            rigid prims within articulations aren't included since those RigidBody' physical
             status (transform, velocity, etc) can't be set individually.
         """
         for rigid_body_name, rigid_body in self.scene_rigid_bodies.items():
-            if not self.scene.object_exists(rigid_body_name):
+            if not self._scene.object_exists(rigid_body_name):
                 log.error(f'[cache_info] {rigid_body_name} does not exist.')
                 continue
             rigid_body.save_status()
@@ -135,11 +125,11 @@ class BaseTask(OmniBaseTask, ABC):
         those in the robot.
         """
         for rigid_body_name, rigid_body in self.scene_rigid_bodies.items():
-            if rigid_body.status is None or not self.scene.object_exists(rigid_body_name):
+            if rigid_body.status is None or not self._scene.object_exists(rigid_body_name):
                 continue
             rigid_body.restore_status()
 
-    def set_up_scene(self, scene: Scene) -> None:
+    def set_up_scene(self, scene: IScene) -> None:
         """
         Adding assets to the stage as well as adding the encapsulated objects such as XFormPrim..etc
         to the task_objects happens here.
@@ -265,7 +255,7 @@ class BaseTask(OmniBaseTask, ABC):
         for obj in self.objects.values():
             # Using try here because we want to ignore all exceptions
             try:
-                self.scene.remove_object(obj.name)
+                self._scene.remove(obj.name)
             finally:
                 log.info('[cleanup] objs cleaned.')
         for robot in self.robots.values():
@@ -273,7 +263,7 @@ class BaseTask(OmniBaseTask, ABC):
             log.info(f'[cleanup] cleanup robot {robot.isaac_robot.name}')
             try:
                 robot.cleanup()
-                self.scene.remove_object(robot.isaac_robot.name, registry_only=True)
+                self._scene.remove(robot.isaac_robot.name, registry_only=True)
             finally:
                 log.info('[cleanup] robots cleaned.')
 
@@ -297,6 +287,6 @@ class BaseTask(OmniBaseTask, ABC):
         return decorator
 
 
-def create_task(config: TaskRuntime, scene: Scene):
+def create_task(config: TaskRuntime, scene: IScene):
     task_cls: BaseTask = BaseTask.tasks[config.type](config, scene)
     return task_cls

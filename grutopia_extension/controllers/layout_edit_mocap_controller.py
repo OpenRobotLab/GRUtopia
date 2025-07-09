@@ -2,7 +2,6 @@ import math
 from typing import List, Tuple
 
 import numpy as np
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.rotations import euler_angles_to_quat, rot_matrix_to_quat
 from omni.isaac.core.utils.stage import get_current_stage
 from omni.isaac.core.utils.types import ArticulationAction
@@ -10,6 +9,7 @@ from pxr import Gf, UsdGeom, UsdPhysics
 
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.controllers import LayoutEditMocapControllerCfg
 from grutopia_extension.controllers.layout_edit_controller.fixjoint_hand import (
     FixjointHand,
@@ -28,7 +28,7 @@ NUM_SPECIFIC_POSE_FRAMES = 12
 
 @BaseController.register('LayoutEditMocapController')
 class LayoutEditMocapController(BaseController):
-    def __init__(self, config: LayoutEditMocapControllerCfg, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: LayoutEditMocapControllerCfg, robot: BaseRobot, scene: IScene):
         super().__init__(config=config, robot=robot, scene=scene)
 
         hand_init_angel = config.origin_xyz_angle if config.origin_xyz_angle is not None else (0, 0, 0)

@@ -6,11 +6,11 @@ from typing import Any, Dict, List, Union
 import numpy as np
 from omni.isaac.core.articulations import ArticulationSubset
 from omni.isaac.core.controllers import BaseController as Base
-from omni.isaac.core.scenes import Scene
 from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.config.robot import ControllerCfg, RobotCfg
 from grutopia.core.robot.robot import BaseRobot
+from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 
 
@@ -19,7 +19,7 @@ class BaseController(Base, ABC):
 
     controllers = {}
 
-    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: Scene):
+    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: IScene):
         """Initialize the controller.
 
         Args:
@@ -114,7 +114,7 @@ class BaseController(Base, ABC):
         return self.sub_controllers[0].get_joint_subset()
 
 
-def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: Scene) -> OrderedDict[str, BaseController]:
+def create_controllers(robot_cfg: RobotCfg, robot: BaseRobot, scene: IScene) -> OrderedDict[str, BaseController]:
     """Create all controllers of one robot.
 
     Args:
@@ -153,7 +153,7 @@ def inject_sub_controllers(
     parent: BaseController,
     configs: List[ControllerCfg],
     robot: BaseRobot,
-    scene: Scene,
+    scene: IScene,
 ):
     """Recursively create and inject sub-controllers into parent controller.
 
