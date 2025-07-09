@@ -4,10 +4,6 @@ import yaml
 
 from grutopia.core.config import Config, EpisodeConfigFile, SimConfig
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.distributed_task_runtime_manager import (
-    DistributedTaskRuntimeManager,
-)
-from grutopia.core.runtime.local_task_runtime_manager import LocalTaskRuntimeManager
 from grutopia.core.runtime.task_runtime import (
     BaseTaskRuntimeManager,
     TaskRuntime,
@@ -130,7 +126,7 @@ class SimulatorRuntime:
         # Init Datahub
         DataHub.datahub_init()
 
-        _trm = create_task_runtime_manager(config.task_config)
+        _trm = create_task_runtime_manager(config)
         self.simulator = config.simulator
         self.task_runtime_manager = _trm
         self.env_num = _trm.env_num

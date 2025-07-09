@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 import numpy as np
 
-from grutopia.core.config import EpisodeCfg, TaskCfg
+from grutopia.core.config import Config, EpisodeCfg
 from grutopia.core.datahub import DataHub
 from grutopia.core.runtime.task_runtime import (
     BaseTaskRuntimeManager,
@@ -14,7 +14,6 @@ from grutopia.core.runtime.task_runtime import (
 from grutopia.core.util import log
 
 
-@BaseTaskRuntimeManager.register('LocalTaskRuntimeManager')
 class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
     """
     Task Runtime Manager
@@ -30,12 +29,8 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         offset_size (float): Offset size.
     """
 
-    def __init__(self, task_user_config: TaskCfg = None):
-        """
-        Args:
-            task_user_config (TaskConfig): Task config read from user input config file.
-        """
-        super().__init__(task_user_config=task_user_config)
+    def __init__(self, config: Config = None):
+        super().__init__(config=config)
         self._current_env_id = 0
         self._column_length = int(np.sqrt(self.env_num))
 
@@ -108,24 +103,6 @@ class LocalTaskRuntimeManager(BaseTaskRuntimeManager):
         self.active_runtimes[last_env.env_id] = task_runtime
 
         return task_runtime
-
-    def init(self):
-        """
-        Initialize of task_runtime_manager. (only run once)
-        Initialize the first batch of active_runtimes to be simulated simultaneously according to `env_num`.
-
-        Set init Env.
-            1. Set up env_id
-            2. Set up offset in isaac sim (2D tuple)
-        """
-        _column_length = int(np.sqrt(self.env_num))
-        for env_id in range(self.env_num):
-            row = int(env_id // _column_length)
-            column = env_id % _column_length
-            offset = [row * self.offset_size, column * self.offset_size, 0]
-            new_env = {'env_id': env_id, 'offset': offset}
-            task_runtime = self.get_next_task_runtime(Env(**new_env))
-            self.active_runtimes[env_id] = task_runtime
 
     def _create_env(self) -> Env:
         row = int(self._current_env_id // self._column_length)

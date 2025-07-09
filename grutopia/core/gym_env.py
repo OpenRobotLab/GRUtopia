@@ -16,6 +16,7 @@ class Env(gym.Env):
     def __init__(self, simulator_runtime: SimulatorRuntime) -> None:
         self._render = None
         self._runtime = simulator_runtime
+        self.env_num = self._runtime.env_num
         self._robot_name = None
         self._current_task_name = None
         self._validate()
@@ -37,8 +38,8 @@ class Env(gym.Env):
 
     def _validate(self):
         """This method is designed for **only** 1 env + 1 robot."""
-        if self._runtime.env_num > 1:
-            raise ValueError(f'Only support single env now, but env num is {self._runtime.env_num}')
+        if self.env_num > 1:
+            raise ValueError(f'Only support single env now, but env num is {self.env_num}')
 
         episodes = self._runtime.task_runtime_manager.episodes
         log.debug(f'================ len(episodes): {len(episodes)} ==================')

@@ -81,8 +81,10 @@ def main():
     # import custom extensions here.
 
     env = Env(sim_runtime)
-    _, info = env.reset()
-    assert len(info) == 2
+    _, task_runtimes = env.reset()
+    assert len(task_runtimes) == 3
+    assert task_runtimes[0] is not None and task_runtimes[1] is not None
+    assert task_runtimes[2] is None
 
     i = 0
 
@@ -91,9 +93,11 @@ def main():
 
     while env.simulation_app.is_running():
         i += 1
-        action_0 = OrderedDict({'h1': move_action, 'h1_1': move_action})
-        action_1 = OrderedDict({'h1': move_action, 'h1_1': move_action})
-        obs, _, terminated_status, _, _ = env.step(action=[action_0, action_1])
+        action = OrderedDict({'h1': move_action, 'h1_1': move_action})
+        obs, _, terminated_status, _, _ = env.step(action=[action for _ in range(3)])
+        assert len(obs) == 3
+        assert obs[0] is not None and obs[1] is not None
+        assert obs[2] is None
 
         if all(terminated_status) and no_more_episode:
             break

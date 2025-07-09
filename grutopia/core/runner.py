@@ -10,6 +10,7 @@ from omni.physx.scripts import utils
 
 # Init
 from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.runtime.task_runtime import Env as TaskEnv
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.task import BaseTask, create_task
@@ -20,6 +21,7 @@ from grutopia.core.util.clear_task import clear_stage_by_prim_path
 class SimulatorRunner:
     def __init__(self, simulator_runtime: SimulatorRuntime):
         self.task_runtime_manager = simulator_runtime.task_runtime_manager
+        self.env_num = self.task_runtime_manager.env_num
         self._simulator_runtime = simulator_runtime
         physics_dt = (
             self._simulator_runtime.simulator.physics_dt
@@ -207,7 +209,7 @@ class SimulatorRunner:
                     metric.update(obs[self.task_name_to_env_id_map[task.name]])
 
         # update terminated_status and rewards
-        for env_id in range(self.task_runtime_manager.env_num):
+        for env_id in range(self.env_num):
             # terminated tasks will no longer apply action
 
             if env_id not in self.env_id_to_task_name_map:
@@ -242,7 +244,7 @@ class SimulatorRunner:
                 obs[task_name][robot_name]['render'] = self._render
 
         _obs = []
-        for env_id in range(self._simulator_runtime.env_num):
+        for env_id in range(self.env_num):
             if env_id in self.env_id_to_task_name_map:
                 _obs.append(obs[self.env_id_to_task_name_map[env_id]])
             else:
@@ -290,7 +292,7 @@ class SimulatorRunner:
         if env_ids is None and self.current_tasks:
             # reset
             log.info('==================== reset all env ====================')
-            env_ids = [i for i in range(self._simulator_runtime.env_num)]
+            env_ids = [i for i in range(self.env_num)]
 
         if env_ids is None:
             # init
@@ -369,7 +371,7 @@ class SimulatorRunner:
         Raises:
             RuntimeError: If a task specified in `reset_tasks` isn't found in the current tasks.
         """
-        runtime_envs: Union[None, TaskRuntime.env] = []
+        runtime_envs: List[Union[None, TaskEnv]] = []
         next_task_runtimes = []
 
         if reset_tasks:
@@ -399,13 +401,13 @@ class SimulatorRunner:
         else:
             # init
             SimulationManager._on_stop('reset')
-            runtime_envs = [None for _ in range(self._simulator_runtime.env_num)]
+            runtime_envs = [None for _ in range(self.env_num)]
 
         # get next_task_runtimes
         for runtime_env in runtime_envs:
             next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
 
-            if next_task_runtime is None:
+            if next_task_runtime is None and runtime_env is not None:
                 del self.env_id_to_task_name_map[runtime_env.env_id]
             next_task_runtimes.append(next_task_runtime)
 

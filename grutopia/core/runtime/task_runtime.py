@@ -1,12 +1,10 @@
-from functools import wraps
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 
-from grutopia.core.config import EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
+from grutopia.core.config import Config, EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
 from grutopia.core.config.metric import MetricCfg
 from grutopia.core.config.task.reward import RewardCfg
-from grutopia.core.util import log
 
 
 class Env(BaseModel):
@@ -82,42 +80,38 @@ class BaseTaskRuntimeManager:
 
     managers = {}
 
-    def __init__(self, task_user_config: TaskCfg = None):
-        """
-        Args:
-            task_user_config (TaskConfig): Task config read from user input config file.
-        """
-        self.task_config: TaskCfg = task_user_config
-        self.episodes: List[EpisodeCfg] = task_user_config.episodes
+    def __init__(self, config: Config = None):
+        self.task_config: TaskCfg = config.task_config
+        self.episodes: List[EpisodeCfg] = self.task_config.episodes
 
         # validate env_num
-        if task_user_config.env_num <= 0:
+        self.env_num = self.task_config.env_num
+        if self.env_num <= 0:
             raise RuntimeError('env_num must be greater than 0')
-        if len(self.episodes) == 0:
-            raise RuntimeError('len(episodes) must be greater than 0')
-        self.env_num = task_user_config.env_num
-        if task_user_config.env_num >= len(self.episodes):
-            log.info('env_num >= len(self.episodes), env_num will be reduced to len(self.episodes)')
-            self.env_num = len(self.episodes)
 
         # validate episodes
-        self.validate_episodes()
+        episodes_count = self.validate_episodes()
+        if episodes_count == 0:
+            raise RuntimeError('len(episodes) must be greater than 0')
 
-        self.metrics_save_path = task_user_config.metrics_save_path
+        self.metrics_save_path = self.task_config.metrics_save_path
         self.active_runtimes: Dict[int, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()
         self.all_allocated = False
 
     def validate_episodes(self):
+        episodes_count = 0
         _order = None
         for episode in self.episodes:
+            episodes_count += 1
             robot_order = [robot.type for robot in episode.robots]
             if _order is None:
                 _order = robot_order
                 continue
             if robot_order != _order:
                 raise ValueError('robot types must be identical across all episodes')
+        return episodes_count
 
     def gen_runtime_template(self):
         task_template = {}
@@ -147,39 +141,8 @@ class BaseTaskRuntimeManager:
         """
         raise NotImplementedError()
 
-    def all_task_allocated(self) -> bool:
-        """
-        Return if all tasks are allocated
-        """
-        return self.all_allocated
 
-    @classmethod
-    def register(cls, name: str):
-        """Register a task runtime manager class with its name(decorator).
+def create_task_runtime_manager(config: Config):
+    from .local_task_runtime_manager import LocalTaskRuntimeManager
 
-        Args:
-            name(str): name of the task runtime manager class.
-        """
-
-        def decorator(manager_class):
-            cls.managers[name] = manager_class
-
-            @wraps(manager_class)
-            def wrapped_function(*args, **kwargs):
-                return manager_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
-
-
-def create_task_runtime_manager(task_user_config: TaskCfg):
-    if task_user_config.operation_mode == 'local':
-        manager_type = 'LocalTaskRuntimeManager'
-    elif task_user_config.operation_mode == 'distributed':
-        manager_type = 'DistributedTaskRuntimeManager'
-    else:
-        raise RuntimeError('Invalid operation_mode.')
-
-    inst: BaseTaskRuntimeManager = BaseTaskRuntimeManager.managers[manager_type](task_user_config)
-    return inst
+    return LocalTaskRuntimeManager(config)

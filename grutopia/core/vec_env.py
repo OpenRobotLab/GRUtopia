@@ -38,6 +38,7 @@ class Env:
     def __init__(self, simulator_runtime: SimulatorRuntime) -> None:
         self._render = None
         self._runtime = simulator_runtime
+        self.env_num = self._runtime.env_num
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
@@ -96,7 +97,7 @@ class Env:
                 - info (List): Additional information about the step execution.
         """
         assert isinstance(action, list)
-        assert len(action) == self._runtime.env_num
+        assert len(action) == self.env_num
 
         truncated = [False for _ in action]
         info = [None for _ in action]
