@@ -8,7 +8,7 @@ It serves as an abstraction layer that can either encapsulate native sensors wit
 
 To add a custom sensor, you need to:
 - Create a config class for sensor config, inheriting from the `grutopia.core.config.robot.SensorCfg`.
-- Create a class for sensor, inheriting from the `grutopia.core.robot.sensor.BaseSensor`.
+- Create a class for sensor, inheriting from the `grutopia.core.sensor.sensor.BaseSensor`.
 
 ## Create Config Class
 
@@ -37,7 +37,7 @@ In the simplest scenario, the following methods are required to be implemented i
 
 ```python
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.sensor import BaseSensor
+from grutopia.core.sensor.sensor import BaseSensor
 
 
 @BaseSensor.register('DepthCamera')
@@ -75,7 +75,7 @@ from typing import Dict
 from omni.isaac.sensor import Camera as i_Camera
 
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.sensor import BaseSensor
+from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
 from grutopia_extension.configs.sensors import DepthCameraCfg
 

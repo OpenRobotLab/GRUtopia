@@ -6,7 +6,7 @@ import omni.isaac.core.utils.numpy.rotations as rot_utils
 from scipy.spatial.transform import Rotation as R
 
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.sensor import BaseSensor
+from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
 from grutopia.core.wrapper.isaac_camera import IsaacCamera as i_Camera
 from grutopia_extension.configs.sensors import MocapControlledCameraCfg

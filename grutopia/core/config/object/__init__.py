@@ -3,24 +3,6 @@ from typing import Optional, Tuple
 from pydantic import BaseModel
 
 
-class Scene(BaseModel):
-    """
-    A class representing a scene, inheriting from BaseModel.
-
-    This class provides a structure for storing information related to a scene in a project.
-    It includes basic attributes like type, name, and path, which can be used to categorize and locate scenes within a larger context.
-
-    Attributes:
-        type (str): The type of the scene, indicating its category or nature.
-        name (Optional[str]): The name of the scene, which can be used for identification. Defaults to None.
-        path (Optional[str]): The file system path to the scene, enabling direct access. Defaults to None.
-    """
-
-    type: str
-    name: Optional[str] = None
-    path: Optional[str] = None
-
-
 class ObjectCfg(BaseModel):
     """
     Represents a customizable object within a scene, with support for physics and different object types.
@@ -42,3 +24,35 @@ class ObjectCfg(BaseModel):
     orientation: Optional[Tuple[float, float, float, float]] = (1.0, 0.0, 0.0, 0.0)
     scale: Optional[Tuple[float, float, float]] = (1.0, 1.0, 1.0)
     type: str
+
+
+class DynamicCubeCfg(ObjectCfg):
+    """
+    Configuration for a dynamic cube object in the scene.
+
+    This class specifies the configuration parameters for a dynamic cube, allowing customization of its physical and visual properties.
+
+    Attributes:
+        color (Optional[Tuple[float, float, float]], optional): RGB color of the cube. Defaults to None.
+        mass (Optional[float], optional): Mass of the cube in kilograms. Defaults to None.
+    """
+
+    type: Optional[str] = 'DynamicCube'
+    color: Optional[Tuple[float, float, float]] = None
+    mass: Optional[float] = None
+
+
+class UsdObjCfg(ObjectCfg):
+    """
+    Configuration for a USD object in the scene.
+
+    This class specifies the configuration parameters for a USD object.
+
+    Attributes:
+        usd_path (str): Path to the USD file.
+        collider (bool, optional): Whether the object enables collider.
+    """
+
+    type: Optional[str] = 'UsdObject'
+    usd_path: str
+    collider: Optional[bool] = True

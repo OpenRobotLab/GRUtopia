@@ -5,7 +5,7 @@ import omni.replicator.core as rep
 import torch
 
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.sensor import BaseSensor
+from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
 from grutopia_extension.configs.sensors import RepCameraCfg
 

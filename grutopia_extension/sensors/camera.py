@@ -3,7 +3,7 @@ from collections import OrderedDict
 from omni.isaac.sensor import Camera as i_Camera
 
 from grutopia.core.robot.robot import BaseRobot, Scene
-from grutopia.core.robot.sensor import BaseSensor
+from grutopia.core.sensor.sensor import BaseSensor
 from grutopia.core.util import log
 from grutopia_extension.configs.sensors import CameraCfg
 

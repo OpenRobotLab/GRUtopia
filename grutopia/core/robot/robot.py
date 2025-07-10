@@ -46,7 +46,7 @@ class BaseRobot:
         for rigid_body in self.get_rigid_bodies():
             scene.add(rigid_body.prim_ins)
         from grutopia.core.robot.controller import BaseController, create_controllers
-        from grutopia.core.robot.sensor import BaseSensor, create_sensors
+        from grutopia.core.sensor.sensor import BaseSensor, create_sensors
 
         self.controllers: OrderedDict[str, BaseController] = create_controllers(robot_cfg, self, scene)
         self.sensors: OrderedDict[str, BaseSensor] = create_sensors(robot_cfg, self, scene)
