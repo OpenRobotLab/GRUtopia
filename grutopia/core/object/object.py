@@ -1,63 +1,61 @@
+from collections import OrderedDict
+
 from grutopia.core.config import ObjectCfg as ObjectConfig
-from grutopia.core.config import Simulator
+from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.scene.scene import IScene
+from grutopia.core.util import log, remove_suffix
 
 
-class IObject:
-    """
-    Object common class.
-
-    Args:
-        config (ObjectConfig): The configuration of the object.
-    """
+class BaseObject:
+    """Base class of object."""
 
     objs = {}
 
-    def __init__(self, config: ObjectConfig):
-        self._config = config
+    def __init__(self, config: ObjectConfig, scene: IScene):
+        super().__init__()
+        self.name = config.name
+        self.config = config
+        self._scene = scene
+
+    def set_up_to_scene(self, scene: IScene):
+        raise NotImplementedError
 
     @classmethod
-    def register(cls, object_type: str, simulator_type: str):
+    def register(cls, name: str):
         """
-        Register an object class
+        Register an object class with the given name(decorator).
 
         Args:
-            object_type (str): The type of the object.
-            simulator_type (str): The type of the simulator.
-
-        Returns:
-            A function to register the object class.
+            name(str): name of the object
         """
 
-        def wrapper(subclass):
+        def wrapper(object_class):
             """
             Register the object class.
             """
-            cls.objs[(object_type, simulator_type)] = subclass
-            return subclass
+            cls.objs[name] = object_class
+            return object_class
 
         return wrapper
 
-    @classmethod
-    def create(cls, config: ObjectConfig, simulator_type: str = Simulator.ISAACSIM.value) -> 'IObject':
-        """
-        Create an object based on the given configuration and simulator type.
 
-        Args:
-            config (ObjectConfig): configuration of the objects
-            simulator_type (str): The type of the simulator.
+def create_objects(runtime: TaskRuntime, scene: IScene) -> OrderedDict[str, BaseObject]:
+    """Create object instances in runtime.
 
-        Returns:
-            IObject: The created object.
-        """
+    Args:
+        runtime (TaskRuntime): task runtime.
+        scene (Scene): isaac scene.
 
-        if simulator_type == Simulator.ISAACSIM.value:
-
-            import grutopia.core.object.isaacsim  # noqa
-
-            subclass = IObject.objs.get((config.type, simulator_type))
-            if subclass:
-                return subclass(config)
-            else:
-                raise ValueError(f'Invalid object type: {config.type}')
-        else:
-            raise ValueError(f'Invalid simulator_type: {simulator_type}')
+    Returns:
+        OrderedDict[str, BaseObject]: robot instances dictionary.
+    """
+    object_map = OrderedDict()
+    for object in runtime.objects:
+        if object.type not in BaseObject.objs:
+            raise KeyError(f'[create_robots] unknown robot type "{object.type}"')
+        object_cls = BaseObject.objs[object.type]
+        object_ins: BaseObject = object_cls(object, scene)
+        object_map[remove_suffix(object.name)] = object_ins
+        object_ins.set_up_to_scene(scene)
+        log.debug(f'[create_objects] {object.name} loaded')
+    return object_map

@@ -1,18 +1,18 @@
 import numpy as np
 from omni.isaac.core.objects import DynamicCuboid
 
-from grutopia.core.scene.object import ObjectCommon
+from grutopia.core.object import BaseObject
 from grutopia.core.scene.scene import IScene
 from grutopia_extension.configs.objects import DynamicCubeCfg
 
 
-@ObjectCommon.register('DynamicCube')
-class DynamicCube(ObjectCommon):
-    def __init__(self, config: DynamicCubeCfg):
-        super().__init__(config=config)
+@BaseObject.register('DynamicCube')
+class DynamicCube(BaseObject):
+    def __init__(self, config: DynamicCubeCfg, scene: IScene):
+        super().__init__(config, scene)
         self._config = config
 
-    def set_up_scene(self, scene: IScene):
+    def set_up_to_scene(self, scene: IScene):
         scene.add(
             DynamicCuboid(
                 prim_path=self._config.prim_path,

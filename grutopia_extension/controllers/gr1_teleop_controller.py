@@ -2,9 +2,9 @@ from typing import List
 
 import lcm
 import numpy as np
-from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.articulation_subset import ArticulationSubset
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -20,7 +20,7 @@ class GR1TeleOpController(BaseController):
         super().__init__(config=config, robot=robot, scene=scene)
 
         self.joint_names = config.joint_names
-        self.joint_subset = ArticulationSubset(self.robot.isaac_robot, self.joint_names)
+        self.joint_subset = ArticulationSubset(self.robot.articulation, self.joint_names)
 
         self.lc = lcm.LCM()
         self.lc.subscribe('teleop_joints', self.teleop_joints_handler)

@@ -2,8 +2,8 @@ from typing import Any, List, Optional, Tuple
 
 from pydantic import BaseModel
 
+from grutopia.core.config import ObjectCfg as Object
 from grutopia.core.config.robot import RobotCfg
-from grutopia.core.config.scene import ObjectCfg as Object
 
 
 class EpisodeCfg(BaseModel, extra='allow'):

@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
 import numpy as np
-from omni.isaac.core.articulations import Articulation
 
+from grutopia.core.robot.articulation import IArticulation
 from grutopia.core.robot.rigid_body import IRigidBody
 
 
@@ -42,7 +42,7 @@ def set_rigidbody_status(rigid_body: IRigidBody, status: Dict):
     rigid_body._rigid_prim_view._physics_view.set_rest_offsets(status['rest_offsets'], indices=np.array([0]))
 
 
-def get_articulation_status(articulation: Articulation) -> Dict[str, Any]:
+def get_articulation_status(articulation: IArticulation) -> Dict[str, Any]:
     """Get the current status of an Articulation"""
     return {
         'dof_limits': articulation._articulation_view._physics_view.get_dof_limits(),
@@ -69,7 +69,7 @@ def get_articulation_status(articulation: Articulation) -> Dict[str, Any]:
     }
 
 
-def set_articulation_status(articulation: Articulation, status: Dict):
+def set_articulation_status(articulation: IArticulation, status: Dict):
     """Set the current status of an Articulation"""
     articulation._articulation_view._physics_view.set_dof_limits(data=status['dof_limits'], indices=[0])
     articulation._articulation_view._physics_view.set_dof_stiffnesses(data=status['dof_stiffnesses'], indices=[0])

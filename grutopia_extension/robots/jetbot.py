@@ -12,17 +12,17 @@ from typing import Optional
 
 import carb
 import numpy as np
-from isaacsim.core.utils.prims import define_prim, get_prim_at_path
-from isaacsim.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.isaacsim.articulation import IsaacsimArticulation
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
-from grutopia.core.wrapper.isaac_robot import IsaacRobot
 from grutopia_extension.configs.robots.jetbot import JetbotRobotCfg
 
 
-class WheeledRobot(IsaacRobot):
+class WheeledRobot(IsaacsimArticulation):
+    # TODO: change IsaacsimArticulation to IArticulation
     def __init__(
         self,
         prim_path: str,
@@ -31,21 +31,10 @@ class WheeledRobot(IsaacRobot):
         wheel_dof_names: Optional[str] = None,
         wheel_dof_indices: Optional[int] = None,
         usd_path: Optional[str] = None,
-        create_robot: Optional[bool] = False,
         position: Optional[np.ndarray] = None,
         orientation: Optional[np.ndarray] = None,
+        scale: Optional[np.ndarray] = None,
     ) -> None:
-        prim = get_prim_at_path(prim_path)
-        if not prim.IsValid():
-            if create_robot:
-                prim = define_prim(prim_path, 'Xform')
-                if usd_path:
-                    prim.GetReferences().AddReference(usd_path)
-                else:
-                    carb.log_error('no valid usd path defined to create new robot')
-            else:
-                carb.log_error('no prim at path %s', prim_path)
-
         if robot_path is not None:
             robot_path = '/' + robot_path
             # regex: remove all prefixing "/", need at least one prefix "/" to work
@@ -53,7 +42,12 @@ class WheeledRobot(IsaacRobot):
             prim_path = prim_path + '/' + robot_path
 
         super().__init__(
-            prim_path=prim_path, name=name, position=position, orientation=orientation, articulation_controller=None
+            usd_path=usd_path,
+            prim_path=prim_path,
+            name=name,
+            position=position,
+            orientation=orientation,
+            scale=scale,
         )
         self._wheel_dof_names = wheel_dof_names
         self._wheel_dof_indices = wheel_dof_indices
@@ -78,7 +72,7 @@ class WheeledRobot(IsaacRobot):
 
     def get_wheel_velocities(self):
         full_dofs_velocities = self.get_joint_velocities()
-        wheel_dof_velocities = [full_dofs_velocities[i] for i in self._wheel_dof_indicies]
+        wheel_dof_velocities = [full_dofs_velocities[i] for i in self._wheel_dof_indices]
         return wheel_dof_velocities
 
     def set_wheel_velocities(self, velocities) -> None:
@@ -109,7 +103,7 @@ class WheeledRobot(IsaacRobot):
         return
 
     def initialize(self, physics_sim_view=None) -> None:
-        super().initialize(physics_sim_view=physics_sim_view)
+        self.unwrap().initialize(physics_sim_view=physics_sim_view)
         if self._wheel_dof_names is not None:
             self._wheel_dof_indices = [
                 self.get_dof_index(self._wheel_dof_names[i]) for i in range(len(self._wheel_dof_names))
@@ -122,7 +116,7 @@ class WheeledRobot(IsaacRobot):
         return
 
     def post_reset(self) -> None:
-        super().post_reset()
+        self.unwrap().post_reset()
         self._articulation_controller.switch_control_mode(mode='velocity')
         return
 
@@ -146,26 +140,24 @@ class JetbotRobot(BaseRobot):
         log.debug(f'jetbot {config.name} usd_path         : ' + str(usd_path))
         log.debug(f'jetbot {config.name} config.prim_path : ' + str(config.prim_path))
         self.prim_path = str(config.prim_path)
-        self.isaac_robot = WheeledRobot(
-            prim_path=config.prim_path,
-            name=config.name,
-            wheel_dof_names=['left_wheel_joint', 'right_wheel_joint'],
-            create_robot=True,
-            position=self._start_position,
-            orientation=self._start_orientation,
-            usd_path=usd_path,
-        )
-
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         if config.scale is not None:
             self._robot_scale = np.array(config.scale)
-            self.isaac_robot.set_local_scale(self._robot_scale)
+        self.articulation = WheeledRobot(
+            prim_path=config.prim_path,
+            name=config.name,
+            wheel_dof_names=['left_wheel_joint', 'right_wheel_joint'],
+            position=self._start_position,
+            orientation=self._start_orientation,
+            usd_path=usd_path,
+            scale=self._robot_scale,
+        )
 
     def get_robot_scale(self):
         return self._robot_scale
 
     def get_pose(self):
-        return self.isaac_robot.get_pose()
+        return self.articulation.get_pose()
 
     def apply_action(self, action: dict):
         """
@@ -179,17 +171,17 @@ class JetbotRobot(BaseRobot):
                 continue
             controller = self.controllers[controller_name]
             control = controller.action_to_control(controller_action)
-            self.isaac_robot.apply_action(control)
+            self.articulation.apply_action(control)
 
     def get_obs(self) -> OrderedDict:
-        position, orientation = self.isaac_robot.get_pose()
+        position, orientation = self.articulation.get_pose()
 
         # custom
         obs = {
             'position': position,
             'orientation': orientation,
-            'joint_positions': self.isaac_robot.get_joint_positions(),
-            'joint_velocities': self.isaac_robot.get_joint_velocities(),
+            'joint_positions': self.articulation.get_joint_positions(),
+            'joint_velocities': self.articulation.get_joint_velocities(),
             'controllers': {},
             'sensors': {},
         }

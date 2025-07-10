@@ -3,8 +3,8 @@ from typing import List, Tuple
 
 import numpy as np
 from omni.isaac.core.utils.rotations import euler_angles_to_quat, rot_matrix_to_quat
-from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene

@@ -16,9 +16,9 @@ class IsaacsimRigidBody(IRigidBody):
     Isaacsim's implementation on `IRigidBody` class.
     Args:
         prim_path (str): prim path of the Prim to encapsulate or create.
-        usd_path (str, optional):  The file path containing the rigid body definition.
         name (str): shortname to be used as a key by Scene class.
                               Note: needs to be unique if the object is added to the Scene.
+        usd_path (str, optional):  The file path containing the rigid body definition.
         position (Optional[np.ndarray], optional): position in the world frame of the prim. shape is (3, ).
                                                    Defaults to None, which means left unchanged.
         translation (Optional[np.ndarray], optional): translation in the local frame of the prim
@@ -39,9 +39,9 @@ class IsaacsimRigidBody(IRigidBody):
 
     def __init__(
         self,
-        prim_path: str = None,
+        prim_path: str,
+        name: str,
         usd_path: Optional[str] = None,
-        name: str = None,
         position: Optional[np.ndarray] = None,
         translation: Optional[np.ndarray] = None,
         orientation: Optional[np.ndarray] = None,
@@ -52,20 +52,21 @@ class IsaacsimRigidBody(IRigidBody):
         angular_velocity: Optional[np.ndarray] = None,
         owner_articulation: Optional[IArticulation] = None,
     ):
+        from isaacsim.core.utils.prims import get_prim_at_path
         from omni.isaac.core.prims import RigidPrim
         from omni.isaac.core.utils.stage import add_reference_to_stage
-
-        if prim_path is None:
-            raise ValueError("'prim_path' is required.")
-
-        if name is None:
-            raise ValueError("'name' is required.")
 
         self._is_link = False
         if owner_articulation is not None:
             self._is_link = True
 
-        if usd_path is not None:
+        prim = get_prim_at_path(prim_path)
+        if prim.IsValid():
+            if usd_path is not None:
+                raise ValueError(f"Prim {prim_path} already exist, 'usd_path' should be None.")
+        else:
+            if usd_path is None:
+                raise ValueError(f"Prim {prim_path} not exist, 'usd_path' is required.")
             add_reference_to_stage(prim_path=prim_path, usd_path=os.path.abspath(usd_path))
 
         self._param = {
@@ -118,9 +119,6 @@ class IsaacsimRigidBody(IRigidBody):
     def unwrap(self) -> any:
         return self._rigid_prim
 
-    def initialize(self, physics_sim_view=None) -> None:
-        self._rigid_prim.initialize(physics_sim_view)
-
     def save_status(self):
         self.status = get_rigidbody_status(self._rigid_prim)
 
@@ -132,3 +130,9 @@ class IsaacsimRigidBody(IRigidBody):
             self.save_status()
             return
         set_rigidbody_status(self._rigid_prim, self.status)
+
+    def post_reset(self):
+        return self._rigid_prim.post_reset()
+
+    def is_valid(self) -> bool:
+        return self._rigid_prim.is_valid()

@@ -3,8 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from grutopia.core.config.object import ObjectCfg
 from grutopia.core.config.robot import RobotCfg
-from grutopia.core.config.scene import ObjectCfg, Scene
 from grutopia.core.config.task import TaskCfg
 from grutopia.core.config.task.episode import EpisodeCfg, EpisodeConfigFile
 

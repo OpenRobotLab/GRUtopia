@@ -1,7 +1,5 @@
 import os
 
-from grutopia.core.scene.object import create_object
-
 
 def validate_scene_file(file_path: str, prim_path_root: str = 'background'):
     """

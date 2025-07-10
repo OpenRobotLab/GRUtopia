@@ -3,11 +3,11 @@ from typing import List
 import numpy as np
 import onnxruntime as ort
 import torch
-from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.utils.types import ArticulationAction
 
 import grutopia.core.util.gym as gymutil
 import grutopia.core.util.math as math_utils
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.articulation_subset import ArticulationSubset
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
@@ -100,7 +100,7 @@ class G1MoveBySpeedController(BaseController):
         self._policy = load_onnx_policy(path=config.policy_weights_path)
         self.joint_names = config.joint_names
         # Setup joint subset from joint names.
-        self.joint_subset = ArticulationSubset(self.robot.isaac_robot, self.joint_names)  # 27 joints
+        self.joint_subset = ArticulationSubset(self.robot.articulation, self.joint_names)  # 27 joints
 
         self.gym_adapter = gymutil.gym_adapter(self.joint_names_gym, self.joint_names_sim)
 

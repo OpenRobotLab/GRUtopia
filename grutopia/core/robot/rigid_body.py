@@ -117,6 +117,12 @@ class IRigidBody(PoseMixin):
         if simulator_type == Simulator.ISAACSIM.value:
             from grutopia.core.robot.isaacsim.rigid_body import IsaacsimRigidBody
 
+            if prim_path is None:
+                raise ValueError("'prim_path' is required.")
+
+            if name is None:
+                raise ValueError("'name' is required.")
+
             return IsaacsimRigidBody(
                 prim_path=prim_path,
                 usd_path=usd_path,

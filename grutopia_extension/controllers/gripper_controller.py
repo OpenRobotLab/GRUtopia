@@ -2,8 +2,8 @@ from collections import OrderedDict
 from typing import Any, List
 
 import numpy as np
-from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -13,7 +13,7 @@ from grutopia_extension.configs.controllers import GripperControllerCfg
 @BaseController.register('GripperController')
 class GripperController(BaseController):
     def __init__(self, config: GripperControllerCfg, robot: BaseRobot, scene: IScene):
-        self._gripper = robot.isaac_robot.gripper  # for franka is OK
+        self._gripper = robot.articulation.gripper  # for franka is OK
         super().__init__(config, robot, scene)
 
     def forward(self, action: str) -> ArticulationAction:

@@ -6,11 +6,11 @@ import numpy as np
 from pxr import Usd
 
 from grutopia.core.config.robot import RobotCfg
+from grutopia.core.robot.articulation import IArticulation
 from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log, remove_suffix
-from grutopia.core.wrapper.isaac_robot import IsaacRobot
 
 
 class BaseRobot:
@@ -21,7 +21,7 @@ class BaseRobot:
     def __init__(self, config: RobotCfg, scene: IScene):
         self.name = config.name
         self.config = config
-        self.isaac_robot: IsaacRobot | None = None
+        self.articulation: IArticulation | None = None
         self.controllers = {}
         self.sensors = {}
         self._scene = scene
@@ -34,17 +34,12 @@ class BaseRobot:
         Args:
             scene (Scene): scene to set up.
         """
-        if self.isaac_robot is None:
-            raise RuntimeError('The attribute self.isaac_robot needs to be initialized in subclass(robot extensions)')
+        if self.articulation is None:
+            raise RuntimeError('The attribute self.articulation needs to be initialized in subclass(robot extensions)')
         self.create_rigid_bodies()
         self._scene = scene
         robot_cfg = self.config
-        if self.isaac_robot:
-            # TODO： Implement initialize method in wrapper to make
-            #       'scene._scene_registry.add_articulated_system' -> 'scene.add'
-            scene._scene._scene_registry.add_articulated_system(
-                name=self.isaac_robot.name, articulated_system=self.isaac_robot
-            )
+        scene.add(self.articulation)
         for rigid_body in self.get_rigid_bodies():
             scene.add(rigid_body)
         from grutopia.core.robot.controller import BaseController, create_controllers
@@ -67,14 +62,14 @@ class BaseRobot:
         """
         Create rigid bodies.
         """
-        _prim = self.isaac_robot.prim
+        _prim = self.articulation.prim
 
         # articulation on rigid-body situation
         if (
-            'PhysicsArticulationRootAPI' in self.isaac_robot.prim.GetAppliedSchemas()
-            and 'PhysicsRigidBodyAPI' in self.isaac_robot.prim.GetAppliedSchemas()
+            'PhysicsArticulationRootAPI' in self.articulation.prim.GetAppliedSchemas()
+            and 'PhysicsRigidBodyAPI' in self.articulation.prim.GetAppliedSchemas()
         ):
-            parts = str(self.isaac_robot.prim.GetPath()).rstrip('/').split('/')
+            parts = str(self.articulation.prim.GetPath()).rstrip('/').split('/')
             _root_prim_path = '/'.join(parts[:-1]) if len(parts) > 1 else ''
             _prim = self._scene.unwrap().stage.GetPrimAtPath(_root_prim_path)
 
@@ -89,18 +84,18 @@ class BaseRobot:
         Saves the current state of the robot's articulation information.
         """
         log.info('saving robot info')
-        self.isaac_robot.save_status()
+        self.articulation.save_status()
 
     def restore_robot_info(self):
         """
         Restores the robot's information and its state within the simulation environment.
         """
-        self.isaac_robot._articulation_view._is_initialized = False
-        self.isaac_robot._articulation_view._on_physics_ready('reset')
+        self.articulation._articulation_view._is_initialized = False
+        self.articulation._articulation_view._on_physics_ready('reset')
         self.clean_stale_rigid_bodies()
         self.create_rigid_bodies()
         self.post_reset()
-        self.isaac_robot.restore_status()
+        self.articulation.restore_status()
 
     def post_reset(self):
         """Set up things after the env resets."""
@@ -176,15 +171,15 @@ class BaseRobot:
         Returns:
             np.ndarray: robot scale in (x, y, z).
         """
-        return self.isaac_robot.get_local_scale()
+        raise NotImplementedError()
 
-    def get_robot_articulation(self) -> IsaacRobot:
+    def get_robot_articulation(self) -> IArticulation:
         """Get isaac robots instance (articulation).
 
         Returns:
             Robot: robot articulation.
         """
-        return self.isaac_robot
+        return self.articulation
 
     def get_controllers(self):
         return self.controllers

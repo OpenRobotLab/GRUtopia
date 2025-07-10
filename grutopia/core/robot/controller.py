@@ -4,11 +4,11 @@ from functools import wraps
 from typing import Any, Dict, List, Union
 
 import numpy as np
-from omni.isaac.core.articulations import ArticulationSubset
 from omni.isaac.core.controllers import BaseController as Base
-from omni.isaac.core.utils.types import ArticulationAction
 
 from grutopia.core.config.robot import ControllerCfg, RobotCfg
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.articulation_subset import ArticulationSubset
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log

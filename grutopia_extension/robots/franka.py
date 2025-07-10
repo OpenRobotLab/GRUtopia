@@ -10,21 +10,19 @@ import os
 from collections import OrderedDict
 from typing import Any, List, Optional
 
-import carb
 import numpy as np
-from isaacsim.core.utils.prims import get_prim_at_path
-from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
+from isaacsim.core.utils.stage import get_stage_units
 from isaacsim.robot.manipulators.grippers.parallel_gripper import ParallelGripper
-from isaacsim.storage.native import get_assets_root_path
 
+from grutopia.core.robot.isaacsim.articulation import IsaacsimArticulation
 from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot, RobotCfg
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
-from grutopia.core.wrapper.isaac_robot import IsaacRobot as Robot
 
 
-class Franka(Robot):
+class Franka(IsaacsimArticulation):
+    # TODO: change IsaacsimArticulation to IArticulation
     def __init__(
         self,
         prim_path: str,
@@ -37,43 +35,28 @@ class Franka(Robot):
         gripper_open_position: Optional[np.ndarray] = None,
         gripper_closed_position: Optional[np.ndarray] = None,
         deltas: Optional[np.ndarray] = None,
+        scale: Optional[np.ndarray] = None,
     ) -> None:
-        prim = get_prim_at_path(prim_path)
         self._end_effector = None
         self._gripper = None
         self._end_effector_prim_name = end_effector_prim_name
-        if not prim.IsValid():
-            if usd_path:
-                add_reference_to_stage(usd_path=usd_path, prim_path=prim_path)
-            else:
-                assets_root_path = get_assets_root_path()
-                if assets_root_path is None:
-                    carb.log_error('Could not find Isaac Sim assets folder')
-                usd_path = assets_root_path + '/Isaac/Robots/Franka/franka.usd'
-                add_reference_to_stage(usd_path=usd_path, prim_path=prim_path)
-            if self._end_effector_prim_name is None:
-                self._end_effector_prim_path = prim_path + '/panda_rightfinger'
-            else:
-                self._end_effector_prim_path = prim_path + '/' + end_effector_prim_name
-            if gripper_dof_names is None:
-                gripper_dof_names = ['panda_finger_joint1', 'panda_finger_joint2']
-            if gripper_open_position is None:
-                gripper_open_position = np.array([0.05, 0.05]) / get_stage_units()
-            if gripper_closed_position is None:
-                gripper_closed_position = np.array([0.0, 0.0])
+        if self._end_effector_prim_name is None:
+            self._end_effector_prim_path = prim_path + '/panda_rightfinger'
         else:
-            if self._end_effector_prim_name is None:
-                self._end_effector_prim_path = prim_path + '/panda_rightfinger'
-            else:
-                self._end_effector_prim_path = prim_path + '/' + end_effector_prim_name
-            if gripper_dof_names is None:
-                gripper_dof_names = ['panda_finger_joint1', 'panda_finger_joint2']
-            if gripper_open_position is None:
-                gripper_open_position = np.array([0.05, 0.05]) / get_stage_units()
-            if gripper_closed_position is None:
-                gripper_closed_position = np.array([0.0, 0.0])
+            self._end_effector_prim_path = prim_path + '/' + end_effector_prim_name
+        if gripper_dof_names is None:
+            gripper_dof_names = ['panda_finger_joint1', 'panda_finger_joint2']
+        if gripper_open_position is None:
+            gripper_open_position = np.array([0.05, 0.05]) / get_stage_units()
+        if gripper_closed_position is None:
+            gripper_closed_position = np.array([0.0, 0.0])
         super().__init__(
-            prim_path=prim_path, name=name, position=position, orientation=orientation, articulation_controller=None
+            usd_path=usd_path,
+            prim_path=prim_path,
+            name=name,
+            position=position,
+            orientation=orientation,
+            scale=scale,
         )
         if gripper_dof_names is not None:
             if deltas is None:
@@ -96,9 +79,9 @@ class Franka(Robot):
         return self._gripper
 
     def initialize(self, physics_sim_view=None) -> None:
-        super().initialize(physics_sim_view)
+        self.unwrap().initialize(physics_sim_view)
         self._end_effector = IRigidBody.create(prim_path=self._end_effector_prim_path, name=self.name + '_end_effector')
-        self._end_effector.initialize(physics_sim_view)
+        self._end_effector.unwrap().initialize(physics_sim_view)
         self._gripper.initialize(
             physics_sim_view=physics_sim_view,
             articulation_apply_action_func=self.apply_action,
@@ -109,7 +92,7 @@ class Franka(Robot):
         return
 
     def post_reset(self) -> None:
-        super().post_reset()
+        self.unwrap().post_reset()
         self._gripper.post_reset()
         self._articulation_controller.switch_dof_control_mode(
             dof_index=self.gripper.joint_dof_indicies[0], mode='position'
@@ -136,18 +119,17 @@ class FrankaRobot(BaseRobot):
 
         log.debug(f'franka {config.name}: usd_path         : ' + str(usd_path))
         log.debug(f'franka {config.name}: config.prim_path : ' + str(config.prim_path))
-        self.isaac_robot = Franka(
+        self._robot_scale = np.array([1.0, 1.0, 1.0])
+        if config.scale is not None:
+            self._robot_scale = np.array(config.scale)
+        self.articulation = Franka(
             prim_path=config.prim_path,
             name=config.name,
             position=self._start_position,
             orientation=self._start_orientation,
             usd_path=os.path.abspath(usd_path),
+            scale=self._robot_scale,
         )
-
-        self._robot_scale = np.array([1.0, 1.0, 1.0])
-        if config.scale is not None:
-            self._robot_scale = np.array(config.scale)
-            self.isaac_robot.set_local_scale(self._robot_scale)
 
         self.last_action = []
 
@@ -185,14 +167,14 @@ class FrankaRobot(BaseRobot):
                 continue
             controller = self.controllers[controller_name]
             control = controller.action_to_control(controller_action)
-            self.isaac_robot.apply_action(control)
+            self.articulation.apply_action(control)
             self.last_action.append(self.action_to_dict(control))
 
     def get_last_action(self):
         return self.last_action
 
     def get_obs(self) -> OrderedDict[str, Any]:
-        position, orientation = self.isaac_robot.get_pose()
+        position, orientation = self.articulation.get_pose()
 
         # custom
         obs = {
@@ -203,7 +185,7 @@ class FrankaRobot(BaseRobot):
             'sensors': {},
         }
 
-        eef_pose = self.isaac_robot.end_effector.get_pose()
+        eef_pose = self.articulation.end_effector.get_pose()
         obs['eef_position'] = eef_pose[0]
         obs['eef_orientation'] = eef_pose[1]
 

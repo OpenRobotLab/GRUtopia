@@ -21,7 +21,7 @@ class RMPFlowController(BaseController):
             maximum_substep_size=1 / 120,
         )
         self._articulation_rmpflow = ArticulationMotionPolicy(
-            robot.isaac_robot, self.rmpflow, default_physics_dt=1 / 120
+            robot.articulation, self.rmpflow, default_physics_dt=1 / 120
         )
 
         self.success = False

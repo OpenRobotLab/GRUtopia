@@ -1,9 +1,9 @@
 from typing import List
 
 import numpy as np
-from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.articulation_subset import ArticulationSubset
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -20,7 +20,7 @@ class JointController(BaseController):
         self.joint_subset = None
         self.joint_names = config.joint_names
         if self.joint_names is not None:
-            self.joint_subset = ArticulationSubset(self.robot.isaac_robot, self.joint_names)
+            self.joint_subset = ArticulationSubset(self.robot.articulation, self.joint_names)
 
     def forward(self, joint_positions: np.ndarray = None, joint_velocities: np.ndarray = None) -> ArticulationAction:
         if self.joint_subset is None:
@@ -51,7 +51,7 @@ class JointController(BaseController):
             joint_vel = np.array(action[1]) if action[1] is not None else None
             if joint_pos is None:
                 joint_pos = (
-                    self.robot.isaac_robot.get_joint_positions()
+                    self.robot.articulation.get_joint_positions()
                     if self.joint_subset is None
                     else self.joint_subset.get_joint_positions()
                 )

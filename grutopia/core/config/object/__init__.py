@@ -24,35 +24,3 @@ class ObjectCfg(BaseModel):
     orientation: Optional[Tuple[float, float, float, float]] = (1.0, 0.0, 0.0, 0.0)
     scale: Optional[Tuple[float, float, float]] = (1.0, 1.0, 1.0)
     type: str
-
-
-class DynamicCubeCfg(ObjectCfg):
-    """
-    Configuration for a dynamic cube object in the scene.
-
-    This class specifies the configuration parameters for a dynamic cube, allowing customization of its physical and visual properties.
-
-    Attributes:
-        color (Optional[Tuple[float, float, float]], optional): RGB color of the cube. Defaults to None.
-        mass (Optional[float], optional): Mass of the cube in kilograms. Defaults to None.
-    """
-
-    type: Optional[str] = 'DynamicCube'
-    color: Optional[Tuple[float, float, float]] = None
-    mass: Optional[float] = None
-
-
-class UsdObjCfg(ObjectCfg):
-    """
-    Configuration for a USD object in the scene.
-
-    This class specifies the configuration parameters for a USD object.
-
-    Attributes:
-        usd_path (str): Path to the USD file.
-        collider (bool, optional): Whether the object enables collider.
-    """
-
-    type: Optional[str] = 'UsdObject'
-    usd_path: str
-    collider: Optional[bool] = True

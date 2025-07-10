@@ -6,14 +6,14 @@ from typing import Any, Dict, Union
 from omni.isaac.core.tasks import BaseTask as OmniBaseTask
 from pxr import Usd
 
+from grutopia.core.object import init_objects
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
-from grutopia.core.scene import create_object
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.metric import BaseMetric, create_metric
-from grutopia.core.util import log, remove_suffix
+from grutopia.core.util import log
 from grutopia.core.util.pose_mixin import PoseMixin
 
 
@@ -85,11 +85,7 @@ class BaseTask(OmniBaseTask, ABC):
                     self.scene_rigid_bodies[str(prim.GetPath())] = _rb
 
         self.robots = init_robots(self.runtime, self._scene)
-        self.objects = {}
-        for obj in self.runtime.objects:
-            _object = create_object(obj)
-            _object.set_up_scene(self._scene)
-            self.objects[remove_suffix(obj.name)] = _object
+        self.objects = init_objects(self.runtime, self._scene)
         self.loaded = True
 
     def clear_rigid_bodies(self):
@@ -260,10 +256,10 @@ class BaseTask(OmniBaseTask, ABC):
                 log.info('[cleanup] objs cleaned.')
         for robot in self.robots.values():
             # Using try here because we want to ignore all exceptions
-            log.info(f'[cleanup] cleanup robot {robot.isaac_robot.name}')
+            log.info(f'[cleanup] cleanup robot {robot.articulation.name}')
             try:
                 robot.cleanup()
-                self._scene.remove(robot.isaac_robot.name, registry_only=True)
+                self._scene.remove(robot.articulation.name, registry_only=True)
             finally:
                 log.info('[cleanup] robots cleaned.')
 

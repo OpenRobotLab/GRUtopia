@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from grutopia.core.config.scene import ObjectCfg
+from grutopia.core.config.object import ObjectCfg
 
 
 class DynamicCubeCfg(ObjectCfg):

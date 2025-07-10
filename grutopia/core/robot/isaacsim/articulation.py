@@ -152,16 +152,11 @@ class IsaacsimArticulation(IArticulation):
     def unwrap(self) -> any:
         return self._articulation
 
-    def initialize(self, physics_sim_view=None) -> None:
-        self._articulation.initialize(physics_sim_view)
-
     def save_status(self):
         self.status = get_articulation_status(self._articulation)
 
     def restore_status(self):
         log.info(f'=============== restore info of robot {self.name} ==============')
-        self._articulation._articulation_view._is_initialized = False
-        self._articulation._articulation_view._on_physics_ready('reset')
         if self.status:
             set_articulation_status(self._articulation, self.status)
 

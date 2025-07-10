@@ -8,12 +8,12 @@ from typing import List, Tuple
 import numpy as np
 from omni.isaac.core.articulations import Articulation
 from omni.isaac.core.utils.numpy.rotations import rot_matrices_to_quats
-from omni.isaac.core.utils.types import ArticulationAction
 from omni.isaac.motion_generation import (
     ArticulationKinematicsSolver,
     LulaKinematicsSolver,
 )
 
+from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -27,7 +27,7 @@ class InverseKinematicsController(BaseController):
     def __init__(self, config: InverseKinematicsControllerCfg, robot: BaseRobot, scene: IScene):
         super().__init__(config=config, robot=robot, scene=scene)
         self._kinematics_solver = KinematicsSolver(
-            robot_articulation=robot.isaac_robot,
+            robot_articulation=robot.articulation,
             robot_description_path=config.robot_description_path,
             robot_urdf_path=config.robot_urdf_path,
             end_effector_frame_name=config.end_effector_frame_name,

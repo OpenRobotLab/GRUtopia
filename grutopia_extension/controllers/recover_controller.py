@@ -1,8 +1,8 @@
 from typing import List
 
 import numpy as np
-from omni.isaac.core.utils.types import ArticulationAction
 
+from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -28,12 +28,12 @@ class RecoverController(BaseController):
             self.num_joints = self.get_joint_subset().num_joints
         current_position = self.robot.get_pose()[0]
         log.info(f'current pos is {current_position}, recovering to {target_position}')
-        self.robot.isaac_robot.set_pose(target_position, target_orientation)
-        self.robot.isaac_robot.set_world_velocity(np.zeros(6))
+        self.robot.articulation.set_pose(target_position, target_orientation)
+        self.robot.articulation.set_world_velocity(np.zeros(6))
 
-        self.robot.isaac_robot.set_joint_velocities(np.zeros(len(self.robot.isaac_robot.dof_names)))
-        self.robot.isaac_robot.set_joint_positions(np.zeros(len(self.robot.isaac_robot.dof_names)))
-        self.robot.isaac_robot.set_linear_velocity(np.zeros(3))
+        self.robot.articulation.set_joint_velocities(np.zeros(len(self.robot.articulation.dof_names)))
+        self.robot.articulation.set_joint_positions(np.zeros(len(self.robot.articulation.dof_names)))
+        self.robot.articulation.set_linear_velocity(np.zeros(3))
 
         return self.sub_controllers[0].forward(
             joint_positions=np.zeros(self.num_joints),

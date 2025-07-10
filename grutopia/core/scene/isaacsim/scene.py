@@ -1,7 +1,5 @@
 import os
 
-import grutopia.core.object.isaacsim as isobj
-import grutopia.core.robot.isaacsim as isrobot
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import validate_scene_file
 from grutopia.core.scene.scene import IScene
@@ -30,19 +28,12 @@ class IsaacsimScene(IScene):
 
     def add(self, target: any):
         """See `IScene.add` for documentation."""
-        if isinstance(target, isrobot.IsaacsimArticulation):
-            if target.__class__ == isrobot.IsaacsimArticulation:
-                self._scene.add(target._articulation)
-            else:
-                # TODO: Implement initialize method on IArticulation._articulation to make
-                # 'self._scene._scene_registry.add_articulated_system' -> 'self._scene.add'
-                self._scene._scene_registry.add_articulated_system(name=target.name, articulated_system=target)
-        elif isinstance(target, isrobot.IsaacsimRigidBody):
-            self._scene.add(target._rigid_prim)
-        elif isinstance(target, isobj.IsaacsimDynamicCube):
-            self._scene.add(target._cube)
-        elif isinstance(target, isobj.IsaacsimUsdObject):
-            self._scene.add(target._obj)
+        if hasattr(target, 'initialize') and hasattr(target, 'unwrap'):
+            # TODO: Implement initialize method on IArticulation._articulation to make
+            # 'self._scene._scene_registry.add_articulated_system' -> 'self._scene.add'
+            self._scene._scene_registry.add_articulated_system(name=target.name, articulated_system=target)
+        elif hasattr(target, 'unwrap'):
+            self._scene.add(target.unwrap())
         else:
             # For instance of isaac-sim native classes
             self._scene.add(target)

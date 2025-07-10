@@ -25,7 +25,7 @@ class MocapControlledFrankaRobot(BaseRobot):
 
         log.debug(f'franka {config.name}: usd_path         : ' + str(usd_path))
         log.debug(f'franka {config.name}: config.prim_path : ' + str(config.prim_path))
-        self.isaac_robot = Franka(
+        self.articulation = Franka(
             prim_path=config.prim_path,
             name=config.name,
             position=self._start_position,
@@ -33,12 +33,12 @@ class MocapControlledFrankaRobot(BaseRobot):
             usd_path=usd_path,
         )
 
-        self.isaac_robot.set_solver_velocity_iteration_count(64)
+        self.articulation.set_solver_velocity_iteration_count(64)
 
         self._robot_scale = np.array([1.0, 1.0, 1.0])
         if config.scale is not None:
             self._robot_scale = np.array(config.scale)
-            self.isaac_robot.set_local_scale(self._robot_scale)
+            self.articulation.set_local_scale(self._robot_scale)
 
         self.last_action = []
 
@@ -51,10 +51,10 @@ class MocapControlledFrankaRobot(BaseRobot):
     def post_reset(self):
         super().post_reset()
         self._robot_ik_base = self._rigid_body_map[self.config.prim_path + '/panda_link0']
-        self.isaac_robot._articulation_view.set_max_joint_velocities([1.0] * 9)
+        self.articulation._articulation_view.set_max_joint_velocities([1.0] * 9)
         stiffnesses = np.array([1e7, 1e7, 1e7, 1e7, 1e7, 1e7, 1e7, 1e4, 0])
         dampings = np.array([1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e6, 1e3, 0])
-        self.isaac_robot._articulation_view.set_gains(kps=stiffnesses, kds=dampings)
+        self.articulation._articulation_view.set_gains(kps=stiffnesses, kds=dampings)
 
     @staticmethod
     def action_to_dict(action):
@@ -80,7 +80,7 @@ class MocapControlledFrankaRobot(BaseRobot):
                 continue
             controller = self.controllers[controller_name]
             control = controller.action_to_control(controller_action)
-            self.isaac_robot.apply_action(control)
+            self.articulation.apply_action(control)
 
             self.last_action.append(self.action_to_dict(control))
 
@@ -88,7 +88,7 @@ class MocapControlledFrankaRobot(BaseRobot):
         return self.last_action
 
     def get_obs(self) -> OrderedDict:
-        position, orientation = self.isaac_robot.get_pose()
+        position, orientation = self.articulation.get_pose()
 
         # custom
         obs = {
@@ -99,7 +99,7 @@ class MocapControlledFrankaRobot(BaseRobot):
             'sensors': {},
         }
 
-        eef_world_pose = self.isaac_robot.end_effector.get_pose()
+        eef_world_pose = self.articulation.end_effector.get_pose()
         obs['eef_position'] = eef_world_pose[0]
         obs['eef_orientation'] = eef_world_pose[1]
 

@@ -13,27 +13,27 @@ class IScene(ABC):
     @abstractmethod
     def load(self, runtime: TaskRuntime):
         """Load the scene."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @abstractmethod
     def add(self, target: any):
         """Add an object to the scene."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @abstractmethod
     def remove(self, target: any, registry_only: bool = False):
         """Remove an object from the scene."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @abstractmethod
     def object_exists(self, target: any) -> bool:
         """Check if an object exists in the scene registry."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @abstractmethod
     def unwrap(self):
         """Unwraps the scene to its base form."""
-        raise NotImplementedError('need to implement this method ')
+        raise NotImplementedError()
 
     @classmethod
     def create(cls, simulator_type: str = Simulator.ISAACSIM.value) -> 'IScene':

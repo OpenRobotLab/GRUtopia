@@ -97,8 +97,8 @@ def main():
             _init_gripper_pos = obs[1]['franka']['controllers']['gripper_controller']['gripper_pos']
 
         if i == 350:
-            assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - _robot.isaac_robot.get_pose()[0]) == 4
-            assert np.linalg.norm(_robot.isaac_robot.get_world_pose()[0] - obs[1]['franka']['position']) == 4
+            assert np.linalg.norm(_robot.articulation.get_world_pose()[0] - _robot.articulation.get_pose()[0]) == 4
+            assert np.linalg.norm(_robot.articulation.get_world_pose()[0] - obs[1]['franka']['position']) == 4
             _350_gripper_pos = obs[1]['franka']['controllers']['gripper_controller']['gripper_pos']
             _o, _ = env.reset([0])
 

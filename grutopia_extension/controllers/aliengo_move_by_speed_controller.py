@@ -2,12 +2,12 @@ from typing import List
 
 import numpy as np
 import torch
-from omni.isaac.core.articulations import ArticulationSubset
-from omni.isaac.core.utils.types import ArticulationAction
 from rsl_rl.algorithms import PPO
 
 import grutopia.core.util.gym as gymutil
 import grutopia.core.util.math as math_utils
+from grutopia.core.robot.articulation_action import ArticulationAction
+from grutopia.core.robot.articulation_subset import ArticulationSubset
 from grutopia.core.robot.controller import BaseController
 from grutopia.core.robot.robot import BaseRobot
 from grutopia.core.scene.scene import IScene
@@ -104,7 +104,7 @@ class AliengoMoveBySpeedController(BaseController):
         self.joint_subset = None
         self.joint_names = config.joint_names
         if self.joint_names is not None:
-            self.joint_subset = ArticulationSubset(self.robot.isaac_robot, self.joint_names)
+            self.joint_subset = ArticulationSubset(self.robot.articulation, self.joint_names)
         self._old_joint_positions = np.zeros(12)
         self.policy_input_obs_num = 270
         self._old_policy_obs = np.zeros(self.policy_input_obs_num)
@@ -139,12 +139,12 @@ class AliengoMoveBySpeedController(BaseController):
         joint_pos = (
             self.joint_subset.get_joint_positions()
             if self.joint_subset is not None
-            else self.robot.isaac_robot.get_joint_positions()
+            else self.robot.articulation.get_joint_positions()
         )
         joint_vel = (
             self.joint_subset.get_joint_velocities()
             if self.joint_subset is not None
-            else self.robot.isaac_robot.get_joint_velocities()
+            else self.robot.articulation.get_joint_velocities()
         )
         default_dof_pos = np.array(
             [0.0, 0.0, 0.0, 0.0, 0.8000, 0.8000, 0.8000, 0.8000, -1.5000, -1.5000, -1.5000, -1.5000]
