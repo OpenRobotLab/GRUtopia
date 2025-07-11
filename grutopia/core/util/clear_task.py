@@ -1,7 +1,3 @@
-from omni.isaac.core.utils.prims import get_prim_type_name
-from omni.usd.commands import DeletePrimsCommand
-
-
 def clear_stage_by_prim_path(prim_path: str = None) -> None:
     """Deletes all prims in the stage without populating the undo command buffer
 
@@ -12,10 +8,12 @@ def clear_stage_by_prim_path(prim_path: str = None) -> None:
     from omni.isaac.core.utils.prims import (
         get_all_matching_child_prims,
         get_prim_path,
+        get_prim_type_name,
         is_prim_ancestral,
         is_prim_hidden_in_stage,
         is_prim_no_delete,
     )
+    from omni.usd.commands import DeletePrimsCommand
 
     def default_predicate(path: str):
         # prim = get_prim_at_path(prim_path)

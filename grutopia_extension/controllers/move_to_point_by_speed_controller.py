@@ -2,7 +2,6 @@ from collections import OrderedDict
 from typing import Any, List
 
 import numpy as np
-from omni.isaac.core.utils.rotations import quat_to_euler_angles
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -33,6 +32,8 @@ class MoveToPointBySpeedController(BaseController):
         start_orientation,
         goal_position,
     ):
+        from omni.isaac.core.utils.rotations import quat_to_euler_angles
+
         normal_vec = np.array([0, 0, 1])
         robot_z_rot = quat_to_euler_angles(start_orientation)[-1]
 

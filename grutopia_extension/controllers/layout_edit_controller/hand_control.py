@@ -1,11 +1,10 @@
-from pxr import Gf, UsdGeom
-
-
 class HandControl:
     def __init__(self, stage):
         self.stage = stage
 
     def add_hand_to_stage(self, hand_path, hand_prim_path, hand_scale):
+        from pxr import Gf, UsdGeom
+
         try:
             # Create a Prim and add a USD reference.
             asset_prim = self.stage.DefinePrim(hand_prim_path)

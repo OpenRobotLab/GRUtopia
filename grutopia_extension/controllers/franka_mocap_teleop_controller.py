@@ -2,7 +2,6 @@ import math
 from typing import List, Tuple
 
 import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat, rot_matrix_to_quat
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -17,6 +16,8 @@ NUM_SPECIFIC_POSE_FRAMES = 12
 @BaseController.register('FrankaMocapTeleopController')
 class FrankaMocapTeleopController(BaseController):
     def __init__(self, config: FrankaMocapTeleopControllerCfg, robot: BaseRobot, scene: IScene):
+        from omni.isaac.core.utils.rotations import euler_angles_to_quat
+
         super().__init__(config=config, robot=robot, scene=scene)
 
         eef_init_angel = config.origin_xyz_angle if config.origin_xyz_angle is not None else (0, 0, 0)
@@ -57,6 +58,8 @@ class FrankaMocapTeleopController(BaseController):
             return True, count
 
     def forward(self, mocap_info) -> Tuple[ArticulationAction, bool]:
+        from omni.isaac.core.utils.rotations import rot_matrix_to_quat
+
         lh_bones_kps = mocap_info.get('lh_bones_kps', None)
         rh_bones_kps = mocap_info.get('rh_bones_kps', None)
         rh_cur_position = mocap_info.get('rh_bones_kps_cam', np.array([[0, 0, 0]]))[0]

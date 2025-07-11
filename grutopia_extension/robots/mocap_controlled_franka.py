@@ -2,7 +2,6 @@ import os
 from collections import OrderedDict
 
 import numpy as np
-from omni.isaac.franka import Franka
 
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.robot import BaseRobot
@@ -13,6 +12,8 @@ from grutopia.core.util import log
 @BaseRobot.register('MocapControlledFrankaRobot')
 class MocapControlledFrankaRobot(BaseRobot):
     def __init__(self, config: RobotCfg, scene: IScene):
+        from omni.isaac.franka import Franka
+
         super().__init__(config, scene)
         self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None

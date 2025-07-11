@@ -1,18 +1,20 @@
-from pxr import UsdPhysics
-
 # To install pxr, use `pip install usd-core`
 """
     Collider
 """
 
 
-def set_collider_(mesh, approx=UsdPhysics.Tokens.convexDecomposition, init_state=True):
+def set_collider_(mesh, approx=None, init_state=True):
     """set collider for a mesh
     Args:
     - mesh: Usd.Prim -> Mesh
     - approx: Convex approximation method, e.g. ConvenDecomposition, ConvexHull
     - init_state: init state of collider(whether activate)
     """
+    from pxr import UsdPhysics
+
+    if approx is None:
+        approx = UsdPhysics.Tokens.convexDecomposition
     if mesh.GetTypeName() == 'Mesh' and UsdPhysics.CollisionAPI.CanApply(mesh):
         collider = UsdPhysics.CollisionAPI.Apply(mesh)
         meshcollider = UsdPhysics.MeshCollisionAPI.Apply(mesh)  # introduce meshcollider to set approx
@@ -20,12 +22,16 @@ def set_collider_(mesh, approx=UsdPhysics.Tokens.convexDecomposition, init_state
         collider.GetCollisionEnabledAttr().Set(init_state)
 
 
-def set_collider(item, approx=UsdPhysics.Tokens.convexDecomposition, init_state=True):
+def set_collider(item, approx=None, init_state=True):
     """set collider for all meshes of an Usd.Prim
     Args:
     - item: Usd.Prim, e.g. Xform
     - init_state: init state of collider(whether activate)
     """
+    from pxr import UsdPhysics
+
+    if approx is None:
+        approx = UsdPhysics.Tokens.convexDecomposition
     if len(item.GetChildren()) == 0:
         set_collider_(item, approx=approx, init_state=init_state)
     for i in item.GetChildren():
@@ -73,6 +79,8 @@ def deactivate_collider(item):
 
 
 def remove_collider_(mesh):
+    from pxr import UsdPhysics
+
     if mesh.GetTypeName() == 'Mesh':
         mesh.RemoveAPI(UsdPhysics.CollisionAPI)
         mesh.RemoveAPI(UsdPhysics.MeshCollisionAPI)

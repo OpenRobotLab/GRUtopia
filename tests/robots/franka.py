@@ -1,6 +1,7 @@
+import numpy as np
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
@@ -25,7 +26,7 @@ franka = FrankaRobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless),
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
@@ -36,13 +37,11 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
 import_extensions()
-import numpy as np
+
+env = Env(config)
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
-env = Env(sim_runtime)
 obs, _ = env.reset()
 print(f'========INIT OBS{obs}=============')
 

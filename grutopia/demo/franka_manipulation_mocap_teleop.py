@@ -1,6 +1,5 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.metrics import RecordingMetricCfg
@@ -15,6 +14,7 @@ from grutopia_extension.configs.tasks import (
     ManipulationTaskCfg,
     ManipulationTaskSetting,
 )
+from grutopia_extension.interactions.motion_capture import MocapInteraction
 
 franka = MocapControlledFrankaRobotCfg(
     position=[-0.35, 0.0, 1.05],
@@ -25,7 +25,9 @@ franka = MocapControlledFrankaRobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
+    simulator=SimConfig(
+        physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=False, webrtc=False, native=True
+    ),
     task_config=ManipulationTaskCfg(
         metrics=[
             RecordingMetricCfg(
@@ -48,12 +50,9 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=False, webrtc=False, native=True)
-
 import_extensions()
-from grutopia_extension.interactions.motion_capture import MocapInteraction
 
-env = Env(sim_runtime)
+env = Env(config)
 obs, _ = env.reset()
 
 mocap_url = 'http://127.0.0.1:5001'

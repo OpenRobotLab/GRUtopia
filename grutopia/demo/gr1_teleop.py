@@ -1,7 +1,10 @@
+from typing import List, Tuple
+
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.util import has_display
+from grutopia.core.util.joint import create_joint
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.objects import DynamicCubeCfg, UsdObjCfg
@@ -15,6 +18,7 @@ from grutopia_extension.configs.tasks import (
     SingleInferenceEpisodeCfg,
     SingleInferenceTaskCfg,
 )
+from grutopia_extension.interactions.visionpro.visionpro import VuerTeleop
 
 headless = False
 
@@ -54,7 +58,7 @@ cube_cfgs = [
 ]
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
@@ -72,19 +76,9 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
-from typing import List, Tuple
-
-from omni.isaac.core.prims import RigidPrim
-
-from grutopia.core.util.joint import create_joint
-from grutopia_extension.interactions.visionpro.visionpro import VuerTeleop
-
 import_extensions()
-# import custom extensions here.
 
-env = Env(sim_runtime)
+env = Env(config)
 
 obs, _ = env.reset()
 
@@ -94,17 +88,17 @@ actions = {}
 
 teleop = VuerTeleop(cert_file='./mkcert/cert.pem', key_file='./mkcert/key.pem', resolution=(720, 1280))
 
-cubes: List[RigidPrim] = []
+cubes: List[IRigidBody] = []
 original_poses: List[Tuple[np.ndarray, np.ndarray]] = []
 for cube_cfg in cube_cfgs:
-    cube: RigidPrim = env.runner.get_obj(cube_cfg.name)
+    cube: IRigidBody = env.runner.get_obj(cube_cfg.name)
     cubes.append(cube)
     original_poses.append(cube.get_world_pose())
 
 cubes[0].set_mass(5.0)
 
 
-table: RigidPrim = env.runner.get_obj(table_cfg.name)
+table: IRigidBody = env.runner.get_obj(table_cfg.name)
 table.set_mass(100.0)
 
 i = 0

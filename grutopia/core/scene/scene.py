@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from grutopia.core.config import Simulator
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.runtime.task_runtime import TaskRuntime
 
 
@@ -28,6 +29,11 @@ class IScene(ABC):
     @abstractmethod
     def object_exists(self, target: any) -> bool:
         """Check if an object exists in the scene registry."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get(self, target: any) -> IRigidBody:
+        """Get an object from the scene."""
         raise NotImplementedError()
 
     @abstractmethod

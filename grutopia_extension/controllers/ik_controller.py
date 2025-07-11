@@ -6,12 +6,6 @@ from collections import OrderedDict
 from typing import List, Tuple
 
 import numpy as np
-from omni.isaac.core.articulations import Articulation
-from omni.isaac.core.utils.numpy.rotations import rot_matrices_to_quats
-from omni.isaac.motion_generation import (
-    ArticulationKinematicsSolver,
-    LulaKinematicsSolver,
-)
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -25,6 +19,47 @@ from grutopia_extension.configs.controllers import InverseKinematicsControllerCf
 @BaseController.register('InverseKinematicsController')
 class InverseKinematicsController(BaseController):
     def __init__(self, config: InverseKinematicsControllerCfg, robot: BaseRobot, scene: IScene):
+
+        from omni.isaac.motion_generation import (
+            ArticulationKinematicsSolver,
+            LulaKinematicsSolver,
+        )
+
+        class KinematicsSolver(ArticulationKinematicsSolver):
+            """Kinematics Solver for robot.  This class loads a LulaKinematicsSovler object
+
+            Args:
+                robot_description_path (str): path to a robot description yaml file \
+                    describing the cspace of the robot and other relevant parameters
+                robot_urdf_path (str): path to a URDF file describing the robot
+                end_effector_frame_name (str): The name of the end effector.
+            """
+
+            def __init__(
+                self,
+                robot_articulation,
+                robot_description_path: str,
+                robot_urdf_path: str,
+                end_effector_frame_name: str,
+            ):
+                self._kinematics = LulaKinematicsSolver(robot_description_path, robot_urdf_path)
+
+                ArticulationKinematicsSolver.__init__(
+                    self, robot_articulation, self._kinematics, end_effector_frame_name
+                )
+
+                if hasattr(self._kinematics, 'set_max_iterations'):
+                    self._kinematics.set_max_iterations(150)
+                else:
+                    self._kinematics.ccd_max_iterations = 150
+
+                return
+
+            def set_robot_base_pose(self, robot_position: np.array, robot_orientation: np.array):
+                return self._kinematics.set_robot_base_pose(
+                    robot_position=robot_position, robot_orientation=robot_orientation
+                )
+
         super().__init__(config=config, robot=robot, scene=scene)
         self._kinematics_solver = KinematicsSolver(
             robot_articulation=robot.articulation,
@@ -118,6 +153,8 @@ class InverseKinematicsController(BaseController):
             - success: if solver converged successfully
             - finished: applied action has been finished
         """
+        from omni.isaac.core.utils.numpy.rotations import rot_matrices_to_quats
+
         ik_base_pose = self.get_ik_base_world_pose()
         self._kinematics_solver.set_robot_base_pose(
             robot_position=ik_base_pose[0] / self._robot_scale, robot_orientation=ik_base_pose[1]
@@ -138,35 +175,3 @@ class InverseKinematicsController(BaseController):
             'finished': finished,
         }
         return self._make_ordered(obs)
-
-
-class KinematicsSolver(ArticulationKinematicsSolver):
-    """Kinematics Solver for robot.  This class loads a LulaKinematicsSovler object
-
-    Args:
-        robot_description_path (str): path to a robot description yaml file \
-            describing the cspace of the robot and other relevant parameters
-        robot_urdf_path (str): path to a URDF file describing the robot
-        end_effector_frame_name (str): The name of the end effector.
-    """
-
-    def __init__(
-        self,
-        robot_articulation: Articulation,
-        robot_description_path: str,
-        robot_urdf_path: str,
-        end_effector_frame_name: str,
-    ):
-        self._kinematics = LulaKinematicsSolver(robot_description_path, robot_urdf_path)
-
-        ArticulationKinematicsSolver.__init__(self, robot_articulation, self._kinematics, end_effector_frame_name)
-
-        if hasattr(self._kinematics, 'set_max_iterations'):
-            self._kinematics.set_max_iterations(150)
-        else:
-            self._kinematics.ccd_max_iterations = 150
-
-        return
-
-    def set_robot_base_pose(self, robot_position: np.array, robot_orientation: np.array):
-        return self._kinematics.set_robot_base_pose(robot_position=robot_position, robot_orientation=robot_orientation)

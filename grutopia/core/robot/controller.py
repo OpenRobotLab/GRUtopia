@@ -4,7 +4,6 @@ from functools import wraps
 from typing import Any, Dict, List, Union
 
 import numpy as np
-from omni.isaac.core.controllers import BaseController as Base
 
 from grutopia.core.config.robot import ControllerCfg, RobotCfg
 from grutopia.core.robot.articulation_action import ArticulationAction
@@ -14,7 +13,7 @@ from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log
 
 
-class BaseController(Base, ABC):
+class BaseController(ABC):
     """Base class of controller."""
 
     controllers = {}
@@ -32,7 +31,6 @@ class BaseController(Base, ABC):
         self.scene = scene
         if config.name is None:
             raise ValueError('must specify controller name.')
-        super().__init__(config.name)
         self._obs = {}
         self._robot = robot
         self.config = config

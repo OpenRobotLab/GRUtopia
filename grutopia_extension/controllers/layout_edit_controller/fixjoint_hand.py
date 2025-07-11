@@ -1,6 +1,4 @@
 import numpy as np
-import omni
-from pxr import Usd, UsdGeom
 
 from grutopia.core.util.joint import create_joint
 from grutopia.core.util.physics import activate_collider, deactivate_collider
@@ -24,6 +22,8 @@ class FixjointHand:
         return None
 
     def bound_object_and_robot(self, goal_prim_path, robot_prim_path):
+        import omni
+
         if 'right' in robot_prim_path:
             deactivate_collider(omni.isaac.core.utils.prims.get_prim_at_path(goal_prim_path))
             create_joint(
@@ -44,6 +44,8 @@ class FixjointHand:
             )
 
     def unbound_object_and_robot(self, goal_prim_path, robot_prim_path):
+        import omni
+
         self.stage.RemovePrim(goal_prim_path + '/pick_joint')
         activate_collider(omni.isaac.core.utils.prims.get_prim_at_path(goal_prim_path))
 
@@ -66,6 +68,8 @@ class FixjointHand:
         """
         Get the world position of a prim given its path.
         """
+        from pxr import Usd, UsdGeom
+
         try:
             prim = self.stage.GetPrimAtPath(prim_path)
             if prim.IsValid():

@@ -1,6 +1,3 @@
-from pxr import Gf, UsdGeom
-
-
 class HandPositionControl:
     """
     Control hand position change.
@@ -19,6 +16,8 @@ class HandPositionControl:
         hand_orientation: 3x3 Rotation matrix
         hand: 'right' or 'left', Indicate whether it is the right hand or the left hand.
         """
+        from pxr import Gf, UsdGeom
+
         prim_path = self.right_hand_prim_path if hand == 'right' else self.left_hand_prim_path
         prim = self.stage.GetPrimAtPath(prim_path)
 

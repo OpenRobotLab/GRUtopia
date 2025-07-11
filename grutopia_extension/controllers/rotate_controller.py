@@ -2,7 +2,6 @@ from collections import OrderedDict
 from typing import Any, List
 
 import numpy as np
-from omni.isaac.core.utils.rotations import quat_to_euler_angles
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -30,6 +29,8 @@ class RotateController(BaseController):
         start_orientation,
         goal_orientation,
     ) -> float:
+        from omni.isaac.core.utils.rotations import quat_to_euler_angles
+
         delta_z_rot = quat_to_euler_angles(goal_orientation)[-1] - quat_to_euler_angles(start_orientation)[-1]
         delta_z_rot = delta_z_rot % (2 * np.pi)
         if delta_z_rot > np.pi:

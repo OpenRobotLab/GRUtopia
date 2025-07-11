@@ -1,17 +1,12 @@
 import json
 from typing import Dict, List, Optional, Tuple, Union
 
-from isaacsim.core.simulation_manager import SimulationManager
-from omni.isaac.core import World
-from omni.isaac.core.loggers import DataLogger
-from omni.isaac.core.prims.xform_prim import XFormPrim
-from omni.isaac.core.simulation_context import SimulationContext
-from omni.physx.scripts import utils
+from grutopia.core.config import Config
+from grutopia.core.robot.rigid_body import IRigidBody
 
 # Init
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.runtime.task_runtime import Env as TaskEnv
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.runtime.task_runtime import TaskRuntime, create_task_runtime_manager
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.task import BaseTask, create_task
 from grutopia.core.util import log
@@ -19,30 +14,13 @@ from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
 class SimulatorRunner:
-    def __init__(self, simulator_runtime: SimulatorRuntime):
-        self.task_runtime_manager = simulator_runtime.task_runtime_manager
-        self.env_num = self.task_runtime_manager.env_num
-        self._simulator_runtime = simulator_runtime
-        physics_dt = (
-            self._simulator_runtime.simulator.physics_dt
-            if self._simulator_runtime.simulator.physics_dt is not None
-            else None
-        )
-        self.rendering_dt = (
-            self._simulator_runtime.simulator.rendering_dt
-            if self._simulator_runtime.simulator.rendering_dt is not None
-            else None
-        )
-        physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
-        self.rendering_dt = eval(self.rendering_dt) if isinstance(self.rendering_dt, str) else self.rendering_dt
-        self.dt = physics_dt
-        self.use_fabric = self._simulator_runtime.simulator.use_fabric
-        log.info(
-            f'simulator params: physics dt={self.dt}, rendering dt={self.rendering_dt}, use_fabric={self.use_fabric}'
-        )
-
+    def __init__(self, config: Config = None):
+        self.config = config
+        self.task_runtime_manager = create_task_runtime_manager(config)
+        self.env_num = self.config.task_config.env_num
+        self.setup_isaacsim()
         self.metrics_config = None
-        self.metrics_save_path = simulator_runtime.task_runtime_manager.metrics_save_path
+        self.metrics_save_path = self.config.task_config.metrics_save_path
         if self.metrics_save_path != 'console':
             try:
                 with open(self.metrics_save_path, 'w'):
@@ -50,13 +28,7 @@ class SimulatorRunner:
             except Exception as e:
                 log.error(f'Can not create result file at {self.metrics_save_path}.')
                 raise e
-
-        self._world: World = World(
-            physics_dt=self.dt,
-            rendering_dt=self.rendering_dt,
-            stage_units_in_meters=1.0,
-            sim_params={'use_fabric': self.use_fabric},
-        )
+        self.create_world()
         self._scene = IScene.create()
         self._stage = self._world.stage
 
@@ -68,9 +40,7 @@ class SimulatorRunner:
         self.finished_tasks = set()
 
         self.render_interval = (
-            self._simulator_runtime.simulator.rendering_interval
-            if self._simulator_runtime.simulator.rendering_interval is not None
-            else 5
+            self.config.simulator.rendering_interval if self.config.simulator.rendering_interval is not None else 5
         )
         log.info(f'rendering interval: {self.render_interval}')
         self.render_trigger = 0
@@ -93,6 +63,8 @@ class SimulatorRunner:
         Raises:
             ValueError: If both `render` and `physics` are set to False, or if `steps` is less than or equal to 0.
         """
+        from omni.isaac.core.simulation_context import SimulationContext
+
         if not render and not physics:
             raise ValueError('both `render` and `physics` are set to False')
         if steps <= 0:
@@ -287,8 +259,9 @@ class SimulatorRunner:
             - Observations are collected only for environments that are reset or initialized.
             - Tasks corresponding to the reset environments are transitioned to new episodes.
         """
-        new_task_runtimes = []
+        from omni.isaac.core.simulation_context import SimulationContext
 
+        new_task_runtimes = []
         if env_ids is None and self.current_tasks:
             # reset
             log.info('==================== reset all env ====================')
@@ -342,6 +315,8 @@ class SimulatorRunner:
             task_name (str): Task name to clear.
 
         """
+        from omni.isaac.core.loggers import DataLogger
+
         if task_name not in self.current_tasks:
             log.warning(f'Clear task {task_name} fail. The task {task_name} is not in current_tasks.')
             return
@@ -371,6 +346,8 @@ class SimulatorRunner:
         Raises:
             RuntimeError: If a task specified in `reset_tasks` isn't found in the current tasks.
         """
+        from isaacsim.core.simulation_manager import SimulationManager
+
         runtime_envs: List[Union[None, TaskEnv]] = []
         next_task_runtimes = []
 
@@ -455,15 +432,93 @@ class SimulatorRunner:
         log.info('======================================================')
         return next_task_runtimes
 
-    def get_obj(self, name: str) -> XFormPrim:
-        return self._world.scene.get_object(name)
+    def get_obj(self, name: str) -> IRigidBody:
+        return self._scene.get(name)
 
     def remove_collider(self, prim_path: str):
+        from omni.physx.scripts import utils
+
         build = self._world.stage.GetPrimAtPath(prim_path)
         if build.IsValid():
             utils.removeCollider(build)
 
     def add_collider(self, prim_path: str):
+        from omni.physx.scripts import utils
+
         build = self._world.stage.GetPrimAtPath(prim_path)
         if build.IsValid():
             utils.setCollider(build, approximationShape=None)
+
+    def create_world(self):
+        physics_dt = self.config.simulator.physics_dt
+        rendering_dt = self.config.simulator.rendering_dt
+        physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
+        rendering_dtt = eval(rendering_dt) if isinstance(rendering_dt, str) else rendering_dt
+        use_fabric = self.config.simulator.use_fabric
+        log.info(f'simulator params: physics dt={physics_dt}, rendering dt={rendering_dtt}, use_fabric={use_fabric}')
+        from omni.isaac.core import World
+
+        self._world: World = World(
+            physics_dt=physics_dt,
+            rendering_dt=rendering_dt,
+            stage_units_in_meters=1.0,
+            sim_params={'use_fabric': use_fabric},
+        )
+
+    def setup_isaacsim(self):
+        # Init Isaac Sim
+        from isaacsim import SimulationApp  # noqa
+
+        headless = self.config.simulator.headless
+        native = self.config.simulator.native
+        webrtc = self.config.simulator.webrtc
+        self._simulation_app = SimulationApp(
+            {'headless': headless, 'anti_aliasing': 0, 'hide_ui': False, 'multi_gpu': False}
+        )
+        self._simulation_app._carb_settings.set('/physics/cooking/ujitsoCollisionCooking', False)
+        log.debug('SimulationApp init done')
+
+        # Determine streaming mode based on isaacsim version.
+        try:
+            from isaacsim import util  # noqa
+        except ImportError:
+            # isaacsim 420 behavior
+            self.setup_streaming_420(native, webrtc)
+        else:
+            # isaac 450 behavior
+            if native:
+                log.warning('native streaming is DEPRECATED, webrtc streaming is used instead')
+            webrtc = native or webrtc
+            self.setup_streaming_450(webrtc)
+
+    def setup_streaming_420(self, native: bool, webrtc: bool):
+        if webrtc:
+            from omni.isaac.core.utils.extensions import enable_extension  # noqa
+
+            self._simulation_app.set_setting('/app/window/drawMouse', True)
+            self._simulation_app.set_setting('/app/livestream/proto', 'ws')
+            self._simulation_app.set_setting('/app/livestream/websocket/framerate_limit', 60)
+            self._simulation_app.set_setting('/ngx/enabled', False)
+            enable_extension('omni.services.streamclient.webrtc')
+
+        elif native:
+            from omni.isaac.core.utils.extensions import enable_extension  # noqa
+
+            self._simulation_app.set_setting('/app/window/drawMouse', True)
+            self._simulation_app.set_setting('/app/livestream/proto', 'ws')
+            self._simulation_app.set_setting('/app/livestream/websocket/framerate_limit', 120)
+            self._simulation_app.set_setting('/ngx/enabled', False)
+            enable_extension('omni.kit.streamsdk.plugins-3.2.1')
+            enable_extension('omni.kit.livestream.core-3.2.0')
+            enable_extension('omni.kit.livestream.native')
+
+    def setup_streaming_450(self, webrtc: bool):
+        if webrtc:
+            from omni.isaac.core.utils.extensions import enable_extension
+
+            self._simulation_app.set_setting('/app/window/drawMouse', True)
+            enable_extension('omni.kit.livestream.webrtc')
+
+    @property
+    def simulation_app(self):
+        return self._simulation_app

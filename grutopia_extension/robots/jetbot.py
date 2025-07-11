@@ -10,7 +10,6 @@ import re
 from collections import OrderedDict
 from typing import Optional
 
-import carb
 import numpy as np
 
 from grutopia.core.robot.articulation_action import ArticulationAction
@@ -103,6 +102,8 @@ class WheeledRobot(IsaacsimArticulation):
         return
 
     def initialize(self, physics_sim_view=None) -> None:
+        import carb
+
         self.unwrap().initialize(physics_sim_view=physics_sim_view)
         if self._wheel_dof_names is not None:
             self._wheel_dof_indices = [

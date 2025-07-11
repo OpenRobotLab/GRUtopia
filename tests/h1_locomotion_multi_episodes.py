@@ -1,7 +1,6 @@
 def main():
     from grutopia.core.config import Config, SimConfig
     from grutopia.core.gym_env import Env
-    from grutopia.core.runtime import SimulatorRuntime
     from grutopia.core.util import has_display
     from grutopia.macros import gm
     from grutopia_extension import import_extensions
@@ -34,7 +33,14 @@ def main():
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20),
+        simulator=SimConfig(
+            physics_dt=1 / 240,
+            rendering_dt=1 / 240,
+            use_fabric=True,
+            rendering_interval=20,
+            headless=headless,
+            native=headless,
+        ),
         task_config=FiniteStepTaskCfg(
             task_settings={'max_step': 501},
             episodes=[
@@ -53,9 +59,10 @@ def main():
     )
 
     print(config.model_dump_json(indent=4))
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
+
     import_extensions()
-    env = Env(sim_runtime)
+
+    env = Env(config)
     obs, _ = env.reset()
 
     env.warm_up(5, physics=False)

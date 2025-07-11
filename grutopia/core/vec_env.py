@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, OrderedDict, Tuple, Union
 
-from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.config import Config
 from grutopia.core.util import log
 
 
@@ -14,7 +14,7 @@ class Env:
     designed to manage the lifecycle of simulation tasks.
 
     Parameters:
-        simulator_runtime (SimulatorRuntime): The runtime instance used for simulation
+        config (Config): The config instance used for simulation
             management.
 
     Methods:
@@ -35,14 +35,13 @@ class Env:
         simulation_app: Retrieves the simulation app instance.
     """
 
-    def __init__(self, simulator_runtime: SimulatorRuntime) -> None:
+    def __init__(self, config: Config) -> None:
         self._render = None
-        self._runtime = simulator_runtime
-        self.env_num = self._runtime.env_num
+        self.env_num = config.task_config.env_num
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
-        self._runner = SimulatorRunner(simulator_runtime=simulator_runtime)
+        self._runner = SimulatorRunner(config=config)
         return
 
     def reset(self, env_ids: List[int] = None) -> Tuple[List, List]:
@@ -124,10 +123,7 @@ class Env:
 
     @property
     def active_runtimes(self):
-        """
-        Get active runtimes with env id as key.
-        """
-        return self._runtime.active_runtime()
+        return self.runner.task_runtime_manager.active_runtime()
 
     def get_dt(self):
         """
@@ -144,18 +140,13 @@ class Env:
 
     def close(self):
         """Close the environment"""
-        self._runtime.simulation_app.close()
+        self.runner.simulation_app.close()
         return
-
-    @property
-    def simulation_runtime(self):
-        """Config of simulation environment"""
-        return self._runtime.active_runtime()
 
     @property
     def simulation_app(self):
         """Simulation app instance"""
-        return self._runtime.simulation_app
+        return self.runner.simulation_app
 
     def finished(self) -> bool:
         """Check if all tasks are finished"""

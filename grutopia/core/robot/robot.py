@@ -3,7 +3,6 @@ from functools import wraps
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from pxr import Usd
 
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.articulation import IArticulation
@@ -62,6 +61,8 @@ class BaseRobot:
         """
         Create rigid bodies.
         """
+        from pxr import Usd
+
         _prim = self.articulation.prim
 
         # articulation on rigid-body situation

@@ -4,7 +4,6 @@ def main():
 
     from grutopia.core.config import Config, SimConfig
     from grutopia.core.gym_env import Env
-    from grutopia.core.runtime import SimulatorRuntime
     from grutopia.core.util import has_display
     from grutopia.macros import gm
     from grutopia_extension import import_extensions
@@ -41,7 +40,9 @@ def main():
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
+        simulator=SimConfig(
+            physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
+        ),
         task_config=SingleInferenceTaskCfg(
             episodes=[
                 SingleInferenceEpisodeCfg(
@@ -55,17 +56,13 @@ def main():
 
     print(config.model_dump_json(indent=4))
 
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
+    import_extensions()
 
     t1 = time.perf_counter()
-    import_extensions()
-    # import custom extensions here.
-
+    env = Env(config)
     t2 = time.perf_counter()
-    env = Env(sim_runtime)
-    t3 = time.perf_counter()
     obs, _ = env.reset()
-    t4 = time.perf_counter()
+    t3 = time.perf_counter()
     print(f'========INIT OBS{obs}=============')
 
     path = [(1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (3.0, 4.0, 0.0)]
@@ -83,13 +80,12 @@ def main():
             pos = obs['position']
             assert pos[0] < 5.0 and pos[1] < 5.0 and pos[2] < 2.0, 'out of range'
         if i == 2000:
-            t5 = time.perf_counter()
+            t4 = time.perf_counter()
             run_result = {
-                'start_sim_app': t1 - t0,
-                'import_ext': t2 - t1,
-                'create_env': t3 - t2,
-                'reset_env': t4 - t3,
-                '2k_step': t5 - t4,
+                'import_ext': t1 - t0,
+                'create_env': t2 - t1,
+                'reset_env': t3 - t2,
+                '2k_step': t4 - t3,
             }
             with open('./test_result.json', 'w', encoding='utf-8') as f:
                 json.dump(run_result, f, ensure_ascii=False, indent=4)

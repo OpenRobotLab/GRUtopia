@@ -1,9 +1,10 @@
 from copy import deepcopy
 from typing import Any, Dict, Tuple
 
+import numpy as np
+
 from grutopia.core.config import Config, RobotCfg, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
@@ -17,7 +18,9 @@ headless = not has_display()
 
 def run(robot: RobotCfg, action: Dict[str, Any], target: Tuple[float, float, float], max_steps=5000):
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
+        simulator=SimConfig(
+            physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
+        ),
         task_config=SingleInferenceTaskCfg(
             episodes=[
                 SingleInferenceEpisodeCfg(
@@ -36,13 +39,9 @@ def run(robot: RobotCfg, action: Dict[str, Any], target: Tuple[float, float, flo
         ),
     )
 
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
     import_extensions()
-    # import custom extensions here.
-    import numpy as np
 
-    env = Env(sim_runtime)
+    env = Env(config)
     obs, _ = env.reset()
 
     i = 0

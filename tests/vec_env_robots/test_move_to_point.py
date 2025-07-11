@@ -1,8 +1,9 @@
 from collections import OrderedDict
 from copy import deepcopy
 
+import numpy as np
+
 from grutopia.core.config import Config, SimConfig
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia.core.vec_env import Env
 from grutopia.macros import gm
@@ -20,7 +21,9 @@ def run(robot_0_cfg: tuple, robot_1_cfg: tuple, max_steps=5000):
     robot_1, action_1, target_1 = robot_1_cfg
     targets = [target_0, target_1]
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True),
+        simulator=SimConfig(
+            physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
+        ),
         task_config=SingleInferenceTaskCfg(
             env_num=2,
             offset_size=10,
@@ -34,13 +37,9 @@ def run(robot_0_cfg: tuple, robot_1_cfg: tuple, max_steps=5000):
         ),
     )
 
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
     import_extensions()
-    # import custom extensions here.
-    import numpy as np
 
-    env = Env(sim_runtime)
+    env = Env(config)
     obs, _ = env.reset()
 
     i = [0, 0]  # for each env

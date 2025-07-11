@@ -2,7 +2,6 @@ def main():
     from collections import OrderedDict
 
     from grutopia.core.config import Config, SimConfig
-    from grutopia.core.runtime import SimulatorRuntime
     from grutopia.core.util import has_display
     from grutopia.core.vec_env import Env
     from grutopia.macros import gm
@@ -53,7 +52,9 @@ def main():
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20),
+        simulator=SimConfig(
+            physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20, headless=headless
+        ),
         task_config=FiniteStepTaskCfg(
             env_num=3,
             offset_size=10,
@@ -75,12 +76,9 @@ def main():
 
     print(config.model_dump_json(indent=4))
 
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
     import_extensions()
-    # import custom extensions here.
 
-    env = Env(sim_runtime)
+    env = Env(config)
     _, task_runtimes = env.reset()
     assert len(task_runtimes) == 3
     assert task_runtimes[0] is not None and task_runtimes[1] is not None

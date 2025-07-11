@@ -2,7 +2,6 @@ import math
 from collections import OrderedDict
 
 import numpy as np
-import omni.isaac.core.utils.numpy.rotations as rot_utils
 from scipy.spatial.transform import Rotation as R
 
 from grutopia.core.robot.robot import BaseRobot
@@ -89,6 +88,8 @@ class CameraMover(object):
         self.rate = rate
 
     def __call__(self, camera_position, camera_orientation, results):
+        import omni.isaac.core.utils.numpy.rotations as rot_utils
+
         self.condition_judgment(results)
 
         # maintain current position if condition not met

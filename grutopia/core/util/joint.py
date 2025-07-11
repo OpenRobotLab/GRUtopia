@@ -1,8 +1,3 @@
-import omni
-import pxr
-from omni.isaac.core import World
-
-
 def create_joint(
     prim_path,
     joint_type,
@@ -37,6 +32,10 @@ def create_joint(
     Returns:
         Usd.Prim: Created joint prim
     """
+    import omni
+    import pxr
+    from omni.isaac.core import World
+
     world = World()
     stage = world.stage
     # Create the joint

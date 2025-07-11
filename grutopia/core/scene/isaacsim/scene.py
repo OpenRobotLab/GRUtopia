@@ -1,5 +1,6 @@
 import os
 
+from grutopia.core.robot.rigid_body import IRigidBody
 from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import validate_scene_file
 from grutopia.core.scene.scene import IScene
@@ -45,6 +46,11 @@ class IsaacsimScene(IScene):
     def object_exists(self, target: any) -> bool:
         """See `IScene.object_exists` for documentation."""
         return self._scene.object_exists(target)
+
+    def get(self, target: any) -> IRigidBody:
+        """See `IScene.get` for documentation."""
+        object = self._scene.get_object(target)
+        return IRigidBody.create(prim_path=object.prim_path, name=object.prim_path)
 
     def unwrap(self):
         """See `IScene.unwrap` for documentation."""

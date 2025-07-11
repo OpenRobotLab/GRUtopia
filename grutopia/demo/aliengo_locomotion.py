@@ -1,6 +1,5 @@
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
@@ -19,7 +18,7 @@ if not has_display():
 
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
     task_config=SingleInferenceTaskCfg(
         episodes=[
             SingleInferenceEpisodeCfg(
@@ -35,12 +34,9 @@ config = Config(
     ),
 )
 
-sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
-
 import_extensions()
-# import custom extensions here.
 
-env = Env(sim_runtime)
+env = Env(config)
 obs, _ = env.reset()
 
 i = 0

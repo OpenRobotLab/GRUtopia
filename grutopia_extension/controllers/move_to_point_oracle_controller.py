@@ -2,7 +2,6 @@ from collections import OrderedDict
 from typing import Any, List
 
 import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -64,6 +63,8 @@ class MoveToPointOracleController(BaseController):
         rotation_speed: float = 8,
         threshold: float = 0.02,
     ) -> ArticulationAction:
+        from omni.isaac.core.utils.rotations import euler_angles_to_quat
+
         self.goal_position = goal_position
         self.goal_position[-1] = 0
         self.last_threshold = threshold

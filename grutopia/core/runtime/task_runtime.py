@@ -94,7 +94,6 @@ class BaseTaskRuntimeManager:
         if episodes_count == 0:
             raise RuntimeError('len(episodes) must be greater than 0')
 
-        self.metrics_save_path = self.task_config.metrics_save_path
         self.active_runtimes: Dict[int, TaskRuntime] = {}
         self.offset_size: float = self.task_config.offset_size
         self.runtime_template: Dict = self.gen_runtime_template()

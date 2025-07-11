@@ -2,7 +2,7 @@ from typing import Any, OrderedDict
 
 import gymnasium as gym
 
-from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.config import Config
 from grutopia.core.util import log
 
 
@@ -13,17 +13,17 @@ class Env(gym.Env):
 
     RESET_INFO_TASK_RUNTIME = 'task_runtime'
 
-    def __init__(self, simulator_runtime: SimulatorRuntime) -> None:
+    def __init__(self, config: Config) -> None:
         self._render = None
-        self._runtime = simulator_runtime
-        self.env_num = self._runtime.env_num
+        self.env_num = config.task_config.env_num
+        self._config = config
         self._robot_name = None
         self._current_task_name = None
         self._validate()
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
-        self._runner = SimulatorRunner(simulator_runtime=simulator_runtime)
+        self._runner = SimulatorRunner(config=config)
 
         # ========================= import space ============================
         import grutopia.core.util.space as space  # noqa E402.
@@ -40,11 +40,10 @@ class Env(gym.Env):
         """This method is designed for **only** 1 env + 1 robot."""
         if self.env_num > 1:
             raise ValueError(f'Only support single env now, but env num is {self.env_num}')
-
-        episodes = self._runtime.task_runtime_manager.episodes
+        episodes = self._config.task_config.episodes
         log.debug(f'================ len(episodes): {len(episodes)} ==================')
 
-        _episode_sample = self._runtime.task_runtime_manager.episodes[0]
+        _episode_sample = episodes[0]
 
         if len(_episode_sample.robots) == 0:
             return
@@ -55,11 +54,10 @@ class Env(gym.Env):
         self._robot_name = f'{_episode_sample.robots[0].name}'
 
     def _get_action_space(self) -> gym.Space:
-        print(self._runtime)
-        return self._space.get_action_space_by_task(self._runtime.config['task_config']['type'])
+        return self._space.get_action_space_by_task(self._config.task_config.type)
 
     def _get_observation_space(self) -> gym.Space:
-        return self._space.get_observation_space_by_task(self._runtime.config['task_config']['type'])
+        return self._space.get_observation_space_by_task(self._config.task_config.type)
 
     def reset(self, *, seed=None, options=None) -> tuple[OrderedDict | None, dict | None]:
         """Resets the environment to an initial internal state, returning an initial observation and info.
@@ -151,7 +149,7 @@ class Env(gym.Env):
 
     @property
     def active_runtimes(self):
-        return self._runtime.active_runtime()
+        return self.runner.task_runtime_manager.active_runtime()
 
     def get_dt(self):
         """
@@ -181,18 +179,13 @@ class Env(gym.Env):
 
     def close(self):
         """close the environment"""
-        self._runtime.simulation_app.close()
+        self.runner.simulation_app.close()
         return
-
-    @property
-    def simulation_runtime(self):
-        """config of simulation environment"""
-        return self._runtime.active_runtime()
 
     @property
     def simulation_app(self):
         """simulation app instance"""
-        return self._runtime.simulation_app
+        return self.runner.simulation_app
 
     def finished(self) -> bool:
         """check if all tasks are finished"""

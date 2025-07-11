@@ -1,5 +1,4 @@
 import numpy as np
-from omni.isaac.core.objects.cuboid import VisualCuboid
 
 from grutopia.core.object import BaseObject
 from grutopia.core.scene.scene import IScene
@@ -13,6 +12,8 @@ class VisualCube(BaseObject):
         self._config = config
 
     def set_up_to_scene(self, scene: IScene):
+        from omni.isaac.core.objects.cuboid import VisualCuboid
+
         scene.add(
             VisualCuboid(
                 prim_path=self._config.prim_path,

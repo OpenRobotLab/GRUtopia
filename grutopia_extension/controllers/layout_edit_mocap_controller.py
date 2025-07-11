@@ -2,9 +2,6 @@ import math
 from typing import List, Tuple
 
 import numpy as np
-from omni.isaac.core.utils.rotations import euler_angles_to_quat, rot_matrix_to_quat
-from omni.isaac.core.utils.stage import get_current_stage
-from pxr import Gf, UsdGeom, UsdPhysics
 
 from grutopia.core.robot.articulation_action import ArticulationAction
 from grutopia.core.robot.controller import BaseController
@@ -29,6 +26,10 @@ NUM_SPECIFIC_POSE_FRAMES = 12
 @BaseController.register('LayoutEditMocapController')
 class LayoutEditMocapController(BaseController):
     def __init__(self, config: LayoutEditMocapControllerCfg, robot: BaseRobot, scene: IScene):
+        from omni.isaac.core.utils.rotations import euler_angles_to_quat
+        from omni.isaac.core.utils.stage import get_current_stage
+        from pxr import Gf, UsdGeom
+
         super().__init__(config=config, robot=robot, scene=scene)
 
         hand_init_angel = config.origin_xyz_angle if config.origin_xyz_angle is not None else (0, 0, 0)
@@ -89,6 +90,8 @@ class LayoutEditMocapController(BaseController):
 
     # Obtain the rigidbody object in the scene that contains a folder with many Scope files
     def get_obj_in_the_scene(self):
+        from pxr import UsdGeom, UsdPhysics
+
         xforms = []
         # First traverse the scene and find all UsdGeom.Scope
         for prim in self.stage.Traverse():
@@ -389,6 +392,8 @@ class LayoutEditMocapController(BaseController):
         init_hand_bones_kps,
         manipulate_hand_bones_kps,
     ):
+        from omni.isaac.core.utils.rotations import rot_matrix_to_quat
+
         # Initialize the base point of the hand
         if hand_init_position is None:
             hand_init_position = hand_cur_position

@@ -3,9 +3,6 @@ from abc import ABC
 from functools import wraps
 from typing import Any, Dict, Union
 
-from omni.isaac.core.tasks import BaseTask as OmniBaseTask
-from pxr import Usd
-
 from grutopia.core.object import init_objects
 from grutopia.core.robot import init_robots
 from grutopia.core.robot.rigid_body import IRigidBody
@@ -17,7 +14,7 @@ from grutopia.core.util import log
 from grutopia.core.util.pose_mixin import PoseMixin
 
 
-class BaseTask(OmniBaseTask, ABC):
+class BaseTask(ABC):
     """
     wrap of omniverse isaac sim's base task
 
@@ -31,15 +28,13 @@ class BaseTask(OmniBaseTask, ABC):
         self.scene_prim = None
         self.objects = None
         self.robots: Union[Dict[str, BaseRobot], None] = None
-        name = runtime.name
+        self.name = runtime.name
         self.env_id = runtime.env.env_id
         self.offset = runtime.env.offset
 
         if runtime.env.env_id not in PoseMixin.env_offset_map:
             PoseMixin.env_offset_map[str(runtime.env.env_id)] = runtime.env.offset
             log.info(f'env {runtime.env.env_id} at {runtime.env.offset}')
-
-        super().__init__(name=name, offset=self.offset)
         self._scene = scene
         self.scene_rigid_bodies: Dict[str, IRigidBody] = {}
         self.runtime = runtime
@@ -75,6 +70,7 @@ class BaseTask(OmniBaseTask, ABC):
         Logs:
         - Information about the initialized robots and objects is logged using the `log.info` method after successful setup.
         """
+        from pxr import Usd
 
         if self.runtime.scene_asset_path is not None:
             self._scene.load(self.runtime)

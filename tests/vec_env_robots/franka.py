@@ -1,6 +1,7 @@
 def main():
+    import numpy as np
+
     from grutopia.core.config import Config, SimConfig
-    from grutopia.core.runtime import SimulatorRuntime
     from grutopia.core.util import has_display
     from grutopia.core.vec_env import Env
     from grutopia.macros import gm
@@ -39,7 +40,14 @@ def main():
     )
 
     config = Config(
-        simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, rendering_interval=0),
+        simulator=SimConfig(
+            physics_dt=1 / 240,
+            rendering_dt=1 / 240,
+            use_fabric=False,
+            rendering_interval=0,
+            headless=headless,
+            native=headless,
+        ),
         task_config=SingleInferenceTaskCfg(
             env_num=2,
             offset_size=10,
@@ -52,12 +60,12 @@ def main():
             ],
         ),
     )
-    sim_runtime = SimulatorRuntime(config_class=config, headless=headless, native=headless)
+
     import_extensions()
-    import numpy as np
+
+    env = Env(config)
     from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
-    env = Env(sim_runtime)
     obs, _ = env.reset()
     max_steps = 2000
 

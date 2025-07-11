@@ -11,8 +11,6 @@ from collections import OrderedDict
 from typing import Any, List, Optional
 
 import numpy as np
-from isaacsim.core.utils.stage import get_stage_units
-from isaacsim.robot.manipulators.grippers.parallel_gripper import ParallelGripper
 
 from grutopia.core.robot.isaacsim.articulation import IsaacsimArticulation
 from grutopia.core.robot.rigid_body import IRigidBody
@@ -37,6 +35,11 @@ class Franka(IsaacsimArticulation):
         deltas: Optional[np.ndarray] = None,
         scale: Optional[np.ndarray] = None,
     ) -> None:
+        from isaacsim.core.utils.stage import get_stage_units
+        from isaacsim.robot.manipulators.grippers.parallel_gripper import (
+            ParallelGripper,
+        )
+
         self._end_effector = None
         self._gripper = None
         self._end_effector_prim_name = end_effector_prim_name
@@ -75,7 +78,7 @@ class Franka(IsaacsimArticulation):
         return self._end_effector
 
     @property
-    def gripper(self) -> ParallelGripper:
+    def gripper(self):
         return self._gripper
 
     def initialize(self, physics_sim_view=None) -> None:

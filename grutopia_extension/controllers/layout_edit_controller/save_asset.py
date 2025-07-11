@@ -1,16 +1,14 @@
 import os
 
-import omni
-import omni.usd
-from omni.isaac.core import SimulationContext
-from pxr import Sdf, Usd
-
 
 class SaveAsset:
     def __init__(self, stage):
         self.stage = stage
 
     def save_entire_scene(self, target_folder: str, robot_save_bool: bool, filename: str = 'saved_scene.usd'):
+        import omni
+        from omni.isaac.core import SimulationContext
+
         try:
             sim = SimulationContext.instance()
             sim.pause()
@@ -26,6 +24,8 @@ class SaveAsset:
             print(f'Delete error: {str(e)}')
 
     def delete_robots(self, root_prim):
+        from pxr import Sdf, Usd
+
         deleted_robots = []
         for prim in Usd.PrimRange(root_prim):
             prim_path = prim.GetPath().pathString
