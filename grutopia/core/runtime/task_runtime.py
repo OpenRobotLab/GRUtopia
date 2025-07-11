@@ -1,3 +1,4 @@
+import socket
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
@@ -142,6 +143,44 @@ class BaseTaskRuntimeManager:
 
 
 def create_task_runtime_manager(config: Config):
-    from .local_task_runtime_manager import LocalTaskRuntimeManager
+    if config.distribution_config is None:
+        from .local_task_runtime_manager import LocalTaskRuntimeManager
 
-    return LocalTaskRuntimeManager(config)
+        return LocalTaskRuntimeManager(config)
+
+    import ray
+
+    address = config.distribution_config.head_address
+    if address is not None:
+        try:
+            local_ip = socket.gethostbyname(socket.gethostname())
+        except Exception:
+            local_ip = None
+        if local_ip == address:
+            address = f'{address}:6379'
+        else:
+            address = f'ray://{address}:10001'
+    runtime_env = None
+    if config.distribution_config.working_dir is not None:
+        runtime_env = {
+            'working_dir': config.distribution_config.working_dir,
+        }
+    try:
+        ray.init(
+            address=address,
+            runtime_env=runtime_env,
+            ignore_reinit_error=True,
+        )
+    except ConnectionError as e:
+        raise RuntimeError(
+            f'Fail to create distributed task runtime manager: {e}, Please confirm that the address {address} can be accessed normally'
+        )
+    except Exception as e:
+        raise RuntimeError(f'Fail to create distributed task runtime manager: {e}')
+    _remote_args = {
+        'num_cpus': 1,
+    }
+    from .distributed_task_runtime_manager import DistributedTaskRuntimeManager
+
+    remote_class = ray.remote(**_remote_args)(DistributedTaskRuntimeManager)
+    return remote_class.options(placement_group_bundle_index=-1).remote(config)

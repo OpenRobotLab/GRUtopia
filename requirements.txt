@@ -2,3 +2,4 @@
 -r requirements/contribute.txt
 -r requirements/test.txt
 -r requirements/webui.txt
+-r requirements/distribution.txt

@@ -6,18 +6,21 @@ from grutopia.core.robot.rigid_body import IRigidBody
 
 # Init
 from grutopia.core.runtime.task_runtime import Env as TaskEnv
-from grutopia.core.runtime.task_runtime import TaskRuntime, create_task_runtime_manager
+from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.task import BaseTask, create_task
-from grutopia.core.util import log
+from grutopia.core.util import extensions_utils, log
 from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
 class SimulatorRunner:
-    def __init__(self, config: Config = None):
+    def __init__(self, config: Config, task_runtime_manager):
         self.config = config
-        self.task_runtime_manager = create_task_runtime_manager(config)
+        self.task_runtime_manager = task_runtime_manager
         self.env_num = self.config.task_config.env_num
+        if self.config.distribution_config is not None:
+            self.runner_id = self.config.distribution_config.runner_id
+            extensions_utils.reload_extensions(self.config.distribution_config.extensions)
         self.setup_isaacsim()
         self.metrics_config = None
         self.metrics_save_path = self.config.task_config.metrics_save_path
@@ -382,7 +385,14 @@ class SimulatorRunner:
 
         # get next_task_runtimes
         for runtime_env in runtime_envs:
-            next_task_runtime: Union[TaskRuntime, None] = self.task_runtime_manager.get_next_task_runtime(runtime_env)
+            if self.config.distribution_config is None:
+                next_task_runtime = self.task_runtime_manager.get_next_task_runtime(runtime_env)
+            else:
+                import ray
+
+                next_task_runtime = ray.get(
+                    self.task_runtime_manager.get_next_task_runtime.remote(runtime_env, self.runner_id)
+                )
 
             if next_task_runtime is None and runtime_env is not None:
                 del self.env_id_to_task_name_map[runtime_env.env_id]

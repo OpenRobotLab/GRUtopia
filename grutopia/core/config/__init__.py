@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from grutopia.core.config.distribution import DistributionCfg
 from grutopia.core.config.object import ObjectCfg
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.config.task import TaskCfg
@@ -27,14 +28,6 @@ class SimConfig(BaseModel):
     native: Optional[bool] = False
 
 
-class DistributionConfig(BaseModel):
-    """
-    Config of distribution, only for distributed operation mode
-    """
-
-    worker_num: Optional[int] = 1
-
-
 class Config(BaseModel):
     """
     Config validator for input file (yaml -> dict).
@@ -42,3 +35,4 @@ class Config(BaseModel):
 
     simulator: Optional[SimConfig] = SimConfig()
     task_config: TaskCfg
+    distribution_config: Optional[DistributionCfg] = None

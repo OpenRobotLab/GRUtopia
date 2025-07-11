@@ -3,6 +3,7 @@ from typing import Any, OrderedDict
 import gymnasium as gym
 
 from grutopia.core.config import Config
+from grutopia.core.runtime.task_runtime import create_task_runtime_manager
 from grutopia.core.util import log
 
 
@@ -23,7 +24,8 @@ class Env(gym.Env):
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
-        self._runner = SimulatorRunner(config=config)
+        task_runtime_manager = create_task_runtime_manager(self._config)
+        self._runner = SimulatorRunner(config=config, task_runtime_manager=task_runtime_manager)
 
         # ========================= import space ============================
         import grutopia.core.util.space as space  # noqa E402.
@@ -76,7 +78,7 @@ class Env(gym.Env):
 
         origin_obs, task_runtime = self.runner.reset(None if self._current_task_name is None else [0])
         if None in task_runtime:
-            log.info('All episodes have finished.')
+            log.info('No more episodes left')
             return None, None
 
         self._current_task_name = task_runtime[0].name

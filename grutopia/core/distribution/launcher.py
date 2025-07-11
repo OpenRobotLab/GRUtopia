@@ -1,0 +1,39 @@
+from grutopia.core.config import Config
+from grutopia.core.config.distribution import DistributionCfg, RayDistributionCfg
+from grutopia.core.distribution.runner_proxy import RunnerProxy
+
+
+class Launcher:
+    def __init__(self, config, task_runtime_manager):
+        from grutopia.core.runner import SimulatorRunner
+
+        self.config: Config = config
+        self.task_runtime_manager = task_runtime_manager
+        self.distribution_config: DistributionCfg = self.config.distribution_config
+        self.runner_factory = SimulatorRunner
+        if self.distribution_config is not None:
+            if not isinstance(self.distribution_config, RayDistributionCfg):
+                raise Exception(f'unsupport distribution config type :{type(self.distribution_config)}')
+
+    def start(self):
+
+        if self.distribution_config is None:
+            runner = self.runner_factory(
+                config=self.config,
+                task_runtime_manager=self.task_runtime_manager,
+            )
+            return RunnerProxy(runner, is_remote=False)
+        else:
+            import ray
+
+            _remote_args = {
+                'num_cpus': 1,
+                'num_gpus': self.config.distribution_config.gpu_num_per_proc,
+            }
+            remote_class = ray.remote(**_remote_args)(self.runner_factory)
+            remote_class = remote_class.options(placement_group_bundle_index=-1)
+            runner = remote_class.remote(
+                config=self.config,
+                task_runtime_manager=self.task_runtime_manager,
+            )
+            return RunnerProxy(runner, is_remote=True)

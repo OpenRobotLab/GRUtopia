@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from functools import wraps
 from typing import Dict
 
 from grutopia.core.config.robot import RobotCfg, SensorCfg
@@ -67,21 +66,20 @@ class BaseSensor(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        Register a sensor class with the given name(decorator).
+        Register an sensor class with the given name(decorator).
+
         Args:
-            name(str): name of the sensor class.
+            name(str): name of the sensor
         """
 
-        def decorator(sensor_class):
+        def wrapper(sensor_class):
+            """
+            Register the sensor class.
+            """
             cls.sensors[name] = sensor_class
+            return sensor_class
 
-            @wraps(sensor_class)
-            def wrapped_function(*args, **kwargs):
-                return sensor_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
 
 def create_sensors(robot_cfg: RobotCfg, robot: BaseRobot, scene: IScene) -> OrderedDict[str, BaseSensor]:

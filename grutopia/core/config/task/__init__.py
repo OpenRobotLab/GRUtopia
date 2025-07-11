@@ -62,9 +62,3 @@ class TaskCfg(BaseModel, extra=Extra.allow):
 
     # episode
     episodes: List[EpisodeCfg]
-
-    # Operation_mode is used to specify the execution environment for the task.
-    # It accepts one of the following values:
-    # - `local`: Indicates that the task will be executed on a single compute node.
-    # - `distributed`: Indicates that the task will be executed across multiple compute nodes.
-    operation_mode: Literal['local', 'distributed'] = 'local'

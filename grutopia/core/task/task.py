@@ -1,6 +1,5 @@
 import traceback
 from abc import ABC
-from functools import wraps
 from typing import Any, Dict, Union
 
 from grutopia.core.object import init_objects
@@ -262,21 +261,20 @@ class BaseTask(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        Register a task with its name(decorator).
+        Register an task class with the given name(decorator).
+
         Args:
             name(str): name of the task
         """
 
-        def decorator(tasks_class):
-            cls.tasks[name] = tasks_class
+        def wrapper(task_class):
+            """
+            Register the task class.
+            """
+            cls.tasks[name] = task_class
+            return task_class
 
-            @wraps(tasks_class)
-            def wrapped_function(*args, **kwargs):
-                return tasks_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
 
 def create_task(config: TaskRuntime, scene: IScene):

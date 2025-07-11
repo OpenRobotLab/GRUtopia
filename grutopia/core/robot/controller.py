@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from functools import wraps
 from typing import Any, Dict, List, Union
 
 import numpy as np
@@ -59,22 +58,21 @@ class BaseController(ABC):
 
     @classmethod
     def register(cls, name: str):
-        """Register a controller with its name(decorator).
+        """
+        Register an controller class with the given name(decorator).
 
         Args:
-            name (str): name of the controller
+            name(str): name of the controller
         """
 
-        def decorator(controller_class):
+        def wrapper(controller_class):
+            """
+            Register the controller class.
+            """
             cls.controllers[name] = controller_class
+            return controller_class
 
-            @wraps(controller_class)
-            def wrapped_function(*args, **kwargs):
-                return controller_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
     @property
     def robot(self):

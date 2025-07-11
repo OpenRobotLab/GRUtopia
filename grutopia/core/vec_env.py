@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, OrderedDict, Tuple, Union
 
 from grutopia.core.config import Config
-from grutopia.core.util import log
+from grutopia.core.distribution.launcher import Launcher
+from grutopia.core.runtime.task_runtime import create_task_runtime_manager
+from grutopia.core.util import extensions_utils, log
 
 
 class Env:
@@ -37,11 +39,35 @@ class Env:
 
     def __init__(self, config: Config) -> None:
         self._render = None
-        self.env_num = config.task_config.env_num
+        self._config = config
+        self.task_runtime_manager = create_task_runtime_manager(self._config)
+        distribution_config = self._config.distribution_config
+        self._runner_list = []
+        self.env_num = self._config.task_config.env_num
+        self.proc_num = 1
+        if distribution_config is not None:
+            import ray
 
-        from grutopia.core.runner import SimulatorRunner  # noqa E402.
+            extensions = extensions_utils.dump_extensions()
+            self._config.distribution_config.extensions = extensions
+            self.is_remote = True
+            self.proc_num = distribution_config.proc_num
+            cluster_gpu_count = ray.cluster_resources().get('GPU', 0)
+            request_gpu_count = self.proc_num * self._config.distribution_config.gpu_num_per_proc
+            if cluster_gpu_count < request_gpu_count:
+                description = f'Insufficient cluster resources, requested GPU: {request_gpu_count}, total GPU: {cluster_gpu_count}, '
+                description += (
+                    'Please adjust proc_num and gpu_num_per_proc to ensure that resources can meet requirements'
+                )
+                raise RuntimeError(description)
+            for runner_id in range(self.proc_num):
+                self._config.distribution_config.runner_id = runner_id
+                self._runner_list.append(Launcher(self._config, self.task_runtime_manager).start())
+        else:
+            self.is_remote = False
+            self.env_num = self.task_runtime_manager.env_num
+            self._runner_list.append(Launcher(self._config, self.task_runtime_manager).start())
 
-        self._runner = SimulatorRunner(config=config)
         return
 
     def reset(self, env_ids: List[int] = None) -> Tuple[List, List]:
@@ -57,10 +83,34 @@ class Env:
             Tuple[List, List]: A tuple containing two lists: the initial observations and task runtimes for
             the reset environments. If no tasks are running, both lists will be empty.
         """
-        obs, task_runtimes = self.runner.reset(env_ids=env_ids)
+        obs = []
+        task_runtimes = []
+        new_env_ids = [None for _ in range(self.proc_num)]
+        if env_ids is not None:
+            result_list = []
+            for env_id in env_ids:
+                runner_id = (env_id) // self._config.task_config.env_num
+                if new_env_ids[runner_id] is None:
+                    new_env_ids[runner_id] = [env_id % self.env_num]
+                else:
+                    new_env_ids[runner_id].append(env_id % self.env_num)
+            for runner_id in range(self.proc_num):
+                if new_env_ids[runner_id]:
+                    result_list.append(self._runner_list[runner_id].reset(env_ids=new_env_ids[runner_id]))
+        else:
+            result_list = [
+                self._runner_list[runner_id].reset(env_ids=new_env_ids[runner_id]) for runner_id in range(self.proc_num)
+            ]
+        if self.is_remote:
+            import ray
+
+            result_list = ray.get(result_list)
+        for _obs, _task_runtimes in result_list:
+            obs.extend(_obs)
+            task_runtimes.extend(_task_runtimes)
 
         if all(task_runtime is None for task_runtime in task_runtimes):
-            log.info('no more episode left')
+            log.info('No more episodes left')
 
         return obs, task_runtimes
 
@@ -73,7 +123,13 @@ class Env:
             render (bool): Whether to render the scene during warm-up. Defaults to True.
             physics (bool): Whether to enable physics during warm-up. Defaults to True.
         """
-        self.runner.warm_up(steps, render, physics)
+        result_list = [
+            self._runner_list[index].warm_up(steps, render, physics) for index in range(len(self._runner_list))
+        ]
+        if self.is_remote:
+            import ray
+
+            result_list = ray.get(result_list)
 
     def step(self, action: List[Union[Dict, OrderedDict]]) -> Tuple[List, List, List, List, List]:
         """
@@ -96,14 +152,27 @@ class Env:
                 - info (List): Additional information about the step execution.
         """
         assert isinstance(action, list)
-        assert len(action) == self.env_num
+        assert len(action) == self.env_num * self.proc_num
 
+        obs = []
+        reward = []
+        terminated = []
         truncated = [False for _ in action]
         info = [None for _ in action]
 
-        obs, terminated_status, reward = self._runner.step(action)
+        result_list = [
+            self._runner_list[index].step(action[index * self.env_num : (index + 1) * self.env_num])
+            for index in range(len(self._runner_list))
+        ]
+        if self.is_remote:
+            import ray
 
-        terminated = terminated_status
+            result_list = ray.get(result_list)
+
+        for _obs, _terminated, _reward in result_list:
+            obs.extend(_obs)
+            terminated.extend(_terminated)
+            reward.extend(_reward)
 
         return obs, reward, terminated, truncated, info
 
@@ -112,7 +181,9 @@ class Env:
         """
         The runner property provides access to the internal runner instance.
         """
-        return self._runner
+        if not self.is_remote:
+            return self._runner_list[0].runner
+        raise NotImplementedError('not implemented in distribution mode.')
 
     @property
     def is_render(self):
@@ -123,31 +194,55 @@ class Env:
 
     @property
     def active_runtimes(self):
-        return self.runner.task_runtime_manager.active_runtime()
+        if not self.is_remote:
+            return self.runner.task_runtime_manager.active_runtime()
+        else:
+            import ray
+
+            return ray.get(self.task_runtime_manager.active_runtime.remote())
 
     def get_dt(self):
         """
         Get dt of simulation environment.
         """
-        return self._runner.dt
+        if not self.is_remote:
+            return self._runner_list[0].runner.dt
+        raise NotImplementedError('not implemented in distribution mode.')
 
     def get_observations(self) -> List | Any:
         """
         Get observations from Isaac environment
         """
-        _obs = self._runner.get_obs()
-        return _obs
+        obs = []
+        result_list = [self._runner_list[index].get_obs() for index in range(len(self._runner_list))]
+        if self.is_remote:
+            import ray
+
+            result_list = ray.get(result_list)
+        for _obs in result_list:
+            obs.extend(_obs)
+        return obs
 
     def close(self):
         """Close the environment"""
-        self.runner.simulation_app.close()
-        return
+        if not self.is_remote:
+            self._runner_list[0].runner.simulation_app.close()
+        else:
+            import ray
+
+            for proxy in self._runner_list:
+                ray.kill(proxy.runner)
+            ray.kill(self.task_runtime_manager)
 
     @property
     def simulation_app(self):
         """Simulation app instance"""
-        return self.runner.simulation_app
+        if not self.is_remote:
+            return self._runner_list[0].runner.simulation_app
+        raise NotImplementedError('not implemented in distribution mode.')
 
     def finished(self) -> bool:
         """Check if all tasks are finished"""
-        return len(self._runner.current_tasks) == 0
+        if not self.is_remote:
+            return len(self._runner_list[0].runner.current_tasks) == 0
+        raise NotImplementedError('not implemented in distribution mode.')

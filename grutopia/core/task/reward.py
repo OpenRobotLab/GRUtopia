@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from functools import wraps
 from typing import Any, Dict
 
 from grutopia.core.config.task import RewardCfg
@@ -33,21 +32,20 @@ class BaseReward(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        This function is used to register a reward class.(decorator)
+        Register an reward class with the given name(decorator).
+
         Args:
             name(str): name of the reward
         """
 
-        def decorator(reward_class):
+        def wrapper(reward_class):
+            """
+            Register the reward class.
+            """
             cls.rewards[name] = reward_class
+            return reward_class
 
-            @wraps(reward_class)
-            def wrapped_function(*args, **kwargs):
-                return reward_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
 
 def create_reward(reward_config: RewardCfg, task: BaseTask):

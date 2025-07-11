@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from functools import wraps
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
@@ -197,22 +196,21 @@ class BaseRobot:
 
     @classmethod
     def register(cls, name: str):
-        """Register a robot class with its name(decorator).
+        """
+        Register an robot class with the given name(decorator).
 
         Args:
-            name(str): name of the robot class.
+            name(str): name of the robot
         """
 
-        def decorator(robot_class):
+        def wrapper(robot_class):
+            """
+            Register the robot class.
+            """
             cls.robots[name] = robot_class
+            return robot_class
 
-            @wraps(robot_class)
-            def wrapped_function(*args, **kwargs):
-                return robot_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
 
 def create_robots(runtime: TaskRuntime, scene: IScene) -> OrderedDict[str, BaseRobot]:

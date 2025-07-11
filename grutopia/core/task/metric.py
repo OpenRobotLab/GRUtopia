@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from functools import wraps
 
 from grutopia.core.config.metric import MetricCfg
 from grutopia.core.runtime.task_runtime import TaskRuntime
@@ -31,21 +30,20 @@ class BaseMetric(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        This function is used to register a metric class.(decorator)
+        Register an metric class with the given name(decorator).
+
         Args:
             name(str): name of the metric
         """
 
-        def decorator(metric_class):
+        def wrapper(metric_class):
+            """
+            Register the metric class.
+            """
             cls.metrics[name] = metric_class
+            return metric_class
 
-            @wraps(metric_class)
-            def wrapped_function(*args, **kwargs):
-                return metric_class(*args, **kwargs)
-
-            return wrapped_function
-
-        return decorator
+        return wrapper
 
 
 def create_metric(config: MetricCfg, task_runtime: TaskRuntime):
