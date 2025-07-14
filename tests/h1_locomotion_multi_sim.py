@@ -35,11 +35,11 @@ def main():
             env_num=2,
             episodes=episodes,
         ),
-        distribution_config=RayDistributionCfg(
+    ).distribute(
+        RayDistributionCfg(
             proc_num=2,
-            head_address=None,
             gpu_num_per_proc=0.5,
-        ),
+        )
     )
 
     from grutopia_extension import import_extensions

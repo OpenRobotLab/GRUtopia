@@ -1,4 +1,4 @@
-from grutopia.core.config import Config
+from grutopia.core.config import Config, DistributedConfig
 from grutopia.core.config.distribution import DistributionCfg, RayDistributionCfg
 from grutopia.core.distribution.runner_proxy import RunnerProxy
 
@@ -9,15 +9,15 @@ class Launcher:
 
         self.config: Config = config
         self.task_runtime_manager = task_runtime_manager
-        self.distribution_config: DistributionCfg = self.config.distribution_config
         self.runner_factory = SimulatorRunner
-        if self.distribution_config is not None:
+        if isinstance(config, DistributedConfig):
+            self.distribution_config: DistributionCfg = self.config.distribution_config
             if not isinstance(self.distribution_config, RayDistributionCfg):
                 raise Exception(f'unsupport distribution config type :{type(self.distribution_config)}')
 
     def start(self):
 
-        if self.distribution_config is None:
+        if not isinstance(self.config, DistributedConfig):
             runner = self.runner_factory(
                 config=self.config,
                 task_runtime_manager=self.task_runtime_manager,

@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List, Optional, Tuple, Union
 
-from grutopia.core.config import Config
+from grutopia.core.config import Config, DistributedConfig
 from grutopia.core.robot.rigid_body import IRigidBody
 
 # Init
@@ -18,7 +18,7 @@ class SimulatorRunner:
         self.config = config
         self.task_runtime_manager = task_runtime_manager
         self.env_num = self.config.task_config.env_num
-        if self.config.distribution_config is not None:
+        if isinstance(self.config, DistributedConfig):
             self.runner_id = self.config.distribution_config.runner_id
             extensions_utils.reload_extensions(self.config.distribution_config.extensions)
         self.setup_isaacsim()
@@ -385,7 +385,7 @@ class SimulatorRunner:
 
         # get next_task_runtimes
         for runtime_env in runtime_envs:
-            if self.config.distribution_config is None:
+            if not isinstance(self.config, DistributedConfig):
                 next_task_runtime = self.task_runtime_manager.get_next_task_runtime(runtime_env)
             else:
                 import ray

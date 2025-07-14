@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, OrderedDict, Tuple, Union
 
-from grutopia.core.config import Config
+from grutopia.core.config import Config, DistributedConfig
 from grutopia.core.distribution.launcher import Launcher
 from grutopia.core.runtime.task_runtime import create_task_runtime_manager
 from grutopia.core.util import extensions_utils, log
@@ -41,17 +41,16 @@ class Env:
         self._render = None
         self._config = config
         self.task_runtime_manager = create_task_runtime_manager(self._config)
-        distribution_config = self._config.distribution_config
         self._runner_list = []
         self.env_num = self._config.task_config.env_num
         self.proc_num = 1
-        if distribution_config is not None:
+        if isinstance(config, DistributedConfig):
             import ray
 
             extensions = extensions_utils.dump_extensions()
             self._config.distribution_config.extensions = extensions
             self.is_remote = True
-            self.proc_num = distribution_config.proc_num
+            self.proc_num = self._config.distribution_config.proc_num
             cluster_gpu_count = ray.cluster_resources().get('GPU', 0)
             request_gpu_count = self.proc_num * self._config.distribution_config.gpu_num_per_proc
             if cluster_gpu_count < request_gpu_count:

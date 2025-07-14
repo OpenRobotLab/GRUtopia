@@ -3,7 +3,14 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 
-from grutopia.core.config import Config, EpisodeCfg, ObjectCfg, RobotCfg, TaskCfg
+from grutopia.core.config import (
+    Config,
+    DistributedConfig,
+    EpisodeCfg,
+    ObjectCfg,
+    RobotCfg,
+    TaskCfg,
+)
 from grutopia.core.config.metric import MetricCfg
 from grutopia.core.config.task.reward import RewardCfg
 
@@ -143,7 +150,7 @@ class BaseTaskRuntimeManager:
 
 
 def create_task_runtime_manager(config: Config):
-    if config.distribution_config is None:
+    if not isinstance(config, DistributedConfig):
         from .local_task_runtime_manager import LocalTaskRuntimeManager
 
         return LocalTaskRuntimeManager(config)

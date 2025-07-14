@@ -35,4 +35,15 @@ class Config(BaseModel):
 
     simulator: Optional[SimConfig] = SimConfig()
     task_config: TaskCfg
+
+    def distribute(self, distribution_config: DistributionCfg):
+        distributed_config = DistributedConfig(
+            simulator=self.simulator.copy(),
+            task_config=self.task_config.copy(),
+            distribution_config=distribution_config.copy(),
+        )
+        return distributed_config
+
+
+class DistributedConfig(Config):
     distribution_config: Optional[DistributionCfg] = None
