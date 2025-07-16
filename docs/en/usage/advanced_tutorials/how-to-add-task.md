@@ -1,37 +1,40 @@
 # How to Add Custom Task
 
-> This tutorial will show you how to add a custom task
+> This tutorial guides you on how to add a custom task
 
 ## 1. Defining a New Task
-Before adding a new task, we need to clarify the following points:
+Before adding a new task, the following points should be figured out:
 
-- Task Naming: What will the task be called?
-- Task Objective: What specific Objective will the task achieve?
-- Task Termination: Will the task end, and how will we determine that?
+- Task Objective: What does the task meant to do?
+- Task Termination: Will the task end, and how do we determine that?
 - Metrics Calculation: What metrics need to be calculated for the task?
 
 
-Here's how we define our SocialNavigationTask based on the above points:
-- Name: FiniteStepTask
-- Objective: Demo
+Now we want to add a new task named `FiniteStepTask`. Here's the answers for `FiniteStepTask` based on the above points:
+
+- Objective: Do something until a certain number of steps reached.
 - Termination:
   - The Task will end.
-  - End Criteria: The task will conclude either after finite steps.
+  - End Criteria: The task will end after finite steps.
 - Metrics Calculation:
   - Record the total distance a robot moves from start to finish.
   - (Additional metrics as needed.)
 
 To add a custom task, you need to:
-- Create a config class for task config, inheriting from the `grutopia.core.config.task.TaskCfg`.
+
+- Create a config class for episode, inheriting from the `grutopia.core.config.task.EpisodeCfg`.
+- Create a config class for task, inheriting from the `grutopia.core.config.task.TaskCfg`.
 - Create a class for task, inheriting from the `grutopia.core.task.BaseTask`.
 
-To add a custom metric, you need to:
-- Create a config class for metric config, inheriting from the `grutopia.core.config.metric.MetricUserConfig`.
-- Create a class for metric, inheriting from the `grutopia.core.task.metric.BaseMetric`.
+For the differences between the two config classes, follow the rules below:
 
-## 2. Create Task Config Class
+- The configs that don't vary across all the episodes should be defined in **task** config class.
+- The configs that may vary between episodes should be defined in **episode** config class.
+- The task config class should always include a list of corresponding episode configs.
 
-Here's an example of a config class for a task:
+## 2. Create Config Classes
+
+Here's an example of the task and episode config classes for the `FiniteStepTask`:
 
 ```python
 from typing import List, Optional
@@ -46,6 +49,8 @@ class FiniteStepTaskCfg(TaskCfg):
 ```
 
 ## 3. Create Task Class
+
+What is a runtime?
 
 ```Python
 from omni.isaac.core.scenes import Scene
@@ -74,11 +79,16 @@ class FiniteStepTask(BaseTask):
     return self.stop_count > self.max_step
 
 ```
-- The `is_done` method has been overridden based on the End Criteria defined above.
-- This task is ready for use, but it will not output any results by itself. To make it work in practice, you must define Metrics and configure them.
+- The `is_done` method is overridden based on the termination condition defined [above](#1-defining-a-new-task).
+- This task is ready to use, but it will not output any results by itself. To make it work in practice, you must define Metrics and configure them.
 
 
 ## 4. Create Metrics Config Class
+
+
+To add a custom metric, you need to:
+- Create a config class for metric config, inheriting from the `grutopia.core.config.metric.MetricUserConfig`.
+- Create a class for metric, inheriting from the `grutopia.core.task.metric.BaseMetric`.
 
 Here's an example of a config class for a metric:
 
@@ -92,7 +102,6 @@ from grutopia.core.config.metric import MetricUserConfig
 class SimpleMetricCfg(MetricUserConfig):
     type: Optional[str] = 'SimpleMetric'
 ```
-
 
 
 ## 5. Create Metrics Class
@@ -187,7 +196,7 @@ env = Env(sim_runtime)
 
 You can also run the [`h1_traveled_distance.py`](https://github.com/OpenRobotLab/GRUtopia/blob/main/grutopia/demo/h1_traveled_distance.py) in the demo directly.
 
-And you can check result in `./h1_simple_metric.jsonl`
+And you can check result in `./h1_simple_metric.jsonl` after the task finishes.
 
 ```json
 {"SimpleMetric": 0.7508679775492055, "normally_end": true}

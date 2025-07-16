@@ -1,6 +1,6 @@
 # How to Add Custom Controller
 
-> This tutorial will show you how to add a custom controller for a robot.
+> This tutorial guides you on how to add a custom controller for a robot.
 
 Note that the controller cannot be operated independently. It must be used with robot to enable robot to act in the environment.
 
@@ -68,7 +68,7 @@ For complete list of controller methods, please refer to the [Controller API doc
 
 Please note that the registration of the controller class is done through the `@BaseController.register` decorator, and the registered name should match the value of `type` field within the corresponding controller config class (here is `DemoController`).
 
-Sometimes the calculation logic is defined in a method named `forward` to show the input parameters the controller accepts, making it more human-readable. In this case, the `action_to_control` method itself only expands the parameters, and invokes `forward` method to calculate the joint signals.
+Sometimes the calculation logic is defined in a method named `forward` to show the input parameters the controller accepts (which is common in our implementations), making it more human-readable. In this case, the `action_to_control` method itself only expands the parameters, and invokes `forward` method to calculate the joint signals.
 
 An example of controller class implementation is shown as following:
 
@@ -121,3 +121,5 @@ class DemoController(BaseController):
             scaler=1 / self.robot.get_robot_scale()[0],
         )
 ```
+
+You can check the implementations of our controllers under [`grutopia_extension/controllers/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/controllers).

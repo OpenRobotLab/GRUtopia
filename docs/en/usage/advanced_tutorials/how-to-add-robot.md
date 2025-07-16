@@ -1,12 +1,17 @@
 # How to Add Custom Robot
 
-> This tutorial will show you how to add a robot. If you wish to use this robot in practice, you need to:
-> - Learn [how to add a custom controller](./how-to-add-controller.md) to control the robot you’ve built.
-> - Learn [how to add a custom sensor](./how-to-add-sensor.md) to collect data.
+> This tutorial guides you on how to add a custom robot.
 
 To add a custom robot, you need to:
 - Create a config class for robot config, inheriting from the `grutopia.core.config.robot.RobotCfg`.
 - Create a class for robot, inheriting from the `grutopia.core.robot.BaseRobot`.
+
+## Prepare USD of robot
+
+We use [USD](https://openusd.org/release/index.html) file to represent a robot. If you have the URDF/MJCF file of the robot, you can refer to the links below to convert it to a USD file:
+
+- Import URDF: https://docs.omniverse.nvidia.com/isaacsim/latest/advanced_tutorials/tutorial_advanced_import_urdf.html
+- Import MJCF: https://docs.omniverse.nvidia.com/isaacsim/latest/advanced_tutorials/tutorial_advanced_import_mjcf.html
 
 ## Create Config Class
 
@@ -19,18 +24,33 @@ class DemoRobotCfg(RobotCfg):
     # meta info
     name: str = 'demo'
     type: str = 'DemoRobot'
-    prim_path: str = '/World/demo'
-    create_robot: bool = True
-    usd_path: Optional[str] = './assets/demo_robot.usd'
+    prim_path: str = '/demo'
+    usd_path: Optional[str] = '/data/assets/demo_robot.usd'
 ```
 
-Generally, when creating a new config class, reasonable default values for required fields should be specified, and robot specific config fields can be added when necessary.
+- name: name of the robot, must be unique in one episode
+- type: type of the robot, must be unique and same with the type of robot class
+- prim_path: prim path of the robot, relative to the env root path
+- usd_path: USD file path, absolute path is preferred to run your code from any working directory
+
+More fields can be added if more attributes are configurable.
+
+Generally, when creating a new config class for robot, reasonable default values for required fields should be specified to avoid validating error, and robot specific config fields can be added when necessary.
 
 ## Create Robot Class
 
 In the simplest scenario, the following methods are required to be implemented in your robot class:
 
 ```python
+from grutopia.core.config import RobotCfg
+
+class DemoRobotCfg(RobotCfg):
+    # meta info
+    name: str = 'demo'
+    type: str = 'DemoRobot'
+    prim_path: str = '/demo'
+    usd_path: Optional[str] = '/data/assets/demo_robot.usd'
+
 from omni.isaac.core.scenes import Scene
 from grutopia.core.robot.robot import BaseRobot
 
@@ -137,3 +157,5 @@ class DemoRobot(BaseRobot):
             obs['sensors'][sensor_name] = sensor_obs.get_data()
         return obs
 ```
+
+You can check the implementations of our robots under [`grutopia_extension/robots/`](https://github.com/OpenRobotLab/GRUtopia/tree/main/grutopia_extension/robots).

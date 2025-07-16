@@ -1,10 +1,10 @@
 # How to Add Custom Sensor
 
-> This tutorial will show you how to add a sensor for a robot
+> This tutorial guides you on how to add a sensor for a robot.
 
-The implementation of the sensor does not rely on any dependencies.
-It serves as an abstraction layer that can either encapsulate native sensors within Isaac Sim or generate synthetic data outputs to emulate a robot's sensor behavior.
+The sensor serves as an abstraction layer that can either encapsulate native sensors provided by simulator or generate synthetic data outputs to emulate a sensor's behavior.
 
+Currently a sensor instance belongs to a robot in the scene, and its data is included in the observation of that robot.
 
 To add a custom sensor, you need to:
 - Create a config class for sensor config, inheriting from the `grutopia.core.config.robot.SensorCfg`.
