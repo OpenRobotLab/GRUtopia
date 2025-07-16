@@ -11,16 +11,13 @@ def main():
         move_by_speed_cfg,
         rotate_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        FiniteStepTaskCfg,
-        FiniteStepTaskEpisodeCfg,
-    )
+    from grutopia_extension.configs.tasks import FiniteStepTaskCfg
 
     headless = False
     if not has_display():
         headless = True
 
-    h1_1 = H1RobotCfg(
+    h1 = H1RobotCfg(
         position=(0.0, 0.0, 1.05),
         controllers=[
             move_by_speed_cfg,
@@ -32,30 +29,63 @@ def main():
         ],
     )
 
+    h1_1 = h1.update(
+        sensors=[
+            h1_camera_cfg.update(name='camera_1', resolution=(64, 64), enable=True),
+        ]
+    )
+    h1_2 = h1.update(
+        sensors=[
+            h1_camera_cfg.update(name='camera_2', resolution=(64, 64), enable=True),
+        ]
+    )
+    h1_3 = h1.update(
+        sensors=[
+            h1_camera_cfg.update(name='camera_3', resolution=(64, 64), enable=True),
+        ]
+    )
+    h1_4 = h1.update(
+        sensors=[
+            h1_camera_cfg.update(name='camera_4', resolution=(64, 64), enable=True),
+        ]
+    )
+
     config = Config(
         simulator=SimConfig(
-            physics_dt=1 / 240,
-            rendering_dt=1 / 240,
-            use_fabric=True,
-            rendering_interval=20,
-            headless=headless,
-            native=headless,
+            physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
         ),
-        task_config=FiniteStepTaskCfg(
-            task_settings={'max_step': 501},
-            episodes=[
-                FiniteStepTaskEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1_1.update()],
-                ),
-                FiniteStepTaskEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1_1.update()],
-                ),
-            ],
-        ),
+        task_configs=[
+            FiniteStepTaskCfg(
+                max_steps=100,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1],
+            ),
+            FiniteStepTaskCfg(
+                max_steps=100,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1_1],
+            ),
+            FiniteStepTaskCfg(
+                max_steps=100,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1_2],
+            ),
+            FiniteStepTaskCfg(
+                max_steps=100,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1_3],
+            ),
+            FiniteStepTaskCfg(
+                max_steps=100,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1_4],
+            ),
+        ],
     )
 
     print(config.model_dump_json(indent=4))
@@ -74,11 +104,26 @@ def main():
         i += 1
         obs, _, terminated, _, _ = env.step(action=move_action)
 
-        if i == 1 or i == 101:
-            assert obs['sensors']['camera']['rgba'].shape == (64, 64, 4)
-
         if i % 100 == 0:
             print(i)
+
+        if i == 1:
+            assert 'camera' in obs['sensors']
+            assert obs['sensors']['camera']['rgba'].shape == (64, 64, 4)
+
+        if i == 101:
+            assert 'camera_1' in obs['sensors']
+            assert obs['sensors']['camera_1']['rgba'].shape == (64, 64, 4)
+
+        if i == 201:
+            assert 'camera_2' in obs['sensors']
+
+        if i == 301:
+            assert 'camera_3' in obs['sensors']
+
+        if i == 401:
+            assert 'camera_4' in obs['sensors']
+
         if terminated:
             _, info = env.reset()
 

@@ -10,15 +10,12 @@ from grutopia_extension.configs.robots.franka import (
     arm_ik_cfg,
     gripper_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = not has_display()
 
 franka = FrankaRobotCfg(
-    position=[0, 0, 0],
+    position=(0, 0, 0),
     controllers=[
         arm_ik_cfg,
         gripper_cfg,
@@ -27,14 +24,12 @@ franka = FrankaRobotCfg(
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[franka],
-            ),
-        ],
-    ),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[franka],
+        ),
+    ],
 )
 
 import_extensions()

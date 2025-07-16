@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import List
 
-from grutopia.core.config import Simulator
+from grutopia.core.config import Simulator, TaskCfg
 from grutopia.core.robot.rigid_body import IRigidBody
-from grutopia.core.runtime.task_runtime import TaskRuntime
 
 
 class IScene(ABC):
@@ -12,7 +12,7 @@ class IScene(ABC):
         return
 
     @abstractmethod
-    def load(self, runtime: TaskRuntime):
+    def load(self, task_config: TaskCfg, env_id: int, env_offset: List[float]):
         """Load the scene."""
         raise NotImplementedError()
 

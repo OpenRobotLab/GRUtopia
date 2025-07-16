@@ -8,10 +8,7 @@ from grutopia.core.gym_env import Env
 from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = not has_display()
 
@@ -21,22 +18,20 @@ def run(robot: RobotCfg, action: Dict[str, Any], target: Tuple[float, float, flo
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
         ),
-        task_config=SingleInferenceTaskCfg(
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[robot.update()],
-                ),
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[robot.update()],
-                ),
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[robot.update()],
-                ),
-            ],
-        ),
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[robot.update()],
+            ),
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[robot.update()],
+            ),
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[robot.update()],
+            ),
+        ],
     )
 
     import_extensions()

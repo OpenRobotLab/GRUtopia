@@ -1,12 +1,11 @@
 import traceback
 from abc import ABC
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
+from grutopia.core.config import TaskCfg
 from grutopia.core.object import init_objects
-from grutopia.core.robot import init_robots
 from grutopia.core.robot.rigid_body import IRigidBody
-from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.robot.robot import BaseRobot, init_robots
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.metric import BaseMetric, create_metric
 from grutopia.core.util import log
@@ -23,40 +22,59 @@ class BaseTask(ABC):
 
     tasks = {}
 
-    def __init__(self, runtime: TaskRuntime, scene: IScene):
+    def __init__(self, config: TaskCfg, scene: IScene):
+        self.name = None
+        self.env_id = 0
+        self.env_offset = []
+        self.root_path = None
+
         self.scene_prim = None
         self.objects = None
         self.robots: Union[Dict[str, BaseRobot], None] = None
-        self.name = runtime.name
-        self.env_id = runtime.env.env_id
-        self.offset = runtime.env.offset
-
-        if runtime.env.env_id not in PoseMixin.env_offset_map:
-            PoseMixin.env_offset_map[str(runtime.env.env_id)] = runtime.env.offset
-            log.info(f'env {runtime.env.env_id} at {runtime.env.offset}')
         self._scene = scene
         self.scene_rigid_bodies: Dict[str, IRigidBody] = {}
-        self.runtime = runtime
+        self.config = config
 
         self.metrics: Dict[str, BaseMetric] = {}
         self.steps = 0
         self.work = True
         self.loaded = False
-        for metric_config in runtime.metrics:
-            self.metrics[metric_config.type] = create_metric(metric_config, self.runtime)
+        for metric_config in config.metrics:
+            self.metrics[metric_config.type] = create_metric(metric_config, self.config)
 
         from grutopia.core.task.reward import BaseReward, create_reward  # noqa
 
-        self.reward: Union[BaseReward, None] = (
-            create_reward(runtime.reward_setting, self) if runtime.reward_setting is not None else None
-        )
+        self.reward: Union[BaseReward, None] = create_reward(config.reward, self) if config.reward is not None else None
+
+    def set_up_runtime(self, task_name, env_id, env_offset):
+        """
+        Sets up info (task_name, env_id, env_offset) for this task.
+
+        TODO: refactor and rename
+
+        Args:
+            task_name (str): The name of the task.
+            env_id (int): The env ID of this task.
+            env_offset (List[float]): The env offset for the task.
+        """
+        self.env_id: int = env_id
+        self.env_offset: List[float] = env_offset
+        self.root_path = f'/World/env_{str(self.env_id)}'
+        if env_id not in PoseMixin.env_offset_map:
+            PoseMixin.env_offset_map[str(env_id)] = env_offset
+            log.info(f'env {env_id} at {env_offset}')
+        self.name = task_name
+        for metric in self.metrics.values():
+            metric.set_up_runtime(task_name, env_id, env_offset)
 
     def load(self):
         """
 
         Loads the environment scene and initializes robots and objects.
 
-        This method first checks if a scene asset path is defined in the runtime configuration. If so, it creates a scene using the provided path and specified parameters such as scaling and positioning. The scene is then populated with robots and objects based on the configurations stored within `self.runtime`.
+        This method first checks if a scene asset path is defined in the task config.
+        If so, it creates a scene using the provided path and specified parameters such as scaling and positioning.
+        The scene is then populated with robots and objects based on the configurations stored within `self.config`.
 
         Raises:
         - Exceptions may be raised during file operations or USD scene creation, but specific exceptions are not documented here.
@@ -71,22 +89,22 @@ class BaseTask(ABC):
         """
         from pxr import Usd
 
-        if self.runtime.scene_asset_path is not None:
-            self._scene.load(self.runtime)
+        if self.config.scene_asset_path is not None:
+            self._scene.load(self.config, self.env_id, self.env_offset)
             for prim in Usd.PrimRange.AllPrims(self._scene.scene_prim):
                 if prim.GetAttribute('physics:rigidBodyEnabled'):
                     log.debug(f'[BaseTask.load] found rigid body at path: {prim.GetPath()}')
                     _rb = IRigidBody.create(prim_path=str(prim.GetPath()), name=str(prim.GetPath()))
                     self.scene_rigid_bodies[str(prim.GetPath())] = _rb
 
-        self.robots = init_robots(self.runtime, self._scene)
-        self.objects = init_objects(self.runtime, self._scene)
+        self.robots = init_robots(self.config, self._scene)
+        self.objects = init_objects(self.config, self._scene)
         self.loaded = True
 
     def clear_rigid_bodies(self):
         for rigid_body_name in self.scene_rigid_bodies.keys():
             if self._scene.object_exists(rigid_body_name):
-                self._scene.remove(name=rigid_body_name)
+                self._scene.remove(target=rigid_body_name)
 
     def save_info(self):
         """
@@ -277,6 +295,6 @@ class BaseTask(ABC):
         return wrapper
 
 
-def create_task(config: TaskRuntime, scene: IScene):
+def create_task(config: TaskCfg, scene: IScene):
     task_cls: BaseTask = BaseTask.tasks[config.type](config, scene)
     return task_cls

@@ -9,12 +9,7 @@ def main():
         arm_ik_cfg,
         gripper_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        ManipulationEpisodeCfg,
-        ManipulationExtra,
-        ManipulationTaskCfg,
-        ManipulationTaskSetting,
-    )
+    from grutopia_extension.configs.tasks import ManipulationTaskCfg
 
     headless = False
     if not has_display():
@@ -37,23 +32,19 @@ def main():
             headless=headless,
             native=headless,
         ),
-        task_config=ManipulationTaskCfg(
-            env_num=2,
-            offset_size=4,
-            episodes=[
-                ManipulationEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[franka.update()],
-                    extra=ManipulationExtra(
-                        prompt='Prompt test 1',
-                        target='franka_manipulation',
-                        episode_idx=0,
-                    ),
-                )
-                for _ in range(8)
-            ],
-            task_settings=ManipulationTaskSetting(max_step=500),
-        ),
+        env_num=2,
+        env_offset_size=4,
+        task_configs=[
+            ManipulationTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[franka.update()],
+                prompt='Prompt test 1',
+                target='franka_manipulation',
+                episode_idx=0,
+                max_steps=500,
+            )
+            for _ in range(8)
+        ],
     )
 
     import_extensions()

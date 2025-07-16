@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -7,7 +7,6 @@ from grutopia.core.config.distribution import DistributionCfg
 from grutopia.core.config.object import ObjectCfg
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.config.task import TaskCfg
-from grutopia.core.config.task.episode import EpisodeCfg, EpisodeConfigFile
 
 
 class Simulator(Enum):
@@ -34,13 +33,19 @@ class Config(BaseModel):
     """
 
     simulator: Optional[SimConfig] = SimConfig()
-    task_config: TaskCfg
+    env_num: Optional[int] = 1
+    env_offset_size: Optional[float] = 5.0
+    metrics_save_path: Optional[str] = 'console'
+    task_configs: List[TaskCfg]
 
     def distribute(self, distribution_config: DistributionCfg):
         distributed_config = DistributedConfig(
-            simulator=self.simulator.copy(),
-            task_config=self.task_config.copy(),
-            distribution_config=distribution_config.copy(),
+            simulator=self.simulator,
+            env_num=self.env_num,
+            env_offset_size=self.env_offset_size,
+            metrics_save_path=self.metrics_save_path,
+            task_configs=self.task_configs,
+            distribution_config=distribution_config,
         )
         return distributed_config
 

@@ -1,6 +1,5 @@
 def main():
     from multi_sim_task import (  # noqa F401
-        MultiSimTestEpisodeCfg,
         MultiSimTestH1Robot,
         MultiSimTestH1RobotCfg,
         MultiSimTestTask,
@@ -17,24 +16,20 @@ def main():
     num_step = 50
     h1 = MultiSimTestH1RobotCfg()
 
-    episodes = [
-        MultiSimTestEpisodeCfg(
+    task_configs = [
+        MultiSimTestTaskCfg(
             scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
             scene_scale=(0.01, 0.01, 0.01),
             robots=[h1.update()],
-            extra={
-                'episode_id': episode_id,
-            },
+            episode_id=episode_id,
         )
         for episode_id in range(num_episode)
     ]
 
     config = Config(
         simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless),
-        task_config=MultiSimTestTaskCfg(
-            env_num=2,
-            episodes=episodes,
-        ),
+        env_num=2,
+        task_configs=task_configs,
     ).distribute(
         RayDistributionCfg(
             proc_num=2,
@@ -47,7 +42,7 @@ def main():
     import_extensions()
 
     env = Env(config)
-    obs, task_runtimes = env.reset()
+    obs, task_configs = env.reset()
     env.warm_up(5, physics=False)
 
     assert env.is_render is None, 'need be None'
@@ -56,10 +51,10 @@ def main():
         assert False, 'need raise NotImplementedError'
     except NotImplementedError:
         pass
-    active_runtimes = env.active_runtimes
-    assert len(active_runtimes) == 4
-    for env_id, task_runtime in enumerate(task_runtimes):
-        assert active_runtimes[env_id] == task_runtime
+    active_task_configs = env.active_task_configs
+    assert len(active_task_configs) == 4
+    for env_id, task_config in enumerate(task_configs):
+        assert active_task_configs[env_id] == task_config
     try:
         env.get_dt()
         assert False, 'need raise NotImplementedError'

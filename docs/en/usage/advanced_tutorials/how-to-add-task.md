@@ -36,22 +36,12 @@ Here's an example of a config class for a task:
 ```python
 from typing import List, Optional
 
-from grutopia.core.config import EpisodeCfg
 from grutopia.core.config.task import TaskCfg
-
-
-class FiniteStepTaskEpisodeCfg(EpisodeCfg):
-  """
-  Configuration for a finite step task episode.
-
-  If necessary, you can add what you want to add to the episode as needed.
-  """
-  pass
 
 
 class FiniteStepTaskCfg(TaskCfg):
   type: Optional[str] = 'FiniteStepTask'
-  episodes: List[FiniteStepTaskEpisodeCfg]
+  max_step: Optional[int] = 500
 
 ```
 
@@ -60,28 +50,28 @@ class FiniteStepTaskCfg(TaskCfg):
 ```Python
 from omni.isaac.core.scenes import Scene
 
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.task_config_manager.base import TaskCfg
 from grutopia.core.task import BaseTask
 
 
 @BaseTask.register('FiniteStepTask')
 class FiniteStepTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: Scene):
-        super().__init__(runtime, scene)
-        self.stop_count = 0
-        self.max_step = 500  # default max_step
-        # ======= Validate task setting =======
-        if not runtime.task_settings:
-            pass
-        elif not isinstance(runtime.task_settings, dict):
-            raise ValueError('task_settings of FiniteStepTask must be a dict')
-        if 'max_step' in runtime.task_settings:
-            self.max_step = runtime.task_settings['max_step']
-        # ======= Validate task setting =======
+  def __init__(self, task_config: TaskCfg, scene: Scene):
+    super().__init__(task_config, scene)
+    self.stop_count = 0
+    self.max_step = 500  # default max_step
+    # ======= Validate task setting =======
+    if not task_config.task_settings:
+      pass
+    elif not isinstance(task_config.task_settings, dict):
+      raise ValueError('task_settings of FiniteStepTask must be a dict')
+    if 'max_step' in task_config.task_settings:
+      self.max_step = task_config.task_settings['max_step']
+    # ======= Validate task setting =======
 
-    def is_done(self) -> bool:
-        self.stop_count += 1
-        return self.stop_count > self.max_step
+  def is_done(self) -> bool:
+    self.stop_count += 1
+    return self.stop_count > self.max_step
 
 ```
 - The `is_done` method has been overridden based on the End Criteria defined above.
@@ -114,51 +104,51 @@ import numpy as np
 from pydantic import BaseModel
 
 from grutopia.core.config.metric import MetricCfg
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.task_config_manager.base import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
 from grutopia.core.util import log
 
 
 class SimpleMetricParam(BaseModel):
-    robot_name: str
+  robot_name: str
 
 
 @BaseMetric.register('SimpleMetric')
 class SimpleMetric(BaseMetric):
-    """
-    Calculate the total distance a robot moves
-    """
+  """
+  Calculate the total distance a robot moves
+  """
 
-    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
-        super().__init__(config, task_runtime)
-        self.distance: float = 0.0
-        self.position = None
-        self.param = SimpleMetricParam(**config.metric_config)
-        _robot_name = self.param.robot_name
-        self.robot_name = (
+  def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
+    super().__init__(config, task_runtime)
+    self.distance: float = 0.0
+    self.position = None
+    self.param = SimpleMetricParam(**config.metric_config)
+    _robot_name = self.param.robot_name
+    self.robot_name = (
             _robot_name + '_' + str(self.task_runtime.env.env_id)
-        )  # real robot name in isaac sim: {robot_name}_{env_id}
+    )  # real robot name in isaac sim: {robot_name}_{env_id}
 
-    def reset(self):
-        self.distance = 0.0
+  def reset(self):
+    self.distance = 0.0
 
-    def update(self, task_obs: dict):
-        """
-        This function is called at each world step.
-        """
-        if self.position is None:
-            self.position = task_obs[self.robot_name]['position']
-            return
-        self.distance += np.linalg.norm(self.position - task_obs[self.robot_name]['position'])
-        self.position = task_obs[self.robot_name]['position']
-        return
+  def update(self, task_obs: dict):
+    """
+    This function is called at each world step.
+    """
+    if self.position is None:
+      self.position = task_obs[self.robot_name]['position']
+      return
+    self.distance += np.linalg.norm(self.position - task_obs[self.robot_name]['position'])
+    self.position = task_obs[self.robot_name]['position']
+    return
 
-    def calc(self):
-        """
-        This function is called to calculate the metrics when the episode is terminated.
-        """
-        log.info('SimpleMetric calc() called.')
-        return self.distance
+  def calc(self):
+    """
+    This function is called to calculate the metrics when the episode is terminated.
+    """
+    log.info('SimpleMetric calc() called.')
+    return self.distance
 
 ```
 - The `update` method will be invoked after every step.

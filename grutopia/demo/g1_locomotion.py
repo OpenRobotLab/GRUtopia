@@ -4,10 +4,7 @@ from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.g1 import G1RobotCfg, move_by_speed_cfg
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 from grutopia_extension.interactions.keyboard import KeyboardInteraction
 
 headless = False
@@ -18,19 +15,17 @@ if not has_display():
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[
-                    G1RobotCfg(
-                        position=[0.0, 0.0, 0.8],
-                        controllers=[move_by_speed_cfg],
-                    )
-                ],
-            ),
-        ],
-    ),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[
+                G1RobotCfg(
+                    position=(0.0, 0.0, 0.8),
+                    controllers=[move_by_speed_cfg],
+                )
+            ],
+        ),
+    ],
 )
 
 import_extensions()

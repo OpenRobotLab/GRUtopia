@@ -16,7 +16,7 @@ from grutopia_extension.configs.tasks import (
 from grutopia_extension.interactions.motion_capture import MocapInteraction
 
 franka = MocapControlledFrankaRobotCfg(
-    position=[-0.35, 100.0, 1.05],
+    position=(-0.35, 100.0, 1.05),
     controllers=[
         layout_cfg,
     ],

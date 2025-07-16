@@ -1,34 +1,25 @@
 from grutopia.core.datahub import DataHub
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task import BaseTask
 from grutopia.core.util import log
-from grutopia_extension.configs.tasks.manipulation_task import (
-    ManipulationExtra,
-    TaskSettingCfg,
-)
+from grutopia_extension.configs.tasks.manipulation_task import ManipulationTaskCfg
 
 
 @BaseTask.register('ManipulationTask')
 class ManipulationTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: IScene):
-        super().__init__(runtime, scene)
+    def __init__(self, config: ManipulationTaskCfg, scene: IScene):
+        super().__init__(config, scene)
         self.step_counter = 0
-        if isinstance(runtime.task_settings, TaskSettingCfg):
-            self.settings = runtime.task_settings
-        else:
-            raise ValueError('task_settings must be a TaskSettingCfg')
-        if isinstance(runtime.extra, ManipulationExtra):
-            self.extra = runtime.extra
-        else:
-            raise ValueError('extra must be a ManipulationExtra')
-        log.info(f'task_settings: max_step       : {self.settings.max_step}.)')
+        self.max_steps = config.max_steps
+        self.prompt = config.prompt
+
+        log.info(f'task_settings: max_step       : {self.max_steps}.)')
         # Episode
-        log.info(f'Episode meta : prompt         : {self.extra.prompt}.)')
+        log.info(f'Episode meta : prompt         : {self.prompt}.)')
 
     def is_done(self) -> bool:
         self.step_counter = self.step_counter + 1
-        return DataHub.get_episode_finished(self.runtime.name) or self.step_counter > self.settings.max_step
+        return DataHub.get_episode_finished(self.name) or self.step_counter > self.max_steps
 
     def update_metrics(self):
         return super().update_metrics()

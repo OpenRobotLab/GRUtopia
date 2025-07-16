@@ -8,16 +8,11 @@ from grutopia_extension.configs.robots.mocap_controlled_franka import (
     lh_controlled_camera_cfg,
     teleop_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    ManipulationEpisodeCfg,
-    ManipulationExtra,
-    ManipulationTaskCfg,
-    ManipulationTaskSetting,
-)
+from grutopia_extension.configs.tasks import ManipulationTaskCfg
 from grutopia_extension.interactions.motion_capture import MocapInteraction
 
 franka = MocapControlledFrankaRobotCfg(
-    position=[-0.35, 0.0, 1.05],
+    position=(-0.35, 0.0, 1.05),
     controllers=[
         teleop_cfg,
     ],
@@ -28,26 +23,22 @@ config = Config(
     simulator=SimConfig(
         physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=False, webrtc=False, native=True
     ),
-    task_config=ManipulationTaskCfg(
-        metrics=[
-            RecordingMetricCfg(
-                robot_name='franka',
-                fields=['joint_action'],
-            )
-        ],
-        episodes=[
-            ManipulationEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/demo_scenes/franka_mocap_teleop/table_scene.usd',
-                robots=[franka],
-                extra=ManipulationExtra(
-                    prompt='Prompt test 1',
-                    target='franka_manipulation_mocap_teleop',
-                    episode_idx=0,
-                ),
-            ),
-        ],
-        task_settings=ManipulationTaskSetting(max_step=10000),
-    ),
+    task_configs=[
+        ManipulationTaskCfg(
+            metrics=[
+                RecordingMetricCfg(
+                    robot_name='franka',
+                    fields=['joint_action'],
+                )
+            ],
+            scene_asset_path=gm.ASSET_PATH + '/scenes/demo_scenes/franka_mocap_teleop/table_scene.usd',
+            robots=[franka],
+            prompt='Prompt test 1',
+            target='franka_manipulation_mocap_teleop',
+            episode_idx=0,
+            max_steps=10000,
+        ),
+    ],
 )
 
 import_extensions()

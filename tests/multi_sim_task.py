@@ -1,10 +1,8 @@
-from typing import List, Optional
+from typing import Optional
 
-from grutopia.core.config import EpisodeCfg
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.config.task import TaskCfg
 from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task import BaseTask
 from grutopia.macros import gm
@@ -19,13 +17,9 @@ class MultiSimTestH1RobotCfg(RobotCfg):
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1/h1.usd'
 
 
-class MultiSimTestEpisodeCfg(EpisodeCfg):
-    pass
-
-
 class MultiSimTestTaskCfg(TaskCfg):
     type: Optional[str] = 'MultiSimTestTask'
-    episodes: List[MultiSimTestEpisodeCfg]
+    episode_id: int
 
 
 @BaseRobot.register('MultiSimTestH1Robot')
@@ -46,9 +40,9 @@ class MultiSimTestH1Robot(H1Robot):
 
 @BaseTask.register('MultiSimTestTask')
 class MultiSimTestTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: IScene):
-        super().__init__(runtime, scene)
-        self.episode_id = runtime.extra['episode_id']
+    def __init__(self, config: MultiSimTestTaskCfg, scene: IScene):
+        super().__init__(config, scene)
+        self.episode_id = config.episode_id
         self.stop_count = 0
         self.max_step = 50
 

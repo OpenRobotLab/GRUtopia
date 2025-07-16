@@ -7,7 +7,7 @@ if __name__ == '__main__':
         target = (3.0, 2.0, 0.0)
         case = {
             'robot': GR1RobotCfg(
-                position=[0.0, 0.0, 0.95],
+                position=(0.0, 0.0, 0.95),
                 controllers=[move_to_point_cfg],
             ),
             'action': {move_to_point_cfg.name: [target]},

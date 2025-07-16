@@ -1,7 +1,8 @@
 import os
+from typing import List
 
+from grutopia.core.config import TaskCfg
 from grutopia.core.robot.rigid_body import IRigidBody
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene import validate_scene_file
 from grutopia.core.scene.scene import IScene
 
@@ -15,16 +16,16 @@ class IsaacsimScene(IScene):
 
         self._scene: Scene = World.instance().scene
 
-    def load(self, runtime: TaskRuntime):
+    def load(self, task_config: TaskCfg, env_id: int, env_offset: List[float]):
         """See `IScene.load` for documentation."""
-        usd_path = os.path.abspath(runtime.scene_asset_path)
-        prim_path_root = f'World/env_{runtime.env.env_id}/scene'
+        usd_path = os.path.abspath(task_config.scene_asset_path)
+        prim_path_root = f'World/env_{env_id}/scene'
         source, prim_path = validate_scene_file(usd_path, prim_path_root)
 
         from omni.isaac.core.utils.prims import create_prim
 
-        position = [runtime.env.offset[idx] + i for idx, i in enumerate(runtime.scene_position)]
-        scene_prim = create_prim(prim_path, usd_path=source, scale=runtime.scene_scale, translation=position)
+        position = [env_offset[idx] + i for idx, i in enumerate(task_config.scene_position)]
+        scene_prim = create_prim(prim_path, usd_path=source, scale=task_config.scene_scale, translation=position)
         self.scene_prim = scene_prim
 
     def add(self, target: any):

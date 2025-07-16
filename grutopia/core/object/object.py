@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from grutopia.core.config import ObjectCfg as ObjectConfig
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.config import TaskCfg
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log, remove_suffix
 
@@ -39,18 +39,18 @@ class BaseObject:
         return wrapper
 
 
-def create_objects(runtime: TaskRuntime, scene: IScene) -> OrderedDict[str, BaseObject]:
-    """Create object instances in runtime.
+def create_objects(task_config: TaskCfg, scene: IScene) -> OrderedDict[str, BaseObject]:
+    """Create object instances in task config.
 
     Args:
-        runtime (TaskRuntime): task runtime.
+        task_config (TaskCfg): task config.
         scene (Scene): isaac scene.
 
     Returns:
         OrderedDict[str, BaseObject]: robot instances dictionary.
     """
     object_map = OrderedDict()
-    for object in runtime.objects:
+    for object in task_config.objects:
         if object.type not in BaseObject.objs:
             raise KeyError(f'[create_robots] unknown robot type "{object.type}"')
         object_cls = BaseObject.objs[object.type]

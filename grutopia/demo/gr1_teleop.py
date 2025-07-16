@@ -14,10 +14,7 @@ from grutopia_extension.configs.robots.gr1 import (
     camera_right_cfg,
     teleop_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 from grutopia_extension.interactions.visionpro.visionpro import VuerTeleop
 
 headless = False
@@ -59,21 +56,19 @@ cube_cfgs = [
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[
-                    GR1RobotCfg(
-                        position=(-0.68, 0.0, 0.82),
-                        controllers=[teleop_cfg],
-                        sensors=[camera_left_cfg, camera_right_cfg],
-                    )
-                ],
-                objects=[table_cfg] + cube_cfgs,
-            ),
-        ],
-    ),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[
+                GR1RobotCfg(
+                    position=(-0.68, 0.0, 0.82),
+                    controllers=[teleop_cfg],
+                    sensors=[camera_left_cfg, camera_right_cfg],
+                )
+            ],
+            objects=[table_cfg] + cube_cfgs,
+        ),
+    ],
 )
 
 import_extensions()

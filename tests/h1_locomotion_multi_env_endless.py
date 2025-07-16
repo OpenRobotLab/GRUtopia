@@ -9,14 +9,10 @@ def main():
     from grutopia_extension.configs.robots.h1 import (
         H1RobotCfg,
         h1_camera_cfg,
-        h1_tp_camera_cfg,
         move_by_speed_cfg,
         rotate_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        SingleInferenceEpisodeCfg,
-        SingleInferenceTaskCfg,
-    )
+    from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
     headless = False
     if not has_display():
@@ -28,32 +24,27 @@ def main():
             move_by_speed_cfg,
             rotate_cfg,
         ],
-        sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=False),
-            h1_tp_camera_cfg.update(enable=False),
-        ],
+        sensors=[h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=False)],
     )
 
     config = Config(
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20, headless=headless
         ),
-        task_config=SingleInferenceTaskCfg(
-            env_num=2,
-            offset_size=10,
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1.update()],
-                ),
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1.update()],
-                ),
-            ],
-        ),
+        env_num=2,
+        env_offset_size=10,
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1.update()],
+            ),
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1.update()],
+            ),
+        ],
     )
 
     print(config.model_dump_json(indent=4))
@@ -69,7 +60,7 @@ def main():
 
     while env.simulation_app.is_running():
         i += 1
-        obs, reward, terminated, _, _ = env.step(action=[{'h1': move_action}, {'h1': move_action}])
+        obs, reward, terminated, _, _ = env.step(action=[{'h1_1': move_action}, {'h1': move_action}])
         if i == 1:
             _pos = obs[1]['h1']['position']
 

@@ -11,10 +11,7 @@ from grutopia_extension.configs.robots.h1 import (
     move_by_speed_cfg,
     rotate_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = False
 if not has_display():
@@ -35,15 +32,13 @@ h1_1 = H1RobotCfg(
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                scene_scale=(0.01, 0.01, 0.01),
-                robots=[h1_1.update()],
-            ),
-        ],
-    ),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            scene_scale=(0.01, 0.01, 0.01),
+            robots=[h1_1.update()],
+        ),
+    ],
 )
 
 print(config.model_dump_json(indent=4))

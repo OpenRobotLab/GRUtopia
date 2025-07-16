@@ -11,10 +11,7 @@ def main():
         arm_ik_cfg,
         gripper_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        SingleInferenceEpisodeCfg,
-        SingleInferenceTaskCfg,
-    )
+    from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
     headless = False
     if not has_display():
@@ -48,17 +45,15 @@ def main():
             headless=headless,
             native=headless,
         ),
-        task_config=SingleInferenceTaskCfg(
-            env_num=2,
-            offset_size=10,
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[franka_0.update(), franka_1.update()],
-                )
-                for _ in range(6)
-            ],
-        ),
+        env_num=2,
+        env_offset_size=10,
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[franka_0.update(), franka_1.update()],
+            )
+            for _ in range(6)
+        ],
     )
 
     import_extensions()

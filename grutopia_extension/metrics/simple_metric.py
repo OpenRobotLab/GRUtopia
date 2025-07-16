@@ -1,8 +1,8 @@
 import numpy as np
 from pydantic import BaseModel
 
+from grutopia.core.config import TaskCfg
 from grutopia.core.config.metric import MetricCfg
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.task.metric import BaseMetric
 from grutopia.core.util import log
 
@@ -17,15 +17,12 @@ class SimpleMetric(BaseMetric):
     Calculate the total distance a robot moves
     """
 
-    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
-        super().__init__(config, task_runtime)
+    def __init__(self, config: MetricCfg, task_config: TaskCfg):
+        super().__init__(config, task_config)
         self.distance: float = 0.0
         self.position = None
         self.param = SimpleMetricParam(**config.metric_config)
-        _robot_name = self.param.robot_name
-        self.robot_name = (
-            _robot_name + '_' + str(self.task_runtime.env.env_id)
-        )  # real robot name in isaac sim: {robot_name}_{env_id}
+        self.robot_name = self.param.robot_name
 
     def reset(self):
         self.distance = 0.0

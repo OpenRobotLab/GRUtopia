@@ -2,7 +2,7 @@ from typing import Any, Dict, List, OrderedDict, Tuple, Union
 
 from grutopia.core.config import Config, DistributedConfig
 from grutopia.core.distribution.launcher import Launcher
-from grutopia.core.runtime.task_runtime import create_task_runtime_manager
+from grutopia.core.task_config_manager.base import create_task_config_manager
 from grutopia.core.util import extensions_utils, log
 
 
@@ -12,7 +12,7 @@ class Env:
 
     This class encapsulates the capability to reset, step, and close environments
     within a simulation framework. It provides properties to access the runner, active
-    runtimes, simulation configuration, and other relevant components. The class is
+    configs, simulation configuration, and other relevant components. The class is
     designed to manage the lifecycle of simulation tasks.
 
     Parameters:
@@ -21,7 +21,7 @@ class Env:
 
     Methods:
         reset(env_ids: List[int] = None) -> Tuple[List, List]: Resets specified environments
-            and returns initial observations and task runtimes.
+            and returns initial observations and task configs.
         step(action: List[Union[Dict, OrderedDict]]) -> Tuple[List, List, List, List, List]:
             Executes a single step in the environment using provided actions.
         get_dt(): Retrieves the simulation timestep (dt).
@@ -32,18 +32,18 @@ class Env:
     Properties:
         runner: Provides access to the internal runner instance.
         is_render: Indicates whether the environment is in a renderable state.
-        active_runtimes: Retrieves the currently active runtimes.
-        simulation_runtime: Provides access to the active simulation runtime configuration.
+        active_task_configs: Retrieves the currently active task configs.
         simulation_app: Retrieves the simulation app instance.
     """
 
     def __init__(self, config: Config) -> None:
         self._render = None
         self._config = config
-        self.task_runtime_manager = create_task_runtime_manager(self._config)
+        self.task_config_manager = create_task_config_manager(self._config)
         self._runner_list = []
-        self.env_num = self._config.task_config.env_num
+        self.env_num = self._config.env_num
         self.proc_num = 1
+        self.is_remote = False
         if isinstance(config, DistributedConfig):
             import ray
 
@@ -61,34 +61,32 @@ class Env:
                 raise RuntimeError(description)
             for runner_id in range(self.proc_num):
                 self._config.distribution_config.runner_id = runner_id
-                self._runner_list.append(Launcher(self._config, self.task_runtime_manager).start())
+                self._runner_list.append(Launcher(self._config, self.task_config_manager).start())
         else:
-            self.is_remote = False
-            self.env_num = self.task_runtime_manager.env_num
-            self._runner_list.append(Launcher(self._config, self.task_runtime_manager).start())
+            self._runner_list.append(Launcher(self._config, self.task_config_manager).start())
 
         return
 
     def reset(self, env_ids: List[int] = None) -> Tuple[List, List]:
         """
         Resets the environments specified by the given environment IDs and returns the initial observations
-        and task runtimes. If no environment IDs are provided, all environments will be reset. If no tasks
+        and task configs. If no environment IDs are provided, all environments will be reset. If no tasks
         are running after the reset, a log message is generated, and empty lists are returned.
 
         Parameters:
             env_ids (List[int]): A list of environment IDs to reset. If None, all environments will be reset.
 
         Returns:
-            Tuple[List, List]: A tuple containing two lists: the initial observations and task runtimes for
+            Tuple[List, List]: A tuple containing two lists: the initial observations and task configs for
             the reset environments. If no tasks are running, both lists will be empty.
         """
         obs = []
-        task_runtimes = []
+        task_configs = []
         new_env_ids = [None for _ in range(self.proc_num)]
         if env_ids is not None:
             result_list = []
             for env_id in env_ids:
-                runner_id = (env_id) // self._config.task_config.env_num
+                runner_id = env_id // self.env_num
                 if new_env_ids[runner_id] is None:
                     new_env_ids[runner_id] = [env_id % self.env_num]
                 else:
@@ -104,14 +102,14 @@ class Env:
             import ray
 
             result_list = ray.get(result_list)
-        for _obs, _task_runtimes in result_list:
+        for _obs, _task_configs in result_list:
             obs.extend(_obs)
-            task_runtimes.extend(_task_runtimes)
+            task_configs.extend(_task_configs)
 
-        if all(task_runtime is None for task_runtime in task_runtimes):
+        if all(task_config is None for task_config in task_configs):
             log.info('No more episodes left')
 
-        return obs, task_runtimes
+        return obs, task_configs
 
     def warm_up(self, steps: int = 10, render: bool = True, physics: bool = True):
         """
@@ -192,13 +190,16 @@ class Env:
         return self._render
 
     @property
-    def active_runtimes(self):
+    def active_task_configs(self):
+        """
+        Get active task configs with env id as key.
+        """
         if not self.is_remote:
-            return self.runner.task_runtime_manager.active_runtime()
+            return self.task_config_manager.get_active_task_configs()
         else:
             import ray
 
-            return ray.get(self.task_runtime_manager.active_runtime.remote())
+            return ray.get(self.task_config_manager.get_active_task_configs.remote())
 
     def get_dt(self):
         """
@@ -231,7 +232,7 @@ class Env:
 
             for proxy in self._runner_list:
                 ray.kill(proxy.runner)
-            ray.kill(self.task_runtime_manager)
+            ray.kill(self.task_config_manager)
 
     @property
     def simulation_app(self):

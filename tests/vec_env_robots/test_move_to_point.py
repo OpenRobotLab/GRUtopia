@@ -8,10 +8,7 @@ from grutopia.core.util import has_display
 from grutopia.core.vec_env import Env
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = not has_display()
 
@@ -24,17 +21,15 @@ def run(robot_0_cfg: tuple, robot_1_cfg: tuple, max_steps=5000):
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
         ),
-        task_config=SingleInferenceTaskCfg(
-            env_num=2,
-            offset_size=10,
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    robots=[robot_0.update(), robot_1.update()],
-                )
-                for _ in range(4)
-            ],
-        ),
+        env_num=2,
+        env_offset_size=10,
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                robots=[robot_0.update(), robot_1.update()],
+            )
+            for _ in range(4)
+        ],
     )
 
     import_extensions()

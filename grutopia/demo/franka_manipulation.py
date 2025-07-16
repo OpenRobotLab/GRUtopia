@@ -10,15 +10,10 @@ from grutopia_extension.configs.robots.franka import (
     arm_ik_cfg,
     gripper_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    ManipulationEpisodeCfg,
-    ManipulationExtra,
-    ManipulationTaskCfg,
-    ManipulationTaskSetting,
-)
+from grutopia_extension.configs.tasks import ManipulationTaskCfg
 
 franka = FrankaRobotCfg(
-    position=[0, 0, 0],
+    position=(0, 0, 0),
     controllers=[
         arm_ik_cfg,
         gripper_cfg,
@@ -26,29 +21,23 @@ franka = FrankaRobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(
-        physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=False, webrtc=False, native=True
-    ),
-    task_config=ManipulationTaskCfg(
-        metrics=[
-            RecordingMetricCfg(
-                robot_name='franka',
-                fields=['joint_action'],
-            )
-        ],
-        episodes=[
-            ManipulationEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[franka],
-                extra=ManipulationExtra(
-                    prompt='Prompt test 1',
-                    target='franka_manipulation',
-                    episode_idx=0,
-                ),
-            ),
-        ],
-        task_settings=ManipulationTaskSetting(max_step=2000),
-    ),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, webrtc=False, native=True),
+    task_configs=[
+        ManipulationTaskCfg(
+            metrics=[
+                RecordingMetricCfg(
+                    robot_name='franka',
+                    fields=['joint_action'],
+                )
+            ],
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[franka],
+            prompt='Prompt test 1',
+            target='franka_manipulation',
+            episode_idx=0,
+            max_steps=2000,
+        ),
+    ],
 )
 
 import_extensions()
@@ -84,7 +73,7 @@ while env.simulation_app.is_running():
 
     if terminated:
         obs, info = env.reset()
-        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+        if env.RESET_INFO_TASK_CONFIG not in info:  # No more episode
             break
 
     if i % 1000 == 0:

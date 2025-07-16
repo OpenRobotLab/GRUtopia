@@ -31,7 +31,7 @@ The minimum code to start simulation is like following:
 ```python
 from grutopia.core.config import Config, SimConfig
 from grutopia.core.gym_env import Env
-from grutopia.core.runtime import SimulatorRuntime
+from grutopia.core.task_config_manager import SimulatorRuntime
 from grutopia.core.util import has_display
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.tasks import (

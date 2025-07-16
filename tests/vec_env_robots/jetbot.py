@@ -10,7 +10,7 @@ if __name__ == '__main__':
                 JetbotRobotCfg(
                     name='h1_0',
                     prim_path='/h1_0',
-                    position=[0.0, 0.0, 0.0],
+                    position=(0.0, 0.0, 0.0),
                     controllers=[move_to_point_cfg],
                 ),
                 {move_to_point_cfg.name: [(3.0, 2.0, 0.0)]},
@@ -20,7 +20,7 @@ if __name__ == '__main__':
                 JetbotRobotCfg(
                     name='h1_1',
                     prim_path='/h1_1',
-                    position=[3.0, 0.0, 0.0],
+                    position=(3.0, 0.0, 0.0),
                     controllers=[move_to_point_cfg],
                 ),
                 {move_to_point_cfg.name: [(6.0, 2.0, 0.0)]},

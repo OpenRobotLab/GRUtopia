@@ -3,10 +3,10 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
+from grutopia.core.config import TaskCfg
 from grutopia.core.config.robot import RobotCfg
 from grutopia.core.robot.articulation import IArticulation
 from grutopia.core.robot.rigid_body import IRigidBody
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.util import log, remove_suffix
 
@@ -213,18 +213,22 @@ class BaseRobot:
         return wrapper
 
 
-def create_robots(runtime: TaskRuntime, scene: IScene) -> OrderedDict[str, BaseRobot]:
-    """Create robot instances in runtime.
+def init_robots(task_config: TaskCfg, scene: IScene) -> OrderedDict[str, BaseRobot]:
+    return create_robots(task_config, scene)
+
+
+def create_robots(task_config: TaskCfg, scene: IScene) -> OrderedDict[str, BaseRobot]:
+    """Create robot instances in task config.
 
     Args:
-        runtime (TaskRuntime): task runtime.
+        task_config (TaskCfg): task config.
         scene (Scene): isaac scene.
 
     Returns:
         OrderedDict[str, BaseRobot]: robot instances dictionary.
     """
     robot_map = OrderedDict()
-    for robot in runtime.robots:
+    for robot in task_config.robots:
         if robot.type not in BaseRobot.robots:
             raise KeyError(f'[create_robots] unknown robot type "{robot.type}"')
         robot_cls = BaseRobot.robots[robot.type]

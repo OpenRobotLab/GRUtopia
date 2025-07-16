@@ -3,7 +3,7 @@ from typing import Any, OrderedDict
 import gymnasium as gym
 
 from grutopia.core.config import Config
-from grutopia.core.runtime.task_runtime import create_task_runtime_manager
+from grutopia.core.task_config_manager.base import create_task_config_manager
 from grutopia.core.util import log
 
 
@@ -12,20 +12,20 @@ class Env(gym.Env):
     Gym Env for a single environment with a single learning agent.
     """
 
-    RESET_INFO_TASK_RUNTIME = 'task_runtime'
+    RESET_INFO_TASK_CONFIG = 'task_config'
 
     def __init__(self, config: Config) -> None:
         self._render = None
-        self.env_num = config.task_config.env_num
         self._config = config
+        self.env_num = config.env_num
         self._robot_name = None
         self._current_task_name = None
         self._validate()
 
         from grutopia.core.runner import SimulatorRunner  # noqa E402.
 
-        task_runtime_manager = create_task_runtime_manager(self._config)
-        self._runner = SimulatorRunner(config=config, task_runtime_manager=task_runtime_manager)
+        task_config_manager = create_task_config_manager(self._config)
+        self._runner = SimulatorRunner(config=config, task_config_manager=task_config_manager)
 
         # ========================= import space ============================
         import grutopia.core.util.space as space  # noqa E402.
@@ -42,10 +42,8 @@ class Env(gym.Env):
         """This method is designed for **only** 1 env + 1 robot."""
         if self.env_num > 1:
             raise ValueError(f'Only support single env now, but env num is {self.env_num}')
-        episodes = self._config.task_config.episodes
-        log.debug(f'================ len(episodes): {len(episodes)} ==================')
-
-        _episode_sample = episodes[0]
+        task_configs = self._config.task_configs
+        _episode_sample = next(iter(task_configs))
 
         if len(_episode_sample.robots) == 0:
             return
@@ -56,10 +54,10 @@ class Env(gym.Env):
         self._robot_name = f'{_episode_sample.robots[0].name}'
 
     def _get_action_space(self) -> gym.Space:
-        return self._space.get_action_space_by_task(self._config.task_config.type)
+        return self._space.get_action_space_by_task(self._config)
 
     def _get_observation_space(self) -> gym.Space:
-        return self._space.get_observation_space_by_task(self._config.task_config.type)
+        return self._space.get_observation_space_by_task(self._config)
 
     def reset(self, *, seed=None, options=None) -> tuple[OrderedDict | None, dict | None]:
         """Resets the environment to an initial internal state, returning an initial observation and info.
@@ -71,18 +69,18 @@ class Env(gym.Env):
 
         Returns:
             observation (OrderedDict): Observation of the initial state.
-            info (dict): Contains the key `task_runtime` if there is an unfinished task
+            info (dict): Contains the key `task_config` if there is an unfinished task
         """
         info = {}
         obs = OrderedDict()
 
-        origin_obs, task_runtime = self.runner.reset(None if self._current_task_name is None else [0])
-        if None in task_runtime:
+        origin_obs, task_configs = self.runner.reset(None if self._current_task_name is None else [0])
+        if None in task_configs:
             log.info('No more episodes left')
             return None, None
 
-        self._current_task_name = task_runtime[0].name
-        info[Env.RESET_INFO_TASK_RUNTIME] = task_runtime[0]
+        self._current_task_name = list(self.runner.task_name_to_env_id_map.keys())[0]
+        info[Env.RESET_INFO_TASK_CONFIG] = task_configs[0]
         if self._robot_name:
             obs = origin_obs[0][self._robot_name]
 
@@ -150,8 +148,8 @@ class Env(gym.Env):
         return self._render
 
     @property
-    def active_runtimes(self):
-        return self.runner.task_runtime_manager.active_runtime()
+    def active_task_configs(self):
+        return self.runner.task_config_manager.get_active_task_configs()
 
     def get_dt(self):
         """

@@ -15,10 +15,7 @@ def main():
         h1_camera_cfg,
         move_by_speed_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        SingleInferenceEpisodeCfg,
-        SingleInferenceTaskCfg,
-    )
+    from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
     t0 = time.perf_counter()
 
@@ -40,24 +37,22 @@ def main():
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, headless=headless, native=headless
         ),
-        task_config=SingleInferenceTaskCfg(
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1],
-                    objects=[
-                        DynamicCubeCfg(
-                            name='target_cube',
-                            prim_path='/World/target_cube',
-                            position=(2.0, 0.0, 0.5),
-                            scale=(0.4, 0.4, 1.0),
-                            color=(0.8, 0.0, 0.8),
-                        )
-                    ],
-                ),
-            ],
-        ),
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1],
+                objects=[
+                    DynamicCubeCfg(
+                        name='target_cube',
+                        prim_path='/World/target_cube',
+                        position=(2.0, 0.0, 0.5),
+                        scale=(0.4, 0.4, 1.0),
+                        color=(0.8, 0.0, 0.8),
+                    )
+                ],
+            ),
+        ],
     )
 
     print(config.model_dump_json(indent=4))

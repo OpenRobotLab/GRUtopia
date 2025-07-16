@@ -1,16 +1,19 @@
 from abc import ABC, abstractmethod
 
 from grutopia.core.config.metric import MetricCfg
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.task_config_manager.base import TaskCfg
 
 
 class BaseMetric(ABC):
     metrics = {}
 
-    def __init__(self, config: MetricCfg, task_runtime: TaskRuntime):
+    def __init__(self, config: MetricCfg, task_config: TaskCfg):
+        self.env_offset = None
+        self.env_id = None
+        self.task_name = None
         self.config = config
         self.name = config.name
-        self.task_runtime = task_runtime
+        self.task_config = task_config
         self.metric_config = config.metric_config
 
     @abstractmethod
@@ -45,11 +48,16 @@ class BaseMetric(ABC):
 
         return wrapper
 
+    def set_up_runtime(self, task_name, env_id, env_offset):
+        self.task_name = task_name
+        self.env_id = env_id
+        self.env_offset = env_offset
 
-def create_metric(config: MetricCfg, task_runtime: TaskRuntime):
+
+def create_metric(config: MetricCfg, task_config: TaskCfg):
     if config.type not in BaseMetric.metrics:
         raise KeyError(
             f"""The metric {config.type} is not registered, please register it using `@BaseMetric.register`"""
         )
     metric_cls = BaseMetric.metrics[config.type]
-    return metric_cls(config, task_runtime)
+    return metric_cls(config, task_config)

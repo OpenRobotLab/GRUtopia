@@ -12,7 +12,7 @@ from grutopia_extension.configs.robots.h1 import (
     move_by_speed_cfg,
     rotate_cfg,
 )
-from grutopia_extension.configs.tasks import FiniteStepTaskCfg, FiniteStepTaskEpisodeCfg
+from grutopia_extension.configs.tasks import FiniteStepTaskCfg
 
 headless = False
 if not has_display():
@@ -33,18 +33,16 @@ h1_1 = H1RobotCfg(
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=FiniteStepTaskCfg(
-        task_settings={'max_step': 300},
-        metrics=[SimpleMetricCfg(metric_config={'robot_name': 'h1'})],
-        metrics_save_path='./h1_simple_metric.jsonl',
-        episodes=[
-            FiniteStepTaskEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                scene_scale=(0.01, 0.01, 0.01),
-                robots=[h1_1],
-            ),
-        ],
-    ),
+    metrics_save_path='./h1_simple_metric.jsonl',
+    task_configs=[
+        FiniteStepTaskCfg(
+            max_steps=300,
+            metrics=[SimpleMetricCfg(metric_config={'robot_name': 'h1'})],
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            scene_scale=(0.01, 0.01, 0.01),
+            robots=[h1_1],
+        ),
+    ],
 )
 
 import_extensions()
@@ -65,7 +63,7 @@ while env.simulation_app.is_running():
 
     if terminated:
         obs, info = env.reset()
-        if env.RESET_INFO_TASK_RUNTIME not in info:  # No more episode
+        if env.RESET_INFO_TASK_CONFIG not in info:  # No more episode
             break
 
     if i % 100 == 0:

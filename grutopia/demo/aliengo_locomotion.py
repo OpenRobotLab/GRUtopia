@@ -4,10 +4,7 @@ from grutopia.core.util import has_display
 from grutopia.macros import gm
 from grutopia_extension import import_extensions
 from grutopia_extension.configs.robots.aliengo import AliengoRobotCfg, move_to_point_cfg
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = False
 webrtc = False
@@ -18,20 +15,18 @@ if not has_display():
 
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[
-                    AliengoRobotCfg(
-                        position=[0.0, 0.0, 1.05],
-                        controllers=[move_to_point_cfg],
-                    )
-                ],
-            ),
-        ],
-    ),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, webrtc=webrtc, headless=headless),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[
+                AliengoRobotCfg(
+                    position=(0.0, 0.0, 1.05),
+                    controllers=[move_to_point_cfg],
+                )
+            ],
+        ),
+    ],
 )
 
 import_extensions()

@@ -1,29 +1,28 @@
 import json
 from typing import Dict, List, Optional, Tuple, Union
 
-from grutopia.core.config import Config, DistributedConfig
+from grutopia.core.config import Config, DistributedConfig, TaskCfg
 from grutopia.core.robot.rigid_body import IRigidBody
 
 # Init
-from grutopia.core.runtime.task_runtime import Env as TaskEnv
-from grutopia.core.runtime.task_runtime import TaskRuntime
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task.task import BaseTask, create_task
+from grutopia.core.task_config_manager.base import BaseTaskConfigManager
 from grutopia.core.util import extensions_utils, log
 from grutopia.core.util.clear_task import clear_stage_by_prim_path
 
 
 class SimulatorRunner:
-    def __init__(self, config: Config, task_runtime_manager):
+    def __init__(self, config: Config, task_config_manager: BaseTaskConfigManager):
         self.config = config
-        self.task_runtime_manager = task_runtime_manager
-        self.env_num = self.config.task_config.env_num
+        self.task_config_manager = task_config_manager
+        self.env_num = self.config.env_num
         if isinstance(self.config, DistributedConfig):
             self.runner_id = self.config.distribution_config.runner_id
             extensions_utils.reload_extensions(self.config.distribution_config.extensions)
         self.setup_isaacsim()
         self.metrics_config = None
-        self.metrics_save_path = self.config.task_config.metrics_save_path
+        self.metrics_save_path = self.config.metrics_save_path
         if self.metrics_save_path != 'console':
             try:
                 with open(self.metrics_save_path, 'w'):
@@ -240,7 +239,7 @@ class SimulatorRunner:
     def reset(self, env_ids: Optional[List[int]] = None) -> Tuple[List, List]:
         """
         Resets the environment for the given environment IDs or initializes it if no IDs are provided.
-        This method handles resetting the simulation context, generating new task runtimes, and finalizing
+        This method handles resetting the simulation context, generating new task configs, and finalizing
         tasks when necessary. It supports partial resets for specific environments and ensures proper
         handling of task transitions.
 
@@ -250,7 +249,7 @@ class SimulatorRunner:
 
         Returns:
             Tuple[List, List]: A tuple containing two lists. The first list contains observations for
-                the reset environments, and the second list contains the new task runtimes.
+                the reset environments, and the second list contains the new task configs.
 
         Raises:
             ValueError: If the provided `env_ids` are invalid or don't correspond to any existing tasks.
@@ -264,7 +263,8 @@ class SimulatorRunner:
         """
         from omni.isaac.core.simulation_context import SimulationContext
 
-        new_task_runtimes = []
+        new_task_configs = []
+
         if env_ids is None and self.current_tasks:
             # reset
             log.info('==================== reset all env ====================')
@@ -274,7 +274,7 @@ class SimulatorRunner:
             # init
             log.info('===================== init reset =====================')
             SimulationContext.reset(self._world, soft=False)
-            new_task_runtimes = self._next_episodes()
+            new_task_configs = self._next_episodes()
         else:
             # switch to next episodes
             env_to_reset = [env_id for env_id in env_ids if env_id in self.env_id_to_task_name_map]
@@ -284,12 +284,12 @@ class SimulatorRunner:
                 return [None for _ in env_ids], [None for _ in env_ids]
 
             tasks = [self.env_id_to_task_name_map[env_id] for env_id in env_to_reset]
-            _task_runtimes = self._next_episodes(tasks)
+            _task_configs = self._next_episodes(tasks)
             for env_id in env_ids:
                 if env_id in self.env_id_to_task_name_map:
-                    new_task_runtimes.append(_task_runtimes.pop(0))
+                    new_task_configs.append(_task_configs.pop(0))
                 else:
-                    new_task_runtimes.append(None)
+                    new_task_configs.append(None)
             [self.finished_tasks.discard(task) for task in tasks]
 
         all_obs = self.get_obs()
@@ -299,7 +299,7 @@ class SimulatorRunner:
             # finished
             self._finalize()
 
-        return obs, new_task_runtimes
+        return obs, new_task_configs
 
     def _finalize(self):
         """
@@ -331,7 +331,7 @@ class SimulatorRunner:
         log.info(f'Clear stage: /World/env_{self.task_name_to_env_id_map[task_name]}')
         clear_stage_by_prim_path(f'/World/env_{self.task_name_to_env_id_map[task_name]}')
 
-    def _next_episodes(self, reset_tasks: List[str] = None) -> List[TaskRuntime]:
+    def _next_episodes(self, reset_tasks: List[str] = None) -> List[TaskCfg]:
         """
         Switch tasks that need to be reset to the next episode.
 
@@ -343,16 +343,17 @@ class SimulatorRunner:
                 initializes all environments without resetting specific tasks.
 
         Returns:
-            List[TaskRuntime]: a list of TaskRuntime objects representing the next set of tasks to be
-                executed in the simulation.
+            List[TaskCfg]: a list of TaskCfg.
 
         Raises:
             RuntimeError: If a task specified in `reset_tasks` isn't found in the current tasks.
         """
         from isaacsim.core.simulation_manager import SimulationManager
 
-        runtime_envs: List[Union[None, TaskEnv]] = []
-        next_task_runtimes = []
+        env_id_list = []
+        env_offset_list = []
+        task_name_list = []
+        task_configs_list = []
 
         if reset_tasks:
             # recycling env_id
@@ -360,8 +361,7 @@ class SimulatorRunner:
                 if task_name not in self.current_tasks:
                     raise RuntimeError(f'Task with task_name {task_name} not in `current_tasks`.')
                 old_task = self.current_tasks[task_name]
-                old_task_runtime: TaskRuntime = old_task.runtime
-                runtime_envs.append(old_task_runtime.env)
+                env_id_list.append(old_task.env_id)
 
             # save the state of envs that need to be kept
             for _task_name, task in self.current_tasks.items():
@@ -381,34 +381,40 @@ class SimulatorRunner:
         else:
             # init
             SimulationManager._on_stop('reset')
-            runtime_envs = [None for _ in range(self.env_num)]
+            env_id_list = [None for _ in range(self.env_num)]
 
-        # get next_task_runtimes
-        for runtime_env in runtime_envs:
+        # get next_task_configs
+        for idx, env_id in enumerate(env_id_list):
             if not isinstance(self.config, DistributedConfig):
-                next_task_runtime = self.task_runtime_manager.get_next_task_runtime(runtime_env)
+                next_task = self.task_config_manager.get_next(env_id)
             else:
                 import ray
 
-                next_task_runtime = ray.get(
-                    self.task_runtime_manager.get_next_task_runtime.remote(runtime_env, self.runner_id)
-                )
+                next_task = ray.get(self.task_config_manager.get_next.remote(env_id, self.runner_id))
+            new_task_name, new_env_id, new_env_offset, task_cfg = next_task
+            if task_cfg is None and env_id in self.env_id_to_task_name_map:
+                del self.env_id_to_task_name_map[env_id]
+            env_id_list[idx] = new_env_id
+            env_offset_list.append(new_env_offset)
+            task_name_list.append(new_task_name)
+            task_configs_list.append(task_cfg)
 
-            if next_task_runtime is None and runtime_env is not None:
-                del self.env_id_to_task_name_map[runtime_env.env_id]
-            next_task_runtimes.append(next_task_runtime)
-
-        # create tasks with next_task_runtimes
+        # create tasks with new task configs
         _new_tasks = []
         _new_tasks_names = []
-        for next_task_runtime in next_task_runtimes:
-            if next_task_runtime is None:
+        for idx, task_config in enumerate(task_configs_list):
+            if task_config is None:
                 continue
-            task = create_task(next_task_runtime, self._scene)
+            task = create_task(task_config, self._scene)
+            task.set_up_runtime(task_name_list[idx], env_id_list[idx], env_offset_list[idx])
             self._world.add_task(task)
             _new_tasks.append(task)
             _new_tasks_names.append(task.name)
             task.set_up_scene(self._scene)
+
+            # map task_name and env_id of new tasks
+            self.task_name_to_env_id_map[task.name] = task.env_id
+            self.env_id_to_task_name_map[task.env_id] = task.name
 
         # create sim_view
         SimulationManager._create_simulation_view('reset')
@@ -426,21 +432,12 @@ class SimulatorRunner:
         for task in _new_tasks:
             task.post_reset()
 
-        # map task_name and env_id of new tasks
-        for next_task_runtime in next_task_runtimes:
-            if next_task_runtime is None:
-                continue
-            self.task_name_to_env_id_map[next_task_runtime.name] = next_task_runtime.env.env_id
-            self.env_id_to_task_name_map[next_task_runtime.env.env_id] = next_task_runtime.name
-
         # log new episodes
         log.info('===================== episodes ========================')
-        for next_task_runtime in next_task_runtimes:
-            if next_task_runtime is None:
-                continue
-            log.info(f'Next episode: {next_task_runtime.name} at {str(next_task_runtime.env.env_id)}')
+        for task in _new_tasks:
+            log.info(f'Next episode: {task.name} at {str(task.env_id)}')
         log.info('======================================================')
-        return next_task_runtimes
+        return task_configs_list
 
     def get_obj(self, name: str) -> IRigidBody:
         return self._scene.get(name)

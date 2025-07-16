@@ -14,10 +14,7 @@ def main():
         move_by_speed_cfg,
         rotate_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        FiniteStepTaskCfg,
-        FiniteStepTaskEpisodeCfg,
-    )
+    from grutopia_extension.configs.tasks import FiniteStepTaskCfg
 
     headless = False
     if not has_display():
@@ -55,19 +52,17 @@ def main():
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=True, rendering_interval=20, headless=headless
         ),
-        task_config=FiniteStepTaskCfg(
-            env_num=4,
-            offset_size=10,
-            task_settings={'max_step': 500},
-            episodes=[
-                FiniteStepTaskEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1_1.update(), h1.update()],
-                )
-                for _ in range(9)
-            ],
-        ),
+        env_num=4,
+        env_offset_size=10,
+        task_configs=[
+            FiniteStepTaskCfg(
+                max_steps=500,
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1_1.update(), h1.update()],
+            )
+            for _ in range(9)
+        ],
     )
 
     print(config.model_dump_json(indent=4))

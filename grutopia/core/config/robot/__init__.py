@@ -33,28 +33,6 @@ class ControllerCfg(BaseCfg, extra='allow'):
     name: str
     type: str
     sub_controllers: Optional[List['ControllerCfg']] = None
-    # reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
-
-    # joint_names: Optional[List[str]] = None
-    # robot_description_path: Optional[str] = None
-    # robot_urdf_path: Optional[str] = None
-    # end_effector_frame_name: Optional[str] = None
-    # rmpflow_config_path: Optional[str] = None
-    # sub_controllers: Optional[List[ControllerParams]] = None
-    # forward_speed: Optional[float] = None
-    # rotation_speed: Optional[float] = None
-    # lateral_speed: Optional[float] = None
-    # threshold: Optional[float] = None
-    # policy_weights_path: Optional[str] = None
-    # recover_height: Optional[float] = None
-    #
-    # map_data_path: Optional[str] = None  # navi only, npy BOG (binary occupancy grid) file
-    # reference: Optional[str] = None  # ik only, world/robot/arm_base, default to world
-    #
-    # # Planner controller
-    # planner: Optional[str] = None  # for planning policy.
-    # model: Optional[str] = None  # for planning policy model
-    # model_path: Optional[str] = None  # for planning policy, weight path of model
 
 
 class RobotCfg(BaseCfg):
@@ -73,9 +51,9 @@ class RobotCfg(BaseCfg):
         create_robot (bool, optional): Flag indicating whether to create the robot instance during simulation setup. Defaults to True.
         usd_path (Optional[str], optional): The file path to the USD containing the robot definition. If None, a default path is used.
 
-        position (Optional[List[float]], optional): Initial position of the robot in world frame. Defaults to (0.0, 0.0, 0.0).
-        orientation (Optional[List[float]], optional): Initial orientation of the robot in quaternion. Defaults to None.
-        scale (Optional[List[float]], optional): Scaling factor for the robot. Defaults to None.
+        position (Optional[Tuple[float, float, float]], optional): Initial position of the robot in world frame. Defaults to (0.0, 0.0, 0.0).
+        orientation (Optional[Tuple[float, float, float, float]], optional): Initial orientation of the robot in quaternion. Defaults to None.
+        scale (Optional[Tuple[float, float, float]], optional): Scaling factor for the robot. Defaults to None.
 
         controllers (Optional[List[ControllerCfg]], optional): List of controller configurations attached to the robot. Defaults to None.
         sensors (Optional[List[SensorCfg]], optional): List of sensor configurations attached to the robot. Defaults to None.

@@ -11,10 +11,7 @@ def main():
         h1_tp_camera_cfg,
         move_by_speed_cfg,
     )
-    from grutopia_extension.configs.tasks import (
-        SingleInferenceEpisodeCfg,
-        SingleInferenceTaskCfg,
-    )
+    from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
     headless = False
     if not has_display():
@@ -39,16 +36,14 @@ def main():
         simulator=SimConfig(
             physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless
         ),
-        task_config=SingleInferenceTaskCfg(
-            episodes=[
-                SingleInferenceEpisodeCfg(
-                    scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                    scene_scale=(0.01, 0.01, 0.01),
-                    robots=[h1],
-                    objects=[],
-                ),
-            ],
-        ),
+        task_configs=[
+            SingleInferenceTaskCfg(
+                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+                scene_scale=(0.01, 0.01, 0.01),
+                robots=[h1],
+                objects=[],
+            ),
+        ],
     )
 
     print(config.model_dump_json(indent=4))

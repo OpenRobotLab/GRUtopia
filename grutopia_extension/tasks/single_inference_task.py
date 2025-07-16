@@ -1,12 +1,12 @@
-from grutopia.core.runtime.task_runtime import TaskRuntime
+from grutopia.core.config import TaskCfg
 from grutopia.core.scene.scene import IScene
 from grutopia.core.task import BaseTask
 
 
 @BaseTask.register('SingleInferenceTask')
 class SimpleInferenceTask(BaseTask):
-    def __init__(self, runtime: TaskRuntime, scene: IScene):
-        super().__init__(runtime, scene)
+    def __init__(self, config: TaskCfg, scene: IScene):
+        super().__init__(config, scene)
 
     def calculate_metrics(self) -> dict:
         pass

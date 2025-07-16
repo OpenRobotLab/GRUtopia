@@ -10,10 +10,7 @@ from grutopia_extension.configs.robots.jetbot import (
     move_along_path_cfg,
     move_to_point_cfg,
 )
-from grutopia_extension.configs.tasks import (
-    SingleInferenceEpisodeCfg,
-    SingleInferenceTaskCfg,
-)
+from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = False
 
@@ -23,20 +20,18 @@ if not has_display():
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    task_config=SingleInferenceTaskCfg(
-        episodes=[
-            SingleInferenceEpisodeCfg(
-                scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[
-                    JetbotRobotCfg(
-                        position=(0.0, 0.0, 0.0),
-                        controllers=[move_to_point_cfg, move_along_path_cfg],
-                        scale=(5.0, 5.0, 5.0),
-                    )
-                ],
-            ),
-        ],
-    ),
+    task_configs=[
+        SingleInferenceTaskCfg(
+            scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
+            robots=[
+                JetbotRobotCfg(
+                    position=(0.0, 0.0, 0.0),
+                    controllers=[move_to_point_cfg, move_along_path_cfg],
+                    scale=(5.0, 5.0, 5.0),
+                )
+            ],
+        ),
+    ],
 )
 
 path = [(3.0, 3.0, 0.0), (1.0, 0.0, 0.0), (0.0, -1.0, 0.0), (-1.0, 0.5, 0.0)]

@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from grutopia.core.config.object import ObjectCfg
 
@@ -13,7 +13,7 @@ class DynamicCubeCfg(ObjectCfg):
 
 class VisualCubeCfg(ObjectCfg):
     type: Optional[str] = 'VisualCube'
-    color: Optional[Tuple[float, float, float]] = None
+    color: Optional[List[float]] = None
 
 
 class UsdObjCfg(ObjectCfg):
