@@ -123,6 +123,9 @@ class RepCamera(BaseSensor):
         Returns:
             np.ndarray: The point cloud as a 2D numpy array with shape (N, 3), where N is the number of points.
         """
+        # Convert the camera env_offset to a GPU tensor.
+        offset = torch.tensor(self._camera.offset, device='cuda')
+
         # Convert the depth image to a GPU tensor.
         depth_tensor = torch.as_tensor(depth, device='cuda', dtype=torch.float32)
 
@@ -161,7 +164,7 @@ class RepCamera(BaseSensor):
         points_camera_homo = torch.cat([points_camera, ones], dim=1)  # (N, 4)
         # Translate points to world frame.
         points_world_homo = points_camera_homo @ view_matrix_ros_inv.T
-        points_world = points_world_homo[:, :3].cpu().numpy()
+        points_world = (points_world_homo[:, :3] - offset).cpu().numpy()
 
         return points_world
 

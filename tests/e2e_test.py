@@ -92,6 +92,12 @@ def test_rep_camera_pointcloud():
 
 
 @pytest.mark.P0
+def test_rep_camera_pointcloud_vec():
+    start_command = 'python ./tests/rep_camera_pointcloud_vec.py'
+    common_body(start_command)
+
+
+@pytest.mark.P0
 def test_franka_manipulation_multi_env_with_reset():
     start_command = 'python ./tests/franka_manipulation_multi_env_with_reset.py'
     common_body(start_command)
