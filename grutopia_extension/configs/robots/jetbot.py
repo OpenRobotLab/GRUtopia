@@ -6,6 +6,7 @@ from grutopia_extension.configs.controllers import (
     DifferentialDriveControllerCfg,
     MoveAlongPathPointsControllerCfg,
     MoveToPointBySpeedControllerCfg,
+    RotateControllerCfg,
 )
 from grutopia_extension.configs.sensors import RepCameraCfg
 
@@ -27,6 +28,12 @@ move_along_path_cfg = MoveAlongPathPointsControllerCfg(
     sub_controllers=[move_to_point_cfg],
 )
 
+rotate_cfg = RotateControllerCfg(
+    name='rotate',
+    rotation_speed=2.0,
+    threshold=0.02,
+    sub_controllers=[move_by_speed_cfg],
+)
 
 camera_cfg = RepCameraCfg(
     name='camera',

@@ -62,8 +62,8 @@ move_along_path_cfg = MoveAlongPathPointsControllerCfg(
 
 rotate_cfg = RotateControllerCfg(
     name='rotate',
-    rotation_speed=2.0,
-    threshold=0.02,
+    rotation_speed=4.0,
+    threshold=0.1,
     sub_controllers=[move_by_speed_cfg],
 )
 

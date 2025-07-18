@@ -117,7 +117,9 @@ def test_h1_locomotion_multi_sim():
 
 @pytest.mark.P0
 def test_robots():
-    start_command = 'set -e; ls ./tests/robots/*.py | grep -v test_ | while read f; do echo "run $f" && python $f; done'
+    start_command = (
+        'set -e; ls ./tests/robots/**/*.py | grep -v test_ | while read f; do echo "run $f" && python $f; done'
+    )
     common_body(start_command)
 
 
