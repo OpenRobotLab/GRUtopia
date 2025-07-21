@@ -7,7 +7,7 @@ with open('requirements/runtime.txt', 'r') as fr:
     requirements = fr.readlines()
 
 setuptools.setup(
-    name='grutopia',
+    name='internutopia',
     version='2.1.1',
     author='APX103',
     author_email='lijialun@pjlab.org.cn',

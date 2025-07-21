@@ -5,7 +5,7 @@ set -eo &> /dev/null
 if [[ -d ~/.local/share/ov/pkg ]] && [[ $(ls ~/.local/share/ov/pkg | grep 'isaac[-_]sim') ]];
 then
   FOUND_ISAAC_SIM_PATH=$(ls -d ~/.local/share/ov/pkg/* | grep 'isaac[-_]sim' | tail -n 1)
-  echo "We found Isaac Sim installed at [4m$FOUND_ISAAC_SIM_PATH[0m. GRUtopia will use it by default."
+  echo "We found Isaac Sim installed at [4m$FOUND_ISAAC_SIM_PATH[0m. InternUtopia will use it by default."
   read -p "If you want to use a different one, please type in the path containing isaac-sim.sh here (press enter to skip) >>> " ISAAC_SIM_PATH
   ISAAC_SIM_PATH=${ISAAC_SIM_PATH:-$FOUND_ISAAC_SIM_PATH}
 else
@@ -21,9 +21,9 @@ echo -e "\nUsing Isaac Sim at [4m$ISAAC_SIM_PATH[0m\n"
 
 
 # Choose venv name
-echo "The new conda environment will be named [4mgrutopia[0m by default."
+echo "The new conda environment will be named [4minternutopia[0m by default."
 read -p "If you want to use a different name, please type in here (press enter to skip) >>> " conda_name
-conda_name=${conda_name:-grutopia}
+conda_name=${conda_name:-internutopia}
 echo -e "\nUsing [4m$conda_name[0m as the conda environment name\n"
 
 # Get Python version from Isaac Sim
@@ -34,7 +34,7 @@ echo "Using Python version [4m$ISAAC_PYTHON_VERSION[0m matching your current I
 source $(conda info --base)/etc/profile.d/conda.sh
 conda create -y -n $conda_name python=${ISAAC_PYTHON_VERSION}
 
-# Now activate the grutopia environment
+# Now activate the internutopia environment
 conda activate $conda_name
 
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
@@ -58,10 +58,10 @@ echo "unset CARB_APP_PATH" >> ${CONDA_DEACT_FILE}
 echo "unset LD_LIBRARY_PATH_OLD" >> ${CONDA_DEACT_FILE}
 echo "unset PYTHONPATH_OLD" >> ${CONDA_DEACT_FILE}
 
-# Install grutopia!
+# Install internutopia!
 pip install -e .
 
 # Cycle conda environment so that all dependencies are propagated
 conda deactivate
 
-echo -e "\GRUtopia successfully installed! Please run [4mconda activate $conda_name[0m to activate the environment.\n"
+echo -e "\InternUtopia successfully installed! Please run [4mconda activate $conda_name[0m to activate the environment.\n"

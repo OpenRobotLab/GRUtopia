@@ -46,7 +46,7 @@ layout_cfg = LayoutEditMocapControllerCfg(
     left_hand_path=gm.ASSET_PATH + '/assets/hand/left_hand.usd',
     left_hand_prim_path='/World/left_hand',
     right_hand_prim_path='/World/right_hand',
-    save_asset_path='GRUtopia/out',
+    save_asset_path='InternUtopia/out',
     save_robot=False,
     sub_controllers=[rmpflow_controller_cfg],
 )

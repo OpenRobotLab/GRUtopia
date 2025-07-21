@@ -11,6 +11,6 @@ stages:
 code_check:
   stage: code_check
   image:
-    name: registry.cn-hangzhou.aliyuncs.com/grutopia/pre-commit:20250303
+    name: registry.cn-hangzhou.aliyuncs.com/internutopia/pre-commit:20250303
   script:
     - pre-commit run --all-files

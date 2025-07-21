@@ -7,7 +7,7 @@ from internutopia.core.util import log
 
 class MetaActionData(BaseModel):
     """
-    action status in grutopia
+    action status in internutopia
     """
 
     controller: str
@@ -16,7 +16,7 @@ class MetaActionData(BaseModel):
 
 class ActionData(BaseModel):
     """
-    action status in grutopia
+    action status in internutopia
     """
 
     robot: str
@@ -25,7 +25,7 @@ class ActionData(BaseModel):
 
 class _IsaacData(BaseModel):
     """
-    isaac status in grutopia
+    isaac status in internutopia
     """
 
     actions: Optional[Dict[str, Dict[str, Any]]] = {}
@@ -36,7 +36,7 @@ class _IsaacData(BaseModel):
 
 class IsaacData:
     """
-    isaac status in grutopia
+    isaac status in internutopia
 
     There are three types of isaac status:
 

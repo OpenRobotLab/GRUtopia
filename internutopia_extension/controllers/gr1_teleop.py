@@ -13,7 +13,7 @@ from pin_ik_solver import PinIKSolver
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # conda run --no-capture-output -n sim-teleop python gr1t2_teleop.py
-# cwd: GRUtopia/internutopia_extension/controllers
+# cwd: InternUtopia/internutopia_extension/controllers
 
 
 class GR1T2TeleOpHandler:
@@ -72,9 +72,11 @@ class GR1T2TeleOpHandler:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--urdf_path', type=str, default='../../grutopia/assets/robots/gr1/urdf/robot.urdf')
+    parser.add_argument('--urdf_path', type=str, default='../../internutopia/assets/robots/gr1/urdf/robot.urdf')
     parser.add_argument(
-        '--retargeting_config_path', type=str, default='../../grutopia/assets/robots/gr1/inspire_hand/inspire_hand.yml'
+        '--retargeting_config_path',
+        type=str,
+        default='../../internutopia/assets/robots/gr1/inspire_hand/inspire_hand.yml',
     )
 
     try:

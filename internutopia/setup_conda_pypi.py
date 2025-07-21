@@ -8,7 +8,9 @@ def main():
     if os.path.isdir(pkg_path) and any('isaac' in d for d in os.listdir(pkg_path)):
         found_paths = [d for d in os.listdir(pkg_path) if 'isaac' in d]
         found_isaac_sim_path = os.path.join(pkg_path, found_paths[-1])
-        print(f'We found Isaac Sim installed at \033[4m{found_isaac_sim_path}\033[0m. GRUtopia will use it by default.')
+        print(
+            f'We found Isaac Sim installed at \033[4m{found_isaac_sim_path}\033[0m. InternUtopia will use it by default.'
+        )
 
         isaac_sim_path = input(
             'If you want to use a different one, please type in the path containing isaac-sim.sh here (press enter to skip) >>> '

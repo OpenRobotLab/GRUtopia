@@ -57,4 +57,4 @@ try:
 except Exception:
     pass
 
-gm.ASSET_PATH = determine_gm_path(default_assets_path, 'GRUTOPIA_ASSETS_PATH')
+gm.ASSET_PATH = determine_gm_path(default_assets_path, 'INTERNUTOPIA_ASSETS_PATH')

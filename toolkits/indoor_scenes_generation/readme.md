@@ -29,7 +29,7 @@ To utilize static assets from GRScenes-100, replace corresponding files in the `
 > - `toolkits/indoor_scenes_generation/infinigen/infinigen_examples/...` → `infinigen/infinigen_examples/...`
 
 #### 2.2 Prepare Static Assets
-Activate the GRUtopia environment and execute the following to generate asset sources in `infinigen/infinigen/assets/static_assets/source`:
+Activate the InternUtopia environment and execute the following to generate asset sources in `infinigen/infinigen/assets/static_assets/source`:
 
 ```bash
 python toolkits/indoor_scenes_generation/util/preparing_static_assets.py \
@@ -60,7 +60,7 @@ python -m infinigen.tools.export \
 
 #### 4.2 Scene Postprocessing
 
-To better use the GRScenes-100 data, please activate GRUtopia environment and run the following script:
+To better use the GRScenes-100 data, please activate InternUtopia environment and run the following script:
 
 ```bash
 python toolkits/indoor_scenes_generation/util/data_post_processing.py \

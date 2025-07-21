@@ -30,7 +30,7 @@ minimum_include_paths = [
 
 
 def generate_random_env_name() -> str:
-    prefix = 'grutopia_asset_'
+    prefix = 'internutopia_asset_'
     random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
     return f'{prefix}_{random_string}'
 

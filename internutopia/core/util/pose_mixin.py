@@ -117,7 +117,7 @@ class PoseMixin:
 
     def get_pose(self) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Get prim's pose with respect to the env's frame (env in grutopia)
+        Get prim's pose with respect to the env's frame (env in internutopia)
 
         Returns:
             Tuple[np.ndarray, np.ndarray]: first index is the position in the world frame (with shape (3, )).
@@ -137,7 +137,7 @@ class PoseMixin:
         orientation: Optional[Sequence[float]] = None,
     ) -> None:
         """
-        Ses prim's pose with respect to the env's frame (env in grutopia)
+        Ses prim's pose with respect to the env's frame (env in internutopia)
 
         Args:
             position (Optional[Sequence[float]], optional): position in the env frame of the prim. shape is (3, ).
