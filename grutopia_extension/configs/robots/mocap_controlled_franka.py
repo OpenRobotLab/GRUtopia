@@ -70,5 +70,4 @@ class MocapControlledFrankaRobotCfg(RobotCfg):
     name: Optional[str] = 'mocap_controlled_franka'
     type: Optional[str] = 'MocapControlledFrankaRobot'
     prim_path: Optional[str] = '/mocap_controlled_franka'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/franka/mocap_teleop_franka.usd'

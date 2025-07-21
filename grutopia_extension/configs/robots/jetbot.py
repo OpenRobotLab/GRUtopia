@@ -47,5 +47,4 @@ class JetbotRobotCfg(RobotCfg):
     name: Optional[str] = 'jetbot'
     type: Optional[str] = 'JetbotRobot'
     prim_path: Optional[str] = '/World/jetbot'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/jetbot/jetbot.usd'

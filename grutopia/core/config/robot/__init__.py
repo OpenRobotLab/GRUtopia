@@ -48,7 +48,6 @@ class RobotCfg(BaseCfg):
         name (str): The name identifier for the robot.
         type (str): The type or category of the robot.
         prim_path (str): The USD prim path where the robot is located or should be instantiated within a scene.
-        create_robot (bool, optional): Flag indicating whether to create the robot instance during simulation setup. Defaults to True.
         usd_path (Optional[str], optional): The file path to the USD containing the robot definition. If None, a default path is used.
 
         position (Optional[Tuple[float, float, float]], optional): Initial position of the robot in world frame. Defaults to (0.0, 0.0, 0.0).
@@ -63,7 +62,6 @@ class RobotCfg(BaseCfg):
     name: str
     type: str
     prim_path: str
-    create_robot: bool = True
     usd_path: Optional[str] = None  # If Optional, use default usd_path
 
     # common config

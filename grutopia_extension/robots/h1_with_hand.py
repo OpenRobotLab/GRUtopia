@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from typing import List
 
 import numpy as np
 
@@ -41,9 +40,6 @@ class H1WithHandRobot(BaseRobot):
         )
 
         self.articulation.set_enabled_self_collisions(False)
-
-    def get_rigid_bodies(self) -> List[IRigidBody]:
-        return self._rigid_body_map.values()
 
     def post_reset(self):
         super().post_reset()

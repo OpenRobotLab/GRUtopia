@@ -73,5 +73,4 @@ class G1RobotCfg(RobotCfg):
     name: Optional[str] = 'g1'
     type: Optional[str] = 'G1Robot'
     prim_path: Optional[str] = '/g1'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/g1/g1_29dof_color.usd'

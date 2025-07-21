@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from typing import List
 
 import numpy as np
 
@@ -45,9 +44,6 @@ class G1Robot(BaseRobot):
         self._robot_base = self._rigid_body_map[self.config.prim_path + '/pelvis']
         self._imu_in_torso = self._rigid_body_map[self.config.prim_path + '/imu_link']
         self.set_gains()
-
-    def get_rigid_bodies(self) -> List[IRigidBody]:
-        return self._rigid_body_map.values()
 
     def get_robot_scale(self):
         return self._robot_scale

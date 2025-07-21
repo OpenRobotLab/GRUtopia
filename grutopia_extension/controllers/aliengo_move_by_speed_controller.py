@@ -132,7 +132,6 @@ class AliengoMoveBySpeedController(BaseController):
         base_quat_w = torch.tensor(base_pose_w[1]).reshape(1, -1)
         base_ang_vel_w = torch.tensor(robot_base.get_angular_velocity()[:]).reshape(1, -1)
         base_ang_vel = np.array(math_utils.quat_rotate_inverse(base_quat_w, base_ang_vel_w).reshape(-1))
-        base_ang_vel = base_ang_vel * np.pi / 180.0
 
         projected_gravity = torch.tensor([[0.0, 0.0, -1.0]], device='cpu', dtype=torch.float)
         projected_gravity = np.array(math_utils.quat_rotate_inverse(base_quat_w, projected_gravity).reshape(-1))

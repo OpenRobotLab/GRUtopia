@@ -63,5 +63,4 @@ class AliengoRobotCfg(RobotCfg):
     name: Optional[str] = 'aliengo'
     type: Optional[str] = 'AliengoRobot'
     prim_path: Optional[str] = '/aliengo'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/aliengo/aliengo_camera.usdz'

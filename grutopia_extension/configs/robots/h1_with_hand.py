@@ -123,5 +123,4 @@ class H1WithHandRobotCfg(RobotCfg):
     name: Optional[str] = 'h1_with_hand'
     type: Optional[str] = 'H1WithHandRobot'
     prim_path: Optional[str] = '/h1_with_hand'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/h1_with_hand/h1_with_hand_rt_v2.usd'

@@ -25,5 +25,4 @@ class FrankaRobotCfg(RobotCfg):
     name: Optional[str] = 'franka'
     type: Optional[str] = 'FrankaRobot'
     prim_path: Optional[str] = '/franka'
-    create_robot: Optional[bool] = True
     usd_path: Optional[str] = gm.ASSET_PATH + '/robots/franka/franka.usd'

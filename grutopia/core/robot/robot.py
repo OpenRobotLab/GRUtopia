@@ -24,7 +24,7 @@ class BaseRobot:
         self.sensors = {}
         self._scene = scene
         self.obs_keys = []
-        self._rigid_body_map = {}
+        self._rigid_body_map: Dict[str, IRigidBody] = {}
 
     def set_up_to_scene(self, scene: IScene):
         """Set up robot in the scene.
@@ -185,7 +185,7 @@ class BaseRobot:
         return self.controllers
 
     def get_rigid_bodies(self) -> List[IRigidBody]:
-        return []
+        return self._rigid_body_map.values()
 
     def _make_ordered(self, obs: Dict = None) -> OrderedDict:
         if obs is None:
