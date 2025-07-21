@@ -37,7 +37,7 @@ config = Config(
     task_configs=[
         FiniteStepTaskCfg(
             max_steps=300,
-            metrics=[SimpleMetricCfg(metric_config={'robot_name': 'h1'})],
+            metrics=[SimpleMetricCfg(robot_name='h1')],
             scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
             scene_scale=(0.01, 0.01, 0.01),
             robots=[h1_1],
@@ -63,7 +63,7 @@ while env.simulation_app.is_running():
 
     if terminated:
         obs, info = env.reset()
-        if env.RESET_INFO_TASK_CONFIG not in info:  # No more episode
+        if info is None:  # No more episode
             break
 
     if i % 100 == 0:

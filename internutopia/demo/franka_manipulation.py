@@ -73,7 +73,7 @@ while env.simulation_app.is_running():
 
     if terminated:
         obs, info = env.reset()
-        if env.RESET_INFO_TASK_CONFIG not in info:  # No more episode
+        if info is None:  # No more episode
             break
 
     if i % 1000 == 0:
