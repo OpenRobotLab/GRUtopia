@@ -8,7 +8,7 @@ e2e-demo-tests:
   script:
     - export PATH=/isaac-sim/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
     - export JOB_ID=${CI_JOB_ID}
-    - ln -s /isaac-sim/GRUtopia/testk ./grutopia/assets
+    - ln -s /isaac-sim/GRUtopia/testk ./internutopia/assets
     - pytest -s -v -m "P0" ./tests/e2e_test.py
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "proto")

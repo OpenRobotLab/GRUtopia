@@ -120,7 +120,7 @@ work_dirs/
 *.py~
 *.sh~
 
-# grutopia assets
+# internutopia assets
 /asset
 assets
 
@@ -131,4 +131,4 @@ assets
 docs/en/_build
 
 # default value for marcos.py
-grutopia/default_config.py
+internutopia/default_config.py

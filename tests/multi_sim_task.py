@@ -1,12 +1,12 @@
 from typing import Optional
 
-from grutopia.core.config.robot import RobotCfg
-from grutopia.core.config.task import TaskCfg
-from grutopia.core.robot.robot import BaseRobot
-from grutopia.core.scene.scene import IScene
-from grutopia.core.task import BaseTask
-from grutopia.macros import gm
-from grutopia_extension.robots.h1 import H1Robot
+from internutopia.core.config.robot import RobotCfg
+from internutopia.core.config.task import TaskCfg
+from internutopia.core.robot.robot import BaseRobot
+from internutopia.core.scene.scene import IScene
+from internutopia.core.task import BaseTask
+from internutopia.macros import gm
+from internutopia_extension.robots.h1 import H1Robot
 
 
 class MultiSimTestH1RobotCfg(RobotCfg):

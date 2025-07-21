@@ -1,17 +1,17 @@
 def main():
-    from grutopia.core.config import Config, SimConfig
-    from grutopia.core.gym_env import Env
-    from grutopia.core.util import has_display
-    from grutopia.macros import gm
-    from grutopia_extension import import_extensions
-    from grutopia_extension.configs.robots.h1 import (
+    from internutopia.core.config import Config, SimConfig
+    from internutopia.core.gym_env import Env
+    from internutopia.core.util import has_display
+    from internutopia.macros import gm
+    from internutopia_extension import import_extensions
+    from internutopia_extension.configs.robots.h1 import (
         H1RobotCfg,
         h1_camera_cfg,
         move_along_path_cfg,
         move_by_speed_cfg,
         rotate_cfg,
     )
-    from grutopia_extension.configs.tasks import FiniteStepTaskCfg
+    from internutopia_extension.configs.tasks import FiniteStepTaskCfg
 
     headless = False
     if not has_display():

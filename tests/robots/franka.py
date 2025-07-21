@@ -1,16 +1,16 @@
 import numpy as np
 
-from grutopia.core.config import Config, SimConfig
-from grutopia.core.gym_env import Env
-from grutopia.core.util import has_display
-from grutopia.macros import gm
-from grutopia_extension import import_extensions
-from grutopia_extension.configs.robots.franka import (
+from internutopia.core.config import Config, SimConfig
+from internutopia.core.gym_env import Env
+from internutopia.core.util import has_display
+from internutopia.macros import gm
+from internutopia_extension import import_extensions
+from internutopia_extension.configs.robots.franka import (
     FrankaRobotCfg,
     arm_ik_cfg,
     gripper_cfg,
 )
-from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
+from internutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = not has_display()
 

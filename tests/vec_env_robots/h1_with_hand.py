@@ -1,6 +1,6 @@
 from test_move_to_point import run
 
-from grutopia_extension.configs.robots.h1_with_hand import (
+from internutopia_extension.configs.robots.h1_with_hand import (
     H1WithHandRobotCfg,
     move_to_point_cfg,
 )

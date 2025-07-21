@@ -36,7 +36,7 @@ def pytest_runtest_makereport(item, call):
             tmp_outcome = res.outcome
         set_up_result = {
             'task_id': task_id,
-            'commit_id': os.environ.get('CI_COMMIT_SHA'),
+            'commit_id': os.environ.get('CI_COMMIT_SHORT_SHA'),
             'case_name': case_name,
             'case_prority': case_prority,
             'nodeid': res.nodeid,
@@ -59,7 +59,7 @@ def pytest_runtest_makereport(item, call):
                     metrics = json.load(f)
         call_result = {
             'task_id': task_id,
-            'commit_id': os.environ.get('CI_COMMIT_SHA'),
+            'commit_id': os.environ.get('CI_COMMIT_SHORT_SHA'),
             'case_name': case_name,
             'case_prority': case_prority,
             'nodeid': res.nodeid,

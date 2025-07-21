@@ -6,10 +6,10 @@ def main():
         MultiSimTestTaskCfg,
     )
 
-    from grutopia.core.config import Config, SimConfig
-    from grutopia.core.config.distribution import RayDistributionCfg
-    from grutopia.core.vec_env import Env
-    from grutopia.macros import gm
+    from internutopia.core.config import Config, SimConfig
+    from internutopia.core.config.distribution import RayDistributionCfg
+    from internutopia.core.vec_env import Env
+    from internutopia.macros import gm
 
     headless = True
     num_episode = 9
@@ -37,7 +37,7 @@ def main():
         )
     )
 
-    from grutopia_extension import import_extensions
+    from internutopia_extension import import_extensions
 
     import_extensions()
 

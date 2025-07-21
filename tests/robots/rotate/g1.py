@@ -1,6 +1,6 @@
 from test_rotate import run
 
-from grutopia_extension.configs.robots.g1 import G1RobotCfg, rotate_cfg
+from internutopia_extension.configs.robots.g1 import G1RobotCfg, rotate_cfg
 
 if __name__ == '__main__':
     try:

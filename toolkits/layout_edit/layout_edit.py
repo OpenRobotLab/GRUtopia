@@ -1,19 +1,19 @@
-from grutopia.core.config import Config, SimConfig
-from grutopia.core.gym_env import Env
-from grutopia.macros import gm
-from grutopia_extension import import_extensions
-from grutopia_extension.configs.robots.mocap_controlled_franka import (
+from internutopia.core.config import Config, SimConfig
+from internutopia.core.gym_env import Env
+from internutopia.macros import gm
+from internutopia_extension import import_extensions
+from internutopia_extension.configs.robots.mocap_controlled_franka import (
     MocapControlledFrankaRobotCfg,
     layout_cfg,
     layout_controlled_camera_cfg,
 )
-from grutopia_extension.configs.tasks import (
+from internutopia_extension.configs.tasks import (
     ManipulationEpisodeCfg,
     ManipulationExtra,
     ManipulationTaskCfg,
     ManipulationTaskSetting,
 )
-from grutopia_extension.interactions.motion_capture import MocapInteraction
+from internutopia_extension.interactions.motion_capture import MocapInteraction
 
 franka = MocapControlledFrankaRobotCfg(
     position=(-0.35, 100.0, 1.05),

@@ -1,6 +1,9 @@
 from test_move_to_point import run
 
-from grutopia_extension.configs.robots.jetbot import JetbotRobotCfg, move_to_point_cfg
+from internutopia_extension.configs.robots.jetbot import (
+    JetbotRobotCfg,
+    move_to_point_cfg,
+)
 
 if __name__ == '__main__':
     try:

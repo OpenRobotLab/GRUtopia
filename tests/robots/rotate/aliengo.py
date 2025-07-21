@@ -1,6 +1,6 @@
 from test_rotate import run
 
-from grutopia_extension.configs.robots.aliengo import AliengoRobotCfg, rotate_cfg
+from internutopia_extension.configs.robots.aliengo import AliengoRobotCfg, rotate_cfg
 
 if __name__ == '__main__':
     try:

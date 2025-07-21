@@ -3,12 +3,12 @@ from copy import deepcopy
 
 import numpy as np
 
-from grutopia.core.config import Config, SimConfig
-from grutopia.core.util import has_display
-from grutopia.core.vec_env import Env
-from grutopia.macros import gm
-from grutopia_extension import import_extensions
-from grutopia_extension.configs.tasks import SingleInferenceTaskCfg
+from internutopia.core.config import Config, SimConfig
+from internutopia.core.util import has_display
+from internutopia.core.vec_env import Env
+from internutopia.macros import gm
+from internutopia_extension import import_extensions
+from internutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
 headless = not has_display()
 
