@@ -32,7 +32,7 @@ echo "Using Python version [4m$ISAAC_PYTHON_VERSION[0m matching your current I
 
 # Create a conda environment with the appropriate python version
 source $(conda info --base)/etc/profile.d/conda.sh
-conda create -y -n $conda_name python=${ISAAC_PYTHON_VERSION}
+conda create -y -n $conda_name python=${ISAAC_PYTHON_VERSION} libxcb=1.14
 
 # Now activate the internutopia environment
 conda activate $conda_name
