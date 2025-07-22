@@ -26,7 +26,7 @@ def run(robot_0_cfg: tuple, robot_1_cfg: tuple, max_steps=5000):
         task_configs=[
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot_0.update(), robot_1.update()],
+                robots=[robot_0, robot_1],
             )
             for _ in range(4)
         ],

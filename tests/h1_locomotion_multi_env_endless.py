@@ -37,12 +37,12 @@ def main():
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 scene_scale=(0.01, 0.01, 0.01),
-                robots=[h1.update()],
+                robots=[h1],
             ),
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
                 scene_scale=(0.01, 0.01, 0.01),
-                robots=[h1.update()],
+                robots=[h1],
             ),
         ],
     )

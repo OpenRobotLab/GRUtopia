@@ -50,7 +50,7 @@ def main():
         task_configs=[
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[franka_0.update(), franka_1.update()],
+                robots=[franka_0, franka_1],
             )
             for _ in range(6)
         ],

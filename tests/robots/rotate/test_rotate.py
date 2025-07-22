@@ -23,15 +23,15 @@ def run(
         task_configs=[
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
         ],
     )

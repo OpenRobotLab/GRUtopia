@@ -6,6 +6,10 @@ from internutopia.core.config import Config, DistributedConfig, TaskCfg
 
 def setup_offset_for_assets(task_config: TaskCfg, env_id: int, offset: List[float]):
     root_path = f'/World/env_{str(env_id)}'
+
+    task_config.robots = [r.model_copy(deep=True) for r in task_config.robots]
+    task_config.objects = [o.model_copy(deep=True) for o in task_config.objects if task_config.objects]
+
     for r in task_config.robots:
         r.name = f'{r.name}_{env_id}'
         r.prim_path = root_path + task_config.robots_root_path + r.prim_path

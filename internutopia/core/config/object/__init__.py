@@ -1,9 +1,9 @@
 from typing import Optional, Tuple
 
-from pydantic import BaseModel
+from internutopia.core.config.robot import BaseCfg
 
 
-class ObjectCfg(BaseModel):
+class ObjectCfg(BaseCfg):
     """
     Represents a customizable object within a scene, with support for physics and different object types.
 

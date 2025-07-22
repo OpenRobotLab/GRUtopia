@@ -36,7 +36,7 @@ config = Config(
         SingleInferenceTaskCfg(
             scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
             scene_scale=(0.01, 0.01, 0.01),
-            robots=[h1_1.update()],
+            robots=[h1_1],
         ),
     ],
 )

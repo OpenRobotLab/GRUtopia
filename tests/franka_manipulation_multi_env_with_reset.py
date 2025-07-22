@@ -37,7 +37,7 @@ def main():
         task_configs=[
             ManipulationTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[franka.update()],
+                robots=[franka],
                 prompt='Prompt test 1',
                 target='franka_manipulation',
                 episode_idx=0,

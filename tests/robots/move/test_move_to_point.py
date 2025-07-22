@@ -21,15 +21,15 @@ def run(robot: RobotCfg, action: Dict[str, Any], target: Tuple[float, float, flo
         task_configs=[
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
             SingleInferenceTaskCfg(
                 scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
-                robots=[robot.update()],
+                robots=[robot],
             ),
         ],
     )
