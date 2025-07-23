@@ -178,9 +178,7 @@ class RepCamera(BaseSensor):
     # ====================================================================================
 
     def get_data(self) -> OrderedDict:
-        if self.config.enable:
-            return self.get_camera_data()
-        return self._make_ordered()
+        return self.get_camera_data()
 
     def cleanup(self) -> None:
         if self._camera is not None:

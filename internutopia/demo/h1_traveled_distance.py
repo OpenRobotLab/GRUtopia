@@ -9,7 +9,6 @@ from internutopia_extension.configs.metrics.traveled_distance_metric import (
 from internutopia_extension.configs.robots.h1 import (
     H1RobotCfg,
     h1_camera_cfg,
-    h1_tp_camera_cfg,
     move_along_path_cfg,
     move_by_speed_cfg,
     rotate_cfg,
@@ -28,8 +27,7 @@ h1_1 = H1RobotCfg(
         rotate_cfg,
     ],
     sensors=[
-        h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=True),
-        h1_tp_camera_cfg.update(enable=False),
+        h1_camera_cfg.update(name='camera', resolution=(320, 240)),
     ],
 )
 

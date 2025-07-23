@@ -8,8 +8,6 @@ def main():
     from internutopia_extension import import_extensions
     from internutopia_extension.configs.robots.h1 import (
         H1RobotCfg,
-        h1_camera_cfg,
-        h1_tp_camera_cfg,
         move_along_path_cfg,
         move_by_speed_cfg,
         rotate_cfg,
@@ -27,10 +25,7 @@ def main():
             move_along_path_cfg,
             rotate_cfg,
         ],
-        sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(160, 160), enable=True, depth=False),
-            h1_tp_camera_cfg.update(enable=False),
-        ],
+        sensors=[],
     )
 
     h1_1 = H1RobotCfg(
@@ -42,10 +37,7 @@ def main():
             move_along_path_cfg,
             rotate_cfg,
         ],
-        sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=False),
-            h1_tp_camera_cfg.update(enable=False),
-        ],
+        sensors=[],
     )
 
     config = Config(

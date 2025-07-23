@@ -29,7 +29,7 @@ def main():
             move_by_speed_cfg,
         ],
         sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(320, 240), enable=True, pointcloud=True),
+            h1_camera_cfg.update(name='camera', resolution=(320, 240), pointcloud=True),
         ],
     )
 

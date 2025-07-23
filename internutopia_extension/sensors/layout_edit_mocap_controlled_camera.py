@@ -50,13 +50,9 @@ class LayoutEditMocapControlledCamera(BaseSensor):
         return camera
 
     def post_reset(self):
-        if self.config.enable:
-            self._camera: ICamera = self.create_camera()
+        self._camera: ICamera = self.create_camera()
 
     def get_data(self) -> OrderedDict:
-        if not self.config.enable:
-            return self._make_ordered()
-
         rgba = self._camera.get_rgba()
         bounding_box_2d_tight = self._camera.get_bounding_box_2d_tight()
 

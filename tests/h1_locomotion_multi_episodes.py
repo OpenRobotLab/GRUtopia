@@ -25,28 +25,28 @@ def main():
             rotate_cfg,
         ],
         sensors=[
-            h1_camera_cfg.update(name='camera', resolution=(64, 64), enable=True),
+            h1_camera_cfg.update(name='camera', resolution=(64, 64)),
         ],
     )
 
     h1_1 = h1.update(
         sensors=[
-            h1_camera_cfg.update(name='camera_1', resolution=(64, 64), enable=True),
+            h1_camera_cfg.update(name='camera_1', resolution=(64, 64)),
         ]
     )
     h1_2 = h1.update(
         sensors=[
-            h1_camera_cfg.update(name='camera_2', resolution=(64, 64), enable=True),
+            h1_camera_cfg.update(name='camera_2', resolution=(64, 64)),
         ]
     )
     h1_3 = h1.update(
         sensors=[
-            h1_camera_cfg.update(name='camera_3', resolution=(64, 64), enable=True),
+            h1_camera_cfg.update(name='camera_3', resolution=(64, 64)),
         ]
     )
     h1_4 = h1.update(
         sensors=[
-            h1_camera_cfg.update(name='camera_4', resolution=(64, 64), enable=True),
+            h1_camera_cfg.update(name='camera_4', resolution=(64, 64)),
         ]
     )
 

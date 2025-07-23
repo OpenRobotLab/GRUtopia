@@ -6,7 +6,6 @@ from internutopia.core.config.robot import SensorCfg
 class RepCameraCfg(SensorCfg):
     # Fields from params.
     type: Optional[str] = 'RepCamera'
-    enable: Optional[bool] = True
     resolution: Optional[Tuple[int, int]] = None  # Camera only
     rgba: Optional[bool] = True
     landmarks: Optional[bool] = False
@@ -18,7 +17,6 @@ class RepCameraCfg(SensorCfg):
 class MocapControlledCameraCfg(SensorCfg):
     # Fields from params.
     type: Optional[str] = 'MocapControlledCamera'
-    enable: Optional[bool] = True
     resolution: Optional[Tuple[int, int]] = None  # Camera only
     translation: Optional[Tuple[float, float, float]] = None
     orientation: Optional[Tuple[float, float, float, float]] = None  # Quaternion in local frame
@@ -26,7 +24,6 @@ class MocapControlledCameraCfg(SensorCfg):
 
 class LayoutEditMocapControlledCameraCfg(SensorCfg):
     type: Optional[str] = 'LayoutEditMocapControlledCamera'
-    enable: Optional[bool] = True
     resolution: Optional[Tuple[int, int]] = None  # Camera only
     translation: Optional[Tuple[float, float, float]] = None
     orientation: Optional[Tuple[float, float, float, float]] = None  # Quaternion in local frame
