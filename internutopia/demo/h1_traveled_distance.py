@@ -32,7 +32,7 @@ h1_1 = H1RobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, webrtc=headless),
     metrics_save_path='./h1_traveled_distance_metric.jsonl',
     task_configs=[
         FiniteStepTaskCfg(

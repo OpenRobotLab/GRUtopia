@@ -23,7 +23,7 @@ class BaseController(ABC):
         Args:
             config (ControllerCfg): controller configuration.
             robot (BaseRobot): robot owning the controller.
-            scene (Scene): scene from isaac sim.
+            scene (IScene): scene interface.
 
         """
         self.sub_controllers = None

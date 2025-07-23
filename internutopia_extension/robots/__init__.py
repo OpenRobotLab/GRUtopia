@@ -7,5 +7,4 @@ from internutopia_extension.robots import (
     h1_with_hand,
     jetbot,
     mocap_controlled_franka,
-    npc,
 )

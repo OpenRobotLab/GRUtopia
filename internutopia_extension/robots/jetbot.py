@@ -129,7 +129,6 @@ class WheeledRobot(IsaacsimArticulation):
 class JetbotRobot(BaseRobot):
     def __init__(self, config: JetbotRobotCfg, scene: IScene):
         super().__init__(config, scene)
-        self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 

@@ -2,20 +2,19 @@ from collections import OrderedDict
 
 import numpy as np
 
-from internutopia.core.config.robot import RobotCfg
 from internutopia.core.robot.articulation import IArticulation
 from internutopia.core.robot.articulation_subset import ArticulationSubset
 from internutopia.core.robot.rigid_body import IRigidBody
 from internutopia.core.robot.robot import BaseRobot
 from internutopia.core.scene.scene import IScene
 from internutopia.core.util import log
+from internutopia_extension.configs.robots.h1 import H1RobotCfg
 
 
 @BaseRobot.register('H1Robot')
 class H1Robot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: IScene):
+    def __init__(self, config: H1RobotCfg, scene: IScene):
         super().__init__(config, scene)
-        self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 

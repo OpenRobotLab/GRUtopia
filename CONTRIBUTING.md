@@ -2,9 +2,9 @@
 
 Thank you for your interest in contributing to InternUtopia! We welcome contributions from everyone. Please take a moment to review this guide to ensure a smooth collaboration.
 
-- [Reporting Bugs](https://github.com/OpenRobotLab/InternUtopia/issues/new/choose)
-- [Suggesting Enhancement](https://github.com/OpenRobotLab/InternUtopia/issues/new/choose)
-- [Questions and Discussions](https://github.com/OpenRobotLab/InternUtopia/issues/new/choose)
+- [Reporting Bugs](https://github.com/InternRobotics/InternUtopia/issues/new/choose)
+- [Suggesting Enhancement](https://github.com/InternRobotics/InternUtopia/issues/new/choose)
+- [Questions and Discussions](https://github.com/InternRobotics/InternUtopia/issues/new/choose)
 - [Submitting Code Changes](#submitting-code-changes)
 - [Reviewing and Merging](#reviewing-and-merging)
 

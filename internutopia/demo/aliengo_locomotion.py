@@ -9,16 +9,11 @@ from internutopia_extension.configs.robots.aliengo import (
 )
 from internutopia_extension.configs.tasks import SingleInferenceTaskCfg
 
-headless = False
-webrtc = False
-
-if not has_display():
-    headless = True
-    webrtc = True
+headless = not has_display()
 
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, webrtc=webrtc, headless=headless),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, webrtc=headless),
     task_configs=[
         SingleInferenceTaskCfg(
             scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',

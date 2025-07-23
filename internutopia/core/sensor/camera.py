@@ -71,10 +71,10 @@ class ICamera(PoseMixin):
             simulator_type (str): simulator type.
             name (str): The unique identifier for the camera.
             prim_path (Optional[str]): The primary path associated with the camera.
-            rgba (Optional[bool], default=False): Whether to get rgba form the camera or not.
-            distance_to_image_plane (Optional[bool], default=False): Whether to get distance_to_image_plane form the camera or not.
-            bounding_box_2d_tight (Optional[bool], default=False): Whether to get bounding_box_2d_tight form the camera or not.
-            camera_params (Optional[bool], default=False): Whether to get camera_params form the camera or not.
+            rgba (Optional[bool], default=False): Whether to get rgba from the camera or not.
+            distance_to_image_plane (Optional[bool], default=False): Whether to get distance_to_image_plane from the camera or not.
+            bounding_box_2d_tight (Optional[bool], default=False): Whether to get bounding_box_2d_tight from the camera or not.
+            camera_params (Optional[bool], default=False): Whether to get camera_params from the camera or not.
             resolution (Optional[Tuple[int, int]], optional): resolution of the camera (width, height). Defaults to None.
             position (Optional[Tuple[float, float, float]], optional): position in the world frame of the prim. shape is (3, ). Defaults to None, which means left unchanged.
             translation (Optional[Tuple[float, float, float]], optional): translation in the local frame of the prim (with respect to its parent prim). shape is (3, ). Defaults to None, which means left unchanged.

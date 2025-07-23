@@ -4,19 +4,19 @@ from typing import Any, List
 
 import numpy as np
 
-from internutopia.core.config.robot import ControllerCfg
 from internutopia.core.robot.articulation_action import ArticulationAction
 from internutopia.core.robot.controller import BaseController
 from internutopia.core.robot.robot import BaseRobot
 from internutopia.core.scene.scene import IScene
 from internutopia.core.util import log
+from internutopia_extension.configs.controllers import MoveAlongPathPointsControllerCfg
 
 
 @BaseController.register('MoveAlongPathPointsController')
 class MoveAlongPathPointsController(BaseController):
     """Controller for moving alone a set of path points by utilizing a move-to-point controller as sub-controller."""
 
-    def __init__(self, config: ControllerCfg, robot: BaseRobot, scene: IScene) -> None:
+    def __init__(self, config: MoveAlongPathPointsControllerCfg, robot: BaseRobot, scene: IScene) -> None:
         self._user_config = None
         self.path_points: List[np.ndarray | List] = []
         self.path_point_idx = 0

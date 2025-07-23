@@ -14,9 +14,10 @@ import numpy as np
 
 from internutopia.core.robot.isaacsim.articulation import IsaacsimArticulation
 from internutopia.core.robot.rigid_body import IRigidBody
-from internutopia.core.robot.robot import BaseRobot, RobotCfg
+from internutopia.core.robot.robot import BaseRobot
 from internutopia.core.scene.scene import IScene
 from internutopia.core.util import log
+from internutopia_extension.configs.robots.franka import FrankaRobotCfg
 
 
 class Franka(IsaacsimArticulation):
@@ -108,10 +109,9 @@ class Franka(IsaacsimArticulation):
 
 @BaseRobot.register('FrankaRobot')
 class FrankaRobot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: IScene):
+    def __init__(self, config: FrankaRobotCfg, scene: IScene):
         super().__init__(config, scene)
         self._robot_ik_base = None
-        self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 

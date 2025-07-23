@@ -8,32 +8,13 @@ from internutopia.core.util import extensions_utils, log
 
 class Env:
     """
-    Represents an environment for multi env and multi agents. **Not gymnasium compatible**.
+    Vectorized environments to run multiple independent environments simultaneously with multiple agents.
 
-    This class encapsulates the capability to reset, step, and close environments
-    within a simulation framework. It provides properties to access the runner, active
-    configs, simulation configuration, and other relevant components. The class is
-    designed to manage the lifecycle of simulation tasks.
+    **NOT gymnasium compatible**.
 
     Parameters:
         config (Config): The config instance used for simulation
             management.
-
-    Methods:
-        reset(env_ids: List[int] = None) -> Tuple[List, List]: Resets specified environments
-            and returns initial observations and task configs.
-        step(action: List[Union[Dict, OrderedDict]]) -> Tuple[List, List, List, List, List]:
-            Executes a single step in the environment using provided actions.
-        get_dt(): Retrieves the simulation timestep (dt).
-        get_observations() -> List | Any: Fetches observations from the simulation environment.
-        close(): Closes the simulation environment.
-        finished() -> bool: Checks if all tasks in the simulation are completed.
-
-    Properties:
-        runner: Provides access to the internal runner instance.
-        is_render: Indicates whether the environment is in a renderable state.
-        active_task_configs: Retrieves the currently active task configs.
-        simulation_app: Retrieves the simulation app instance.
     """
 
     def __init__(self, config: Config) -> None:

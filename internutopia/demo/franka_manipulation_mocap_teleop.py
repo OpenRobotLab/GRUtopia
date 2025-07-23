@@ -20,9 +20,7 @@ franka = MocapControlledFrankaRobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(
-        physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=False, webrtc=False, native=True
-    ),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=False, webrtc=True),
     task_configs=[
         ManipulationTaskCfg(
             metrics=[

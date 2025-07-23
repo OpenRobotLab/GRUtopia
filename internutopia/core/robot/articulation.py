@@ -211,6 +211,7 @@ class IArticulation(PoseMixin):
     ) -> 'IArticulation':
         """
         Factory method to create IArticulation instances based on simulator_type.
+
         Args:
             simulator_type (str): simulator type.
             usd_path (str, optional): The file path to the USD containing the robot definition.

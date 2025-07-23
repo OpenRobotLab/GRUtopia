@@ -3,19 +3,18 @@ from collections import OrderedDict
 import numpy as np
 
 import internutopia.core.util.gym as gymutil
-from internutopia.core.config.robot import RobotCfg
 from internutopia.core.robot.articulation import IArticulation
 from internutopia.core.robot.rigid_body import IRigidBody
 from internutopia.core.robot.robot import BaseRobot
 from internutopia.core.scene.scene import IScene
 from internutopia.core.util import log
+from internutopia_extension.configs.robots.gr1 import GR1RobotCfg
 
 
 @BaseRobot.register('GR1Robot')
 class GR1Robot(BaseRobot):
-    def __init__(self, config: RobotCfg, scene: IScene):
+    def __init__(self, config: GR1RobotCfg, scene: IScene):
         super().__init__(config, scene)
-        self._sensor_config = config.sensors
         self._start_position = np.array(config.position) if config.position is not None else None
         self._start_orientation = np.array(config.orientation) if config.orientation is not None else None
 

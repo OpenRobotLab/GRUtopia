@@ -439,7 +439,9 @@ class SimulatorRunner:
         return task_configs_list
 
     def get_obj(self, name: str) -> IRigidBody:
-        return self._scene.get(name)
+        # Only supported in gym_env.
+        # TODO: handle name by a more robust way and maybe support vec env
+        return self._scene.get(name + '_0')
 
     def remove_collider(self, prim_path: str):
         from omni.physx.scripts import utils
@@ -459,9 +461,10 @@ class SimulatorRunner:
         physics_dt = self.config.simulator.physics_dt
         rendering_dt = self.config.simulator.rendering_dt
         physics_dt = eval(physics_dt) if isinstance(physics_dt, str) else physics_dt
-        rendering_dtt = eval(rendering_dt) if isinstance(rendering_dt, str) else rendering_dt
+        self.dt = physics_dt
+        rendering_dt = eval(rendering_dt) if isinstance(rendering_dt, str) else rendering_dt
         use_fabric = self.config.simulator.use_fabric
-        log.info(f'simulator params: physics dt={physics_dt}, rendering dt={rendering_dtt}, use_fabric={use_fabric}')
+        log.info(f'simulator params: physics dt={physics_dt}, rendering dt={rendering_dt}, use_fabric={use_fabric}')
         from omni.isaac.core import World
 
         self._world: World = World(

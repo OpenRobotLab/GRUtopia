@@ -2,6 +2,7 @@ import numpy as np
 
 from internutopia.core.config import Config, SimConfig
 from internutopia.core.gym_env import Env
+from internutopia.core.util import has_display
 from internutopia.macros import gm
 from internutopia_extension import import_extensions
 from internutopia_extension.configs.metrics import RecordingMetricCfg
@@ -12,6 +13,8 @@ from internutopia_extension.configs.robots.franka import (
 )
 from internutopia_extension.configs.tasks import ManipulationTaskCfg
 
+headless = not has_display()
+
 franka = FrankaRobotCfg(
     position=(0, 0, 0),
     controllers=[
@@ -21,7 +24,7 @@ franka = FrankaRobotCfg(
 )
 
 config = Config(
-    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, webrtc=False, native=True),
+    simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, webrtc=True),
     task_configs=[
         ManipulationTaskCfg(
             metrics=[
