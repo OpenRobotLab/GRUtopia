@@ -40,7 +40,7 @@ class BaseTask(ABC):
         self.work = True
         self.loaded = False
         for metric_config in config.metrics:
-            self.metrics[metric_config.type] = create_metric(metric_config, self.config)
+            self.metrics[metric_config.name] = create_metric(metric_config, self.config)
 
         from internutopia.core.task.reward import BaseReward, create_reward  # noqa
 

@@ -3,38 +3,37 @@ import numpy as np
 from internutopia.core.config import TaskCfg
 from internutopia.core.task.metric import BaseMetric
 from internutopia.core.util import log
-from internutopia_extension.configs.metrics.simple_metric import SimpleMetricCfg
+from internutopia_extension.configs.metrics.traveled_distance_metric import (
+    TraveledDistanceMetricCfg,
+)
 
 
-@BaseMetric.register('SimpleMetric')
-class SimpleMetric(BaseMetric):
+@BaseMetric.register('TraveledDistanceMetric')
+class TraveledDistanceMetric(BaseMetric):
     """
     Calculate the total distance a robot moves
     """
 
-    def __init__(self, config: SimpleMetricCfg, task_config: TaskCfg):
+    def __init__(self, config: TraveledDistanceMetricCfg, task_config: TaskCfg):
         super().__init__(config, task_config)
         self.distance: float = 0.0
         self.position = None
         self.robot_name = self.config.robot_name
 
-    def reset(self):
-        self.distance = 0.0
-
-    def update(self, task_obs: dict):
+    def update(self, obs: dict):
         """
         This function is called at each world step.
         """
         if self.position is None:
-            self.position = task_obs[self.robot_name]['position']
+            self.position = obs[self.robot_name]['position']
             return
-        self.distance += np.linalg.norm(self.position - task_obs[self.robot_name]['position'])
-        self.position = task_obs[self.robot_name]['position']
+        self.distance += np.linalg.norm(self.position - obs[self.robot_name]['position'])
+        self.position = obs[self.robot_name]['position']
         return
 
     def calc(self):
         """
         This function is called to calculate the metrics when the episode is terminated.
         """
-        log.info('SimpleMetric calc() called.')
+        log.info('TraveledDistanceMetric calc() called.')
         return self.distance

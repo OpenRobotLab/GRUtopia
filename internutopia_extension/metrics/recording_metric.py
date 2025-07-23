@@ -17,21 +17,18 @@ class RecordingMetric(BaseMetric):
         self.step = 0
         self.obs = {}
 
-    def reset(self):
-        self.step = 0
-
-    def update(self, task_obs: dict):
+    def update(self, obs: dict):
         """
         This function is called at each world step.
         """
         if self.fields is None:
-            self.obs[self.step] = task_obs
+            self.obs[self.step] = obs
         else:
-            assert len(task_obs) == 1, f'only support one task currently. but len(task_obs) is : {len(task_obs)}'
-            robot_name = list(task_obs.keys())[0]
+            assert len(obs) == 1, f'only support one task currently. but len(task_obs) is : {len(obs)}'
+            robot_name = list(obs.keys())[0]
             self.obs[self.step] = {robot_name: {}}
             for record_field in self.fields:
-                self.obs[self.step][robot_name][record_field] = task_obs[robot_name][record_field]
+                self.obs[self.step][robot_name][record_field] = obs[robot_name][record_field]
 
         self.step += 1
 

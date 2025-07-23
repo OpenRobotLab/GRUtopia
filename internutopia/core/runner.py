@@ -167,10 +167,9 @@ class SimulatorRunner:
                 self.finished_tasks.add(task.name)
                 log.info(f'Task {task.name} finished.')
                 metrics_results = task.calculate_metrics()
-                metrics_results['normally_end'] = True
                 if self.metrics_save_path == 'console':
                     print(json.dumps(metrics_results, indent=4))
-                elif self.metrics_save_path == 'none':
+                elif self.metrics_save_path == 'none' or self.metrics_save_path is None:
                     pass
                 else:
                     with open(self.metrics_save_path, 'a') as f:

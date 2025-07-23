@@ -13,8 +13,8 @@ class MetricCfg(BaseModel):
     with systems that evaluate or monitor performance based on specified metrics.
 
     Attributes:
-        type (str): The type of the metric, specifying how the metric is calculated or what it measures.
-        name (Optional[str]): An optional name for the metric, allowing users to provide a descriptive label.
+        type (str): The type of the metric, specifying which metric class will be created.
+        name (str): A name for the metric.
         metric_config (Optional[Dict]): An optional dictionary containing specific configuration parameters
             for the metric, which may vary depending on the metric type.
 
@@ -29,5 +29,5 @@ class MetricCfg(BaseModel):
     """
 
     type: str
-    name: Optional[str] = None
+    name: str = None
     metric_config: Optional[Union[Dict, BaseModel]] = {}

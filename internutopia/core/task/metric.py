@@ -33,7 +33,7 @@ class BaseMetric(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        Register an metric class with the given name(decorator).
+        Register a metric class with the given name(decorator).
 
         Args:
             name(str): name of the metric

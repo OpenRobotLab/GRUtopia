@@ -3,7 +3,9 @@ from internutopia.core.gym_env import Env
 from internutopia.core.util import has_display
 from internutopia.macros import gm
 from internutopia_extension import import_extensions
-from internutopia_extension.configs.metrics.simple_metric import SimpleMetricCfg
+from internutopia_extension.configs.metrics.traveled_distance_metric import (
+    TraveledDistanceMetricCfg,
+)
 from internutopia_extension.configs.robots.h1 import (
     H1RobotCfg,
     h1_camera_cfg,
@@ -33,11 +35,11 @@ h1_1 = H1RobotCfg(
 
 config = Config(
     simulator=SimConfig(physics_dt=1 / 240, rendering_dt=1 / 240, use_fabric=False, headless=headless, native=headless),
-    metrics_save_path='./h1_simple_metric.jsonl',
+    metrics_save_path='./h1_traveled_distance_metric.jsonl',
     task_configs=[
         FiniteStepTaskCfg(
             max_steps=300,
-            metrics=[SimpleMetricCfg(robot_name='h1')],
+            metrics=[TraveledDistanceMetricCfg(robot_name='h1')],
             scene_asset_path=gm.ASSET_PATH + '/scenes/empty.usd',
             scene_scale=(0.01, 0.01, 0.01),
             robots=[h1_1],
