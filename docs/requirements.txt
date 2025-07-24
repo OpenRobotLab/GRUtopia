@@ -1,5 +1,0 @@
-myst_parser
-pydata-sphinx-theme
-sphinx==6.2.1
-sphinx_copybutton==0.5.2
-sphinx_markdown_tables==0.0.17

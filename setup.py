@@ -8,7 +8,7 @@ with open('requirements/runtime.txt', 'r') as fr:
 
 setuptools.setup(
     name='internutopia',
-    version='2.1.1',
+    version='2.2.0',
     author='APX103',
     author_email='lijialun@pjlab.org.cn',
     description='Easy to use omniverse isaac sim standalone package',

@@ -132,9 +132,9 @@ def download_via_huggingface(target_path, minimum=False):
             DEFAULT_ENV_NAME,
         ]
 
-    # huggingface-cli download OpenRobotLab/GRScenes --repo-type dataset --local-dir <target_path>
+    # huggingface-cli download InternRobotics/GRScenes --repo-type dataset --local-dir <target_path>
     print('Downloading assets...')
-    dataset_repo = 'OpenRobotLab/GRScenes'
+    dataset_repo = 'InternRobotics/GRScenes'
     args = args_prefix + [
         'huggingface-cli',
         'download',

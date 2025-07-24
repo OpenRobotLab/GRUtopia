@@ -2,7 +2,7 @@
 
 This directory `toolkits/grscenes_scripts` includes some tool scripts for GRScenes usage.
 
-Users can download the GRScenes dataset from [**OpenXLab**](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes), [**ModelScope**](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/summary) and [**HuggingFace**](https://huggingface.co/datasets/OpenRobotLab/GRScenes).
+Users can download the GRScenes dataset from [**OpenXLab**](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes), [**ModelScope**](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/summary) and [**HuggingFace**](https://huggingface.co/datasets/InternRobotics/GRScenes).
 
 ## Prerequisites
 

@@ -1,33 +1,35 @@
-[![demo](docs/en/_static/image/teaser.png "demo")](https://www.youtube.com/watch?v=fD0F1jIax5Y)
+[![demo](static/teaser.webp "demo")](https://www.youtube.com/watch?v=fD0F1jIax5Y)
 <div id="top" align="left">
 
 [![arxiv](https://img.shields.io/badge/arXiv%202407.10943-red?logo=arxiv)](https://arxiv.org/abs/2407.10943)
 [![pdf](https://img.shields.io/badge/Paper-06AC38?logo=pagekit)](https://github.com/grutopia/grutopia.github.io/releases/download/v0.1.0/GRUtopia.pdf)
-[![github](https://img.shields.io/badge/Project-0065D3?logo=rocket&logoColor=white)](https://github.com/OpenRobotLab/GRUtopia)
-[![doc](https://img.shields.io/badge/Document-FFA500?logo=readthedocs&logoColor=white)](https://grutopia.github.io)
+[![github](https://img.shields.io/badge/Project-0065D3?logo=rocket&logoColor=white)](https://github.com/InternRobotics/InternUtopia)
+[![doc](https://img.shields.io/badge/Document-FFA500?logo=readthedocs&logoColor=white)](https://internrobotics.github.io/user_guide/internutopia/)
 [![video-en](https://img.shields.io/badge/YouTube-D33847?logo=youtube)](https://www.youtube.com/watch?v=fD0F1jIax5Y)
 [![video-cn](https://img.shields.io/badge/Bilibili-00A1D6?logo=bilibili&logoColor=white)](https://www.bilibili.com/video/BV1JUbxeMEsL/?buvid=XU42709457560E0722A8AA591EE792A3DAE59&from_spmid=search.search-result.0.0&is_story_h5=false&mid=vxiHfNKVdk6fb8fduRusuX8FTQ%2FSZMtL1rElX6M3iMo%3D&p=1&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=e78b4bb6-087b-4a72-817b-b06ef91167f3&share_source=COPY&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1720788955&unique_k=CeKgxGI&up_id=3546722198358311&vd_source=7f685cd616faf836ed7469749c100410)
-[![PyPI Downloads](https://static.pepy.tech/badge/grutopia)](https://pepy.tech/projects/grutopia)
-[![GitHub Issues](https://img.shields.io/github/issues/OpenRobotLab/GRUtopia)](https://github.com/OpenRobotLab/GRUtopia/issues)
+[![PyPI Downloads](https://static.pepy.tech/badge/internutopia)](https://pepy.tech/projects/internutopia)
+[![GitHub Issues](https://img.shields.io/github/issues/InternRobotics/InternUtopia)](https://github.com/InternRobotics/InternUtopia/issues)
 <a href="https://cdn.vansin.top/taoyuan.jpg"><img src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white" height="20" style="display:inline"></a>
 [![Discord](https://img.shields.io/discord/1373946774439591996?logo=discord)](https://discord.gg/5jeaQHUj4B)
 </div>
 
-# GRUtopia
+# InternUtopia
 
 ## 🔥 News
 
+- \[2025-07\] InternUtopia 2.2.0 is released!
+- \[2025-07\] Our project has been renamed to InternUtopia.
 - \[2025-02\] GRUtopia 2.0 released!
 - \[2024-07\] We release the [paper](https://arxiv.org/abs/2407.10943) and demos of GRUtopia.
 
 ## 🚀 New Features in 2.0 release
 - Gym compatible env implementation.
-- Easy-to-use pythonic config system to use out-of-the-box [sensors](https://grutopia.github.io/usage/tutorials/how-to-use-sensor.html), [controllers](https://grutopia.github.io/usage/tutorials/how-to-use-controller.html), [robots](https://grutopia.github.io/usage/tutorials/how-to-use-robot.html) and [tasks](https://grutopia.github.io/usage/tutorials/how-to-use-task.html).
-- Examples of driving [diverse robots](https://grutopia.github.io/usage/tutorials/how-to-use-robot.html) and the corresponding policies.
-- [Benchmark and baseline](https://grutopia.github.io/usage/get_started/run-benchmark-baseline.html) for social navigation and mobile manipulation task.
-- Teleportation tools with [Mocap](https://grutopia.github.io/usage/get_started/teleoperating-with-mocap.html) and [Apple VisionPro](https://grutopia.github.io/usage/get_started/teleoperating-with-visionpro.html).
-- Physically accurate [interactive object assets](https://huggingface.co/datasets/OpenRobotLab/GRScenes) that are ready for simulation.
-- Procedural [Indoor Scene Generation](https://github.com/OpenRobotLab/GRUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://grutopia.github.io/usage/get_started/explore-grscenes.html).
+- Easy-to-use pythonic config system to use out-of-the-box [sensors](https://internrobotics.github.io/user_guide/internutopia/tutorials/how-to-use-sensor.html), [controllers](https://internrobotics.github.io/user_guide/internutopia/tutorials/how-to-use-controller.html), [robots](https://internrobotics.github.io/user_guide/internutopia/tutorials/how-to-use-robot.html) and [tasks](https://internrobotics.github.io/user_guide/internutopia/tutorials/how-to-use-task.html).
+- Examples of driving [diverse robots](https://internrobotics.github.io/user_guide/internutopia/get_started/drive-unitree-g1-with-keyboard.html) and the corresponding policies.
+- Benchmark and baseline for [social navigation](https://internrobotics.github.io/user_guide/internnav/) and [mobile manipulation](https://internrobotics.github.io/user_guide/internmanip/) task.
+- Teleportation tools with [Mocap](https://internrobotics.github.io/user_guide/internutopia/get_started/control-franak-with-your-hand.html) and [Apple VisionPro](https://internrobotics.github.io/user_guide/internutopia/get_started/teleoprate-fourier-gr1-with-visionpro.html).
+- Physically accurate [interactive object assets](https://huggingface.co/datasets/InternRobotics/GRScenes) that are ready for simulation.
+- Procedural [Indoor Scene Generation](https://github.com/InternRobotics/InternUtopia/tree/main/toolkits/indoor_scenes_generation) with [GRScenes-100](https://internrobotics.github.io/user_guide/internutopia/get_started/dive-into-grscenes-100.html).
 
 ## 📋 Contents
 - [🏠 About](#-about) <!-- omit in toc -->
@@ -47,7 +49,7 @@
 
 Recent works have been exploring the scaling laws in the field of Embodied AI. Given the prohibitive costs of collecting real-world data, we believe the <b>Simulation-to-Real (Sim2Real) paradigm</b> is a more feasible path for scaling the learning of embodied models.
 
-We introduce project <b>GRUtopia</b> (aka. 桃源 in Chinese), a general-purpose research platform for embodied AGI.
+We introduce project <b>InternUtopia</b> (aka. 桃源 in Chinese), a general-purpose research platform for embodied AGI.
 It features several advancements:
 * 🏙️ <b>GRScenes</b>, the scene dataset, includes 100k interactive finely annotated scenes. GRScenes covers 89 diverse scene categories, facilitating deployment of general robots across different scenarios.
 * 🧑‍🤝‍🧑 <b>GRResidents</b>, a Large Language Model (LLM) driven Non-Player Character (NPC) system that enables social interaction, task generation, and task assignment, thus simulating <b>social scenarios</b> for embodied AI applications.
@@ -64,7 +66,7 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 ### Prerequisites
 
 - Ubuntu 20.04, 22.04
-- [NVIDIA Omniverse Isaac Sim 4.2.0](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/install_workstation.html)
+- [NVIDIA Omniverse Isaac Sim 4.5.0](https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/install_workstation.html)
   - Ubuntu 20.04/22.04 Operating System
   - NVIDIA GPU (RTX 2070 or higher)
   - NVIDIA GPU Driver (recommended version 535.216.01+)
@@ -75,41 +77,41 @@ We hope that this work can alleviate the scarcity of high-quality data in this f
 
 ### Installation
 
-We provide the installation guide [here](https://grutopia.github.io/usage/get_started/installation.html). You can install locally or use docker and verify the installation easily.
+We provide the installation guide [here](https://internrobotics.github.io/user_guide/internutopia/get_started/installation.html). You can install locally or use docker and verify the installation easily.
 
 ### Documentation \& Tutorial
 
-We provide detailed [docs](https://grutopia.github.io) for the basic usage of different modules supported in GRUtopia. Welcome to try and post your suggestions!
+We provide detailed [docs](https://internrobotics.github.io/user_guide/internutopia/) for the basic usage of different modules supported in InternUtopia. Welcome to try and post your suggestions!
 
 ## 🏙️ Assets
 
 > [!NOTE]
 > 📝First of all you **MUST** complete the [User Agreement for GRScenes-100 Dataset Access](https://docs.google.com/forms/d/e/1FAIpQLSccX4pMb57eZbjXpH12Jz6WUBmCfeyc2t0s98k_u4Z-GD3Org/viewform?fbzx=8256642192244696391).
 
-Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [GRUtopia](https://grutopia.github.io/usage/get_started/installation.html) installed:
+Then you can choose to download all assets (~80GB) or a minimum set (~500MB) to examine installation by running the following script with [InternUtopia](https://internrobotics.github.io/user_guide/internutopia/get_started/installation.html) installed:
 
 ```shell
-$ python -m grutopia.download_assets
+$ python -m internutopia.download_assets
 ```
-The default path to store the downloaded assets is `${PATH/TO/GRUTOPIA/ROOT}/grutopia/assets`. Users have two ways to configure the asset path:
+The default path to store the downloaded assets is `${PATH/TO/INTERNUTOPIA/ROOT}/internutopia/assets`. Users have two ways to configure the asset path:
 
-1. Spcecify a custom path during download using `python -m grutopia.download_assets`.
-2. Set it later by running `python -m grutopia.set_assets_path` and entering the preferred directory.
+1. Spcecify a custom path during download using `python -m internutopia.download_assets`.
+2. Set it later by running `python -m internutopia.set_assets_path` and entering the preferred directory.
 
 
 
 ### GRScenes-100
-If you want to separately download the `GRScenes-100` scene assets, you can manually download them from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100). Please refer to the [instructions](https://huggingface.co/datasets/OpenRobotLab/GRScenes#%F0%9F%93%9A-getting-started) for scene usage.
+If you want to separately download the `GRScenes-100` scene assets, you can manually download them from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/scenes/GRScenes-100), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/InternRobotics/GRScenes/tree/main/scenes/GRScenes-100). Please refer to the [instructions](https://huggingface.co/datasets/InternRobotics/GRScenes#%F0%9F%93%9A-getting-started) for scene usage.
 
 ### Robots & Weights
-If you want to separately download robots and policy weights, you can manually download the `robot` directory from from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/robots), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/OpenRobotLab/GRScenes/tree/main/robots) and move it to the root of the asset path.
+If you want to separately download robots and policy weights, you can manually download the `robot` directory from from [OpenDataLab](https://openxlab.org.cn/datasets/OpenRobotLab/GRScenes/tree/main/robots), [ModelScope](https://www.modelscope.cn/datasets/Shanghai_AI_Laboratory/GRScenes/files) and [HuggingFace](https://huggingface.co/datasets/InternRobotics/GRScenes/tree/main/robots) and move it to the root of the asset path.
 
 ## 📦 Benchmark & Method
 <p align="center">
-  <img src="docs/en/_static/image/benchmark.png" align="center" width="100%">
+  <img src="static/benchmark.png" align="center" width="100%">
 </p>
 
- We preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. Please refer to the [documentation](https://grutopia.github.io/usage/get_started/run-benchmark-baseline.html) for running the benchmarks.
+ We preliminarily establish three benchmarks for evaluating the capabilities of embodied agents from different aspects: <b>Object Loco-Navigation</b>, <b>Social Loco-Navigation</b>, and <b>Loco-Manipulation</b>. Please refer to the [InternNav](https://internrobotics.github.io/user_guide/internnav/) and [InternManip](https://internrobotics.github.io/user_guide/internmanip/) for running the benchmarks.
 
 ## 👥 Support
 
@@ -123,8 +125,8 @@ Join our [WeChat](https://cdn.vansin.top/taoyuan.jpg) support group or [Discord]
 - \[x\] Polish APIs and related codes.
 - \[x\] Full release and further updates.
 - \[x\] Release the baseline methods and benchmark data.
-- \[ \] Support multiple episodes.
-- \[ \] Vectorized env and batch execution.
+- \[x\] Support multiple episodes.
+- \[x\] Vectorized env and batch execution.
 - \[ \] Training framework.
 
 ## 🔗 Citation
@@ -144,7 +146,7 @@ If you find our work helpful, please cite:
 
 ## 📄 License
 
-GRUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRScenes are under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License </a><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>.
+InternUtopia's simulation platform is [MIT licensed](LICENSE). The open-sourced GRScenes are under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License </a><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>.
 
 ## 👏 Acknowledgements
 
